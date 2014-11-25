@@ -1,9 +1,15 @@
 #!/usr/bin/python2
 # -*- coding: utf-8 -*-
 
-## Dependencies:    python-mechanize
+## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers
-## Licence:         Creative Commons BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/deed.nl)
+## Licence:         CC-BY-SA-4.0
+
+## This work is licensed under the Creative Commons
+## Attribution-ShareAlike 4.0 International License. To view a copy of 
+## this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or
+## send a letter to Creative Commons, PO Box 1866, Mountain View, 
+## CA 94042, USA.
 
 import re                               ## Basislib voor reguliere expressies
 import sys                              ## Basislib voor output en besturingssysteemintegratie
