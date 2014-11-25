@@ -15,15 +15,15 @@ binary, skip steps 1 and 2.
 1. Install the dependencies:
   - Ubuntu:
   
-        sudo apt-get install python-mechanize
+            sudo apt-get install python-mechanize
         
   - Arch:
   
-        sudo pacman -S python2-mechanize
+            sudo pacman -S python2-mechanize
         
   - Pip:
   
-        sudo pip install mechanize
+            sudo pip install mechanize
         
 2. Clone this repository:
 
