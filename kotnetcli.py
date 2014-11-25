@@ -9,9 +9,24 @@ import re                               ## Basislib voor reguliere expressies
 import sys                              ## Basislib voor output en besturingssysteemintegratie
 import time                             ## Voor timeout om venster te sluiten na login etc.
 import curses                           ## Voor tekenen op scherm.
+import keyring                          ## Voor ophalen wachtwoord
+import getpass
 import mechanize                        ## Emuleert een browser
-from credentials import gebruikersnaam, wachtwoord
+#from credentials import gebruikersnaam, wachtwoord
 
+def credentials():
+    if (keyring.get_password("kotnetcli", "gebruikersnaam") == None) or\
+    (keyring.get_password("kotnetcli", "wachtwoord") == None):
+        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
+        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+        
+        keyring.set_password("kotnetcli", "gebruikersnaam", \
+        gebruikersnaam)
+        keyring.set_password("kotnetcli", "wachtwoord", wachtwoord)
+    
+    gebruikersnaam = keyring.get_password("kotnetcli", "gebruikersnaam")
+    wachtwoord = keyring.get_password("kotnetcli", "wachtwoord")
+    return gebruikersnaam, wachtwoord
 
 class Kotnetlogin():
     def __init__(self, gebruikersnaam, wachtwoord):
@@ -164,4 +179,5 @@ def main(scherm):
     kl.gegevensopsturen()
     kl.tegoeden()
 
+gebruikersnaam, wachtwoord = credentials()
 curses.wrapper(main)        ## Zorgt er voor dat curses netjes opstart en afsluit.
