@@ -29,19 +29,17 @@ binary, skip steps 1 and 2.
 
         git clone https://github.com/GijsTimmers/kotnetcli.git
         
-3. Create the file credentials.py in the kotnetcli directory, and
-put this data in it:
-
-        gebruikersnaam = "s0123456"
-        wachtwoord = "w4chtw00rd"
-
-4. Mark kotnetcli.py as executable:
+3. Mark kotnetcli.py as executable:
 
         chmod +x kotnetcli*
         
-5. Run kotnetcli.py:
+4. Run kotnetcli.py:
 
         ./kotnetcli*      
+
+When run for the first time, kotnetcli will ask you for your username
+and password. Both will be stored safely in the keyring of your desktop
+environment.
 
 You can add kotnetcli to your autostart programs to log in to Kotnet
 at boot-time.
