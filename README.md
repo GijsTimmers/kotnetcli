@@ -33,8 +33,9 @@ at boot-time.
 
 | Dependency | Rationale | Where to get it|
 |------------|-----------|--------------|
-| [Python 2](jo) | jo | jo |
-| [curses lib](https://docs.python.org/2/library/curses.html) | jo | jo |
+| [Python 2](https://www.python.org) | The `kotnetcli` application is entirely written in python.  Since python is an interpreted language, running the `kotnetcli.py` script implies having a python interpreter installed. Running the compiled [binary](https://github.com/GijsTimmers/kotnetcli/releases/latest) however doesn't require having python installed. The newer `python3` isn't backwards compatible with `python2`. | Python2 is pre-installed on many UNIX systems. If not most of them provide `python2` in the standard package manager.|
+| [curses lib](https://docs.python.org/2/library/curses.html) | `kotnetcli` uses the `curses` library to display dynamic colorized progress-output  | Most UNIX versions are shipped with a version of the `ncurses` library. If not, most of them provide `ncurses` in the standard package manager. |
+| [mechanize lib](https://pypi.python.org/pypi/mechanize/) | A library emulating a browser in python. This is used by `kotnetcli` to acces the kotnetlogin.kuleuven.be page | The following section lists platform specific info to resolve this dependency.|
 
 ## Platform dependent instructions
 This section lists the platform specific instructions to resolve the above dependencies:
