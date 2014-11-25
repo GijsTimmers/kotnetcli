@@ -85,8 +85,7 @@ class Kotnetlogin():
         try:
             self.browser.select_form(nr=1)
             self.browser.form["uid"] = self.gebruikersnaam
-            wachtwoordoproeping = self.browser.form.find_control(type="password")
-            wachtwoordvaknaam = wachtwoordoproeping.name
+            wachtwoordvaknaam = self.browser.form.find_control(type="password").name
             self.browser.form[wachtwoordvaknaam] = self.wachtwoord
             self.scherm.addstr(2, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
             self.scherm.addstr(3, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD) 
