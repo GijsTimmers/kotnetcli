@@ -6,8 +6,9 @@ An easy automated way to log in on Kotnet.
 Installation
 -----
 
-You can either install the dependencies and run the python file, or skip
-that and just download the binary. Currently, we only support 64-bit
+You can either install the dependencies and run the python file,
+[or just download the binary](https://github.com/GijsTimmers/kotnetcli/
+releases/download/1.0.0/kotnetcli). Currently, we only support 64-bit
 Linux. If you decide to download the binary, skip steps 1 and 2.
 
 1. Install the dependencies: `python-mechanize`:
