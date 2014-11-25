@@ -15,15 +15,15 @@ binary, skip steps 1 and 2.
 1. Install the dependencies:
   - Ubuntu:
   
-            sudo apt-get install python-mechanize
+            sudo apt-get install python-mechanize python-keyring
         
   - Arch:
   
-            sudo pacman -S python2-mechanize
+            sudo pacman -S python2-mechanize python2-keyring
         
   - Pip:
   
-            sudo pip install mechanize
+            sudo pip install mechanize keyring
         
 2. Clone this repository:
 

@@ -12,7 +12,7 @@ import curses                           ## Voor tekenen op scherm.
 import keyring                          ## Voor ophalen wachtwoord
 import getpass
 import mechanize                        ## Emuleert een browser
-#from credentials import gebruikersnaam, wachtwoord
+
 
 def credentials():
     if (keyring.get_password("kotnetcli", "gebruikersnaam") == None) or\
