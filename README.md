@@ -1,6 +1,6 @@
 # kotnetcli
 
-An easy automated way to log in on Kotnet.
+*KotNet Command Line Interface* -- An easy automated way to log in to [KotNet](https://admin.kuleuven.be/icts/english/kotnet).
 
 ## Installation
 
