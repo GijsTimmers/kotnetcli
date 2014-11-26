@@ -7,8 +7,8 @@
 
 Logging in on KotNet is a hassle. A method to autologin from within the
 browser
-[already exists](https://code.google.com/p/kotnetloginextension/),
-and although this way of logging in is very user-friendly, it also has
+[exists](https://code.google.com/p/kotnetloginextension/),
+but although this way of logging in is very user-friendly, it also has
 some downsides:
 
 - The login speed is suboptimal as the webbrowser has to draw the 

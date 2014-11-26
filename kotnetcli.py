@@ -4,6 +4,7 @@
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers
 ## Licence:         CC-BY-SA-4.0
+##                  http://creativecommons.org/licenses/by-sa/4.0/
 
 ## This work is licensed under the Creative Commons
 ## Attribution-ShareAlike 4.0 International License. To view a copy of 
@@ -16,7 +17,7 @@ import sys                              ## Basislib voor output en besturingssys
 import time                             ## Voor timeout om venster te sluiten na login etc.
 import curses                           ## Voor tekenen op scherm.
 import keyring                          ## Voor ophalen wachtwoord
-import getpass
+import getpass                          ## Voor invoer wachtwoord zonder feedback
 import mechanize                        ## Emuleert een browser
 
 
