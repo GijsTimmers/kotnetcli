@@ -219,8 +219,8 @@ def argumentenParser():
     action="store_true")
 
     parser.add_argument("-g", "--guest-mode",\
-    help="Allows to log in as a different user without forgetting \
-    the default credentials",\
+    help="Logs you in as a different user without forgetting your \
+    default credentials",\
     action="store_true")
 
 
