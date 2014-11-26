@@ -1,0 +1,20 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+
+## make sure you have a git clone of pyinstaller in this directory...
+
+if [ -d "pyinstaller" ]; then
+    echo "OK, pyinstaller aanwezig..."
+fi
+
+if [ ! -d "pyinstaller" ]; then
+    echo "pyinstaller afwezig, gaat nu clonen..."
+    git clone https://github.com/pyinstaller/pyinstaller.git
+fi
+
+./pyinstaller/pyinstaller.py kotnetcli.spec &&\
+cp -v dist/kotnetcli . &&\
+echo "Compileren klaar"
+
+
+
