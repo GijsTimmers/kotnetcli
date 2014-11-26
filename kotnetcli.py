@@ -35,10 +35,16 @@ class Credentials():
         gebruikersnaam = keyring.get_password("kotnetcli", "gebruikersnaam")
         wachtwoord = keyring.get_password("kotnetcli", "wachtwoord")
         return gebruikersnaam, wachtwoord
+    
     def forget(self):
         keyring.delete_password("kotnetcli", "gebruikersnaam")
         keyring.delete_password("kotnetcli", "wachtwoord")
         print "You have succesfully removed your kotnetcli credentials."
+    
+    def guest(self):
+        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
+        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+        return gebruikersnaam, wachtwoord
 
 class Kotnetlogin():
     def __init__(self, gebruikersnaam, wachtwoord):
@@ -239,8 +245,10 @@ def aanstuurderObvArgumenten(argumenten, cr):
         print "ik wil zwijgen"
         print "(Nog niet geïmplementeerd)"
     if argumenten.guest_mode:
+        ## werkt alleen met login op het moment
         print "ik wil me anders voordoen dan ik ben"
-        print "(Nog niet geïmplementeerd)"
+        gebruikersnaam, wachtwoord = cr.guest()
+        curses.wrapper(main, gebruikersnaam, wachtwoord)
     
         ## De eerste if moet bij voorkeur gemakkelijker.
         ## En een 'else'-statement werkt hier niet, want dan logt hij
