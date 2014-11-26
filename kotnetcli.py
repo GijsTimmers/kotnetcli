@@ -43,6 +43,7 @@ class Kotnetlogin():
         self.wachtwoord = wachtwoord
         
         self.scherm = curses.initscr()
+        curses.curs_set(0)                  ## cursor invisible
         curses.start_color()                ## Kleuren aanmaken
         curses.noecho()                     ## Toetsen niet afdrukken
         self.scherm.keypad(True)            ## Toetsen laten opvangen door curses
