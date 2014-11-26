@@ -19,21 +19,26 @@ import curses                           ## Voor tekenen op scherm.
 import keyring                          ## Voor ophalen wachtwoord
 import getpass                          ## Voor invoer wachtwoord zonder feedback
 import mechanize                        ## Emuleert een browser
+import argparse
 
 
-def credentials():
-    if (keyring.get_password("kotnetcli", "gebruikersnaam") == None) or\
-    (keyring.get_password("kotnetcli", "wachtwoord") == None):
-        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
-        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+class Credentials():
+    def getset(self):
+        if (keyring.get_password("kotnetcli", "gebruikersnaam") == None) or\
+        (keyring.get_password("kotnetcli", "wachtwoord") == None):
+            gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
+            wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+            
+            keyring.set_password("kotnetcli", "gebruikersnaam", gebruikersnaam)
+            keyring.set_password("kotnetcli", "wachtwoord", wachtwoord)
         
-        keyring.set_password("kotnetcli", "gebruikersnaam", \
-        gebruikersnaam)
-        keyring.set_password("kotnetcli", "wachtwoord", wachtwoord)
-    
-    gebruikersnaam = keyring.get_password("kotnetcli", "gebruikersnaam")
-    wachtwoord = keyring.get_password("kotnetcli", "wachtwoord")
-    return gebruikersnaam, wachtwoord
+        gebruikersnaam = keyring.get_password("kotnetcli", "gebruikersnaam")
+        wachtwoord = keyring.get_password("kotnetcli", "wachtwoord")
+        return gebruikersnaam, wachtwoord
+    def forget(self):
+        keyring.delete_password("kotnetcli", "gebruikersnaam")
+        keyring.delete_password("kotnetcli", "wachtwoord")
+        print "You have succesfully removed your kotnetcli credentials."
 
 class Kotnetlogin():
     def __init__(self, gebruikersnaam, wachtwoord):
@@ -179,7 +184,7 @@ class Kotnetlogin():
         time.sleep(2)
         #self.scherm.getch()
         
-def main(scherm):
+def main(scherm, gebruikersnaam, wachtwoord):
     kl = Kotnetlogin(gebruikersnaam, wachtwoord) ## Vervang door jouw gegevens!        
     kl.netlogin()
     kl.kuleuven()
@@ -187,5 +192,62 @@ def main(scherm):
     kl.gegevensopsturen()
     kl.tegoeden()
 
-gebruikersnaam, wachtwoord = credentials()
-curses.wrapper(main)        ## Zorgt er voor dat curses netjes opstart en afsluit.
+def argumentenParser():
+    parser = argparse.ArgumentParser(description="Script om in- of uit \
+    te loggen op KotNet")
+
+    parser.add_argument("-i", "--login",\
+    help="Logs you in on KotNet (default)",\
+    action="store_true")
+
+    parser.add_argument("-o", "--logout",\
+    help="Logs you out off KotNet",\
+    action="store_true")
+
+    parser.add_argument("-f", "--forget",\
+    help="Makes kotnetcli forget your credentials",\
+    action="store_true")
+
+    parser.add_argument("-q", "--quiet",\
+    help="Hides all output",\
+    action="store_true")
+
+    parser.add_argument("-g", "--guest-mode",\
+    help="Allows to log in as a different user without forgetting \
+    the default credentials",\
+    action="store_true")
+
+
+    argumenten = parser.parse_args()
+    return argumenten
+
+def aanstuurderObvArgumenten(argumenten, cr):
+    argumententuple_omgekeerd = [not i for i in vars(argumenten).values()]
+    if argumenten.login or all(argumententuple_omgekeerd):
+        print "ik wil inloggen"
+        gebruikersnaam, wachtwoord = cr.getset()
+        curses.wrapper(main, gebruikersnaam, wachtwoord) 
+        ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
+    if argumenten.logout:
+        print "ik wil uitloggen"
+        print "(Nog niet geïmplementeerd)"
+        ## TODO
+    if argumenten.forget:
+        print "ik wil vergeten"
+        cr.forget()
+    if argumenten.quiet:
+        print "ik wil zwijgen"
+        print "(Nog niet geïmplementeerd)"
+    if argumenten.guest_mode:
+        print "ik wil me anders voordoen dan ik ben"
+        print "(Nog niet geïmplementeerd)"
+    
+        ## De eerste if moet bij voorkeur gemakkelijker.
+        ## En een 'else'-statement werkt hier niet, want dan logt hij
+        ## twee keer in. Ik heb een manier nodig om ook in te loggen als álle
+        ## andere argumenten False zijn. Liefst zou ik het combineren met
+        ## argumenten.login: bvb if argumenten.login or not argumenten.*.
+        ## Of zoiets.
+
+cr = Credentials()
+aanstuurderObvArgumenten(argumentenParser(), cr)
