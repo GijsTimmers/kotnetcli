@@ -22,6 +22,8 @@ import curses                           ## Voor tekenen op scherm.
 import sys                              ## Basislib voor output en besturingssysteemintegratie
 import os
 
+from communicator import Communicator   ## Zorgt voor al dan niet afdrukken in de terminal.
+
 class Credentials():
     def getset(self):
         if (keyring.get_password("kotnetcli", "gebruikersnaam") == None) or\
@@ -47,13 +49,18 @@ class Credentials():
         return gebruikersnaam, wachtwoord
 
 class Kotnetlogin():
-    def __init__(self, scherm, gebruikersnaam, wachtwoord):
+    def __init__(self, co, gebruikersnaam, wachtwoord):
+        
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
         
         self.gebruikersnaam = gebruikersnaam
         self.wachtwoord = wachtwoord
         
+        self.co = co
+        
+        
+        """
         self.scherm = scherm
         curses.curs_set(0)                  ## cursor invisible
         curses.start_color()                ## Kleuren aanmaken
@@ -78,10 +85,26 @@ class Kotnetlogin():
         self.scherm.addstr(5, 10, "[          ][    ]", curses.A_BOLD)        
         
         self.scherm.refresh()
+        """
+        self.co.kprint(0, 0, "Netlogin openen.......")
+        self.co.kprint(0, 22, "[    ]", curses.A_BOLD)
+        #self.co.kprint(0, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
+        self.co.kprint(0, 23, "WAIT", curses.color_pair(3))
+        self.co.kprint(1, 0, "KU Leuven kiezen......")
+        self.co.kprint(1, 22, "[    ]", curses.A_BOLD)
+        self.co.kprint(2, 0, "Gegevens invoeren.....")
+        self.co.kprint(2, 22, "[    ]", curses.A_BOLD)
+        self.co.kprint(3, 0, "Gegevens opsturen.....")
+        self.co.kprint(3, 22, "[    ]", curses.A_BOLD)
+        self.co.kprint(4, 0, "Download:")
+        self.co.kprint(4, 10, "[          ][    ]", curses.A_BOLD)
+        self.co.kprint(5, 0, "Upload:")
+        self.co.kprint(5, 10, "[          ][    ]", curses.A_BOLD)        
         
-            
+        self.scherm.refresh()
+        
+    
     def netlogin(self):
-        
         try:
             respons = self.browser.open("https://netlogin.kuleuven.be", timeout=1.8)
             html = respons.read()
@@ -181,8 +204,8 @@ class Kotnetlogin():
         time.sleep(2)
         #self.scherm.getch()
         
-def main(scherm, gebruikersnaam, wachtwoord):
-    kl = Kotnetlogin(scherm, gebruikersnaam, wachtwoord) ## Vervang door jouw gegevens!        
+def main(co, gebruikersnaam, wachtwoord):
+    kl = Kotnetlogin(co, gebruikersnaam, wachtwoord) ## Vervang door jouw gegevens!        
     kl.netlogin()
     kl.kuleuven()
     kl.gegevensinvoeren()
@@ -232,9 +255,14 @@ def aanstuurderObvArgumenten(argumenten, cr):
     if argumenten.forget:
         print "ik wil vergeten"
         cr.forget()
+        
     if argumenten.quiet:
         print "ik wil zwijgen"
-        print "(Nog niet geïmplementeerd)"
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = Communicator(verbosity="quiet")
+        
+        main(co, gebruikersnaam, wachtwoord)
+        
     if argumenten.guest_mode:
         ## werkt alleen met login op het moment
         print "ik wil me anders voordoen dan ik ben"
@@ -249,4 +277,5 @@ def aanstuurderObvArgumenten(argumenten, cr):
         ## Of zoiets.
 
 cr = Credentials()
+#co = Communicator()
 aanstuurderObvArgumenten(argumentenParser(), cr)
