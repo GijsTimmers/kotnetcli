@@ -13,14 +13,14 @@
 ## CA 94042, USA.
 
 import re                               ## Basislib voor reguliere expressies
-import sys                              ## Basislib voor output en besturingssysteemintegratie
 import time                             ## Voor timeout om venster te sluiten na login etc.
-import curses                           ## Voor tekenen op scherm.
 import keyring                          ## Voor ophalen wachtwoord
-import getpass                          ## Voor invoer wachtwoord zonder feedback
+import argparse                         ## Parst argumenten
 import mechanize                        ## Emuleert een browser
-import argparse
-
+import getpass                          ## Voor invoer wachtwoord zonder feedback
+import curses                           ## Voor tekenen op scherm.
+import sys                              ## Basislib voor output en besturingssysteemintegratie
+import os
 
 class Credentials():
     def getset(self):
@@ -47,18 +47,16 @@ class Credentials():
         return gebruikersnaam, wachtwoord
 
 class Kotnetlogin():
-    def __init__(self, gebruikersnaam, wachtwoord):
+    def __init__(self, scherm, gebruikersnaam, wachtwoord):
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
         
         self.gebruikersnaam = gebruikersnaam
         self.wachtwoord = wachtwoord
         
-        self.scherm = curses.initscr()
+        self.scherm = scherm
         curses.curs_set(0)                  ## cursor invisible
         curses.start_color()                ## Kleuren aanmaken
-        curses.noecho()                     ## Toetsen niet afdrukken
-        self.scherm.keypad(True)            ## Toetsen laten opvangen door curses
         curses.use_default_colors()
         curses.init_pair(1, 1, -1)          ## Paren aanmaken: ndz vr curses.
         curses.init_pair(2, 2, -1)          ## Ik heb de curses-conventie aangehouden, 1 is dus rood,
@@ -70,20 +68,14 @@ class Kotnetlogin():
         self.scherm.addstr(0, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
         self.scherm.addstr(1, 0, "KU Leuven kiezen......")
         self.scherm.addstr(1, 22, "[    ]", curses.A_BOLD)
-        #self.scherm.addstr(1, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
         self.scherm.addstr(2, 0, "Gegevens invoeren.....")
         self.scherm.addstr(2, 22, "[    ]", curses.A_BOLD)
-        #self.scherm.addstr(2, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
         self.scherm.addstr(3, 0, "Gegevens opsturen.....")
         self.scherm.addstr(3, 22, "[    ]", curses.A_BOLD)
-        #self.scherm.addstr(3, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD) 
         self.scherm.addstr(4, 0, "Download:")
         self.scherm.addstr(4, 10, "[          ][    ]", curses.A_BOLD)
-        #self.scherm.addstr(4, 26, "%")
         self.scherm.addstr(5, 0, "Upload:")
-        self.scherm.addstr(5, 10, "[          ][    ]", curses.A_BOLD)
-        #self.scherm.addstr(5, 26, "%")
-        
+        self.scherm.addstr(5, 10, "[          ][    ]", curses.A_BOLD)        
         
         self.scherm.refresh()
         
@@ -92,7 +84,6 @@ class Kotnetlogin():
         
         try:
             respons = self.browser.open("https://netlogin.kuleuven.be", timeout=1.8)
-            #respons = self.browser.open("134.58.127.65", timeout=1.8)
             html = respons.read()
             self.scherm.addstr(0, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
             self.scherm.addstr(1, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
@@ -191,7 +182,7 @@ class Kotnetlogin():
         #self.scherm.getch()
         
 def main(scherm, gebruikersnaam, wachtwoord):
-    kl = Kotnetlogin(gebruikersnaam, wachtwoord) ## Vervang door jouw gegevens!        
+    kl = Kotnetlogin(scherm, gebruikersnaam, wachtwoord) ## Vervang door jouw gegevens!        
     kl.netlogin()
     kl.kuleuven()
     kl.gegevensinvoeren()
