@@ -243,15 +243,6 @@ def argumentenParser():
 
 def aanstuurderObvArgumenten(argumenten, cr):
     argumententuple_omgekeerd = [not i for i in vars(argumenten).values()]
-    if argumenten.login or all(argumententuple_omgekeerd):
-        print "ik wil inloggen"
-        gebruikersnaam, wachtwoord = cr.getset()
-        curses.wrapper(main, gebruikersnaam, wachtwoord) 
-        ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
-    if argumenten.logout:
-        print "ik wil uitloggen"
-        print "(Nog niet geïmplementeerd)"
-        ## TODO
     if argumenten.forget:
         print "ik wil vergeten"
         cr.forget()
@@ -269,12 +260,27 @@ def aanstuurderObvArgumenten(argumenten, cr):
         gebruikersnaam, wachtwoord = cr.guest()
         curses.wrapper(main, gebruikersnaam, wachtwoord)
     
-        ## De eerste if moet bij voorkeur gemakkelijker.
-        ## En een 'else'-statement werkt hier niet, want dan logt hij
-        ## twee keer in. Ik heb een manier nodig om ook in te loggen als álle
-        ## andere argumenten False zijn. Liefst zou ik het combineren met
-        ## argumenten.login: bvb if argumenten.login or not argumenten.*.
-        ## Of zoiets.
+    if argumenten.logout:
+        print "ik wil uitloggen"
+        print "(Nog niet geïmplementeerd)"
+        return()
+    
+    #if argumenten.login or all(argumententuple_omgekeerd):
+    if argumenten.login:    
+        print "ik wil inloggen"
+        gebruikersnaam, wachtwoord = cr.getset()
+        curses.wrapper(main, gebruikersnaam, wachtwoord) 
+        ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
+    
+    print "ik wil inloggen"
+    gebruikersnaam, wachtwoord = cr.getset()
+    curses.wrapper(main, gebruikersnaam, wachtwoord) 
+    ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
+    
+    ## .login op 't einde, zonder return, zodat er altijd wordt
+    ## ingelogd, zowel met --login als zonder argumenten. Als er moet
+    ## worden uitgelogd, is de .logout True en zal de .login() niet worden
+    ## gestart; daardoor is het te combineren met de andere vlaggen.
 
 cr = Credentials()
 #co = Communicator()
