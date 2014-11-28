@@ -22,7 +22,8 @@ import curses                           ## Voor tekenen op scherm.
 import sys                              ## Basislib voor output en besturingssysteemintegratie
 import os
 
-from communicator import Communicator   ## Zorgt voor al dan niet afdrukken in de terminal.
+import communicator
+#from communicator import QuietCommunicator   ## Zorgt voor al dan niet afdrukken in de terminal.
 
 class Credentials():
     def getset(self):
@@ -59,50 +60,20 @@ class Kotnetlogin():
         
         self.co = co
         
-        
-        """
-        self.scherm = scherm
-        curses.curs_set(0)                  ## cursor invisible
-        curses.start_color()                ## Kleuren aanmaken
-        curses.use_default_colors()
-        curses.init_pair(1, 1, -1)          ## Paren aanmaken: ndz vr curses.
-        curses.init_pair(2, 2, -1)          ## Ik heb de curses-conventie aangehouden, 1 is dus rood,
-        curses.init_pair(3, 3, -1)          ## 2 is groen, 3 is geel.
-        
-        ## Tekst op het scherm tekenen. Vakjes worden pas in de methodes ingevuld.
-        self.scherm.addstr(0, 0, "Netlogin openen.......")
-        self.scherm.addstr(0, 22, "[    ]", curses.A_BOLD)
-        self.scherm.addstr(0, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-        self.scherm.addstr(1, 0, "KU Leuven kiezen......")
-        self.scherm.addstr(1, 22, "[    ]", curses.A_BOLD)
-        self.scherm.addstr(2, 0, "Gegevens invoeren.....")
-        self.scherm.addstr(2, 22, "[    ]", curses.A_BOLD)
-        self.scherm.addstr(3, 0, "Gegevens opsturen.....")
-        self.scherm.addstr(3, 22, "[    ]", curses.A_BOLD)
-        self.scherm.addstr(4, 0, "Download:")
-        self.scherm.addstr(4, 10, "[          ][    ]", curses.A_BOLD)
-        self.scherm.addstr(5, 0, "Upload:")
-        self.scherm.addstr(5, 10, "[          ][    ]", curses.A_BOLD)        
-        
-        self.scherm.refresh()
-        """
         self.co.kprint(0, 0, "Netlogin openen.......")
-        self.co.kprint(0, 22, "[    ]", curses.A_BOLD)
-        #self.co.kprint(0, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-        self.co.kprint(0, 23, "WAIT", curses.color_pair(3))
+        self.co.kprint(0, 22, "[    ]", co.tekstOpmaakVet)
+        #self.co.kprint(0, 23, "WAIT", co.tekstOpmaakVet | co.tekstKleurGeel)
+        self.co.kprint(0, 23, "WAIT", co.tekstKleurGeelOpmaakVet)
         self.co.kprint(1, 0, "KU Leuven kiezen......")
-        self.co.kprint(1, 22, "[    ]", curses.A_BOLD)
+        self.co.kprint(1, 22, "[    ]", co.tekstOpmaakVet)
         self.co.kprint(2, 0, "Gegevens invoeren.....")
-        self.co.kprint(2, 22, "[    ]", curses.A_BOLD)
+        self.co.kprint(2, 22, "[    ]", co.tekstOpmaakVet)
         self.co.kprint(3, 0, "Gegevens opsturen.....")
-        self.co.kprint(3, 22, "[    ]", curses.A_BOLD)
+        self.co.kprint(3, 22, "[    ]", co.tekstOpmaakVet)
         self.co.kprint(4, 0, "Download:")
-        self.co.kprint(4, 10, "[          ][    ]", curses.A_BOLD)
+        self.co.kprint(4, 10, "[          ][    ]", co.tekstOpmaakVet)
         self.co.kprint(5, 0, "Upload:")
-        self.co.kprint(5, 10, "[          ][    ]", curses.A_BOLD)        
-        
-        self.scherm.refresh()
-        
+        self.co.kprint(5, 10, "[          ][    ]", co.tekstOpmaakVet)
     
     def netlogin(self):
         try:
@@ -246,20 +217,20 @@ def aanstuurderObvArgumenten(argumenten, cr):
     if argumenten.forget:
         print "ik wil vergeten"
         cr.forget()
-        
-    if argumenten.quiet:
-        print "ik wil zwijgen"
-        gebruikersnaam, wachtwoord = cr.getset()
-        co = Communicator(verbosity="quiet")
-        
-        main(co, gebruikersnaam, wachtwoord)
-        
+    
     if argumenten.guest_mode:
         ## werkt alleen met login op het moment
         print "ik wil me anders voordoen dan ik ben"
         gebruikersnaam, wachtwoord = cr.guest()
+        co = communicator.CursesCommunicator()
         curses.wrapper(main, gebruikersnaam, wachtwoord)
-    
+        
+    if argumenten.quiet:
+        print "ik wil zwijgen"
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.QuietCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        
     if argumenten.logout:
         print "ik wil uitloggen"
         print "(Nog niet geïmplementeerd)"
@@ -269,7 +240,9 @@ def aanstuurderObvArgumenten(argumenten, cr):
     if argumenten.login:    
         print "ik wil inloggen"
         gebruikersnaam, wachtwoord = cr.getset()
-        curses.wrapper(main, gebruikersnaam, wachtwoord) 
+        co = communicator.CursesCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        #curses.wrapper(main, gebruikersnaam, wachtwoord) 
         ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
     
     print "ik wil inloggen"
@@ -283,5 +256,4 @@ def aanstuurderObvArgumenten(argumenten, cr):
     ## gestart; daardoor is het te combineren met de andere vlaggen.
 
 cr = Credentials()
-#co = Communicator()
 aanstuurderObvArgumenten(argumentenParser(), cr)
