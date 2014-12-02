@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 ## Dependencies:    python-mechanize, python-keyring, curses
-## Author:          Gijs Timmers
+## Author:          Gijs Timmers: https://github.com/GijsTimmers
+## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
+##                  https://github.com/jovanbulck
+
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
 
@@ -13,11 +16,10 @@
 ## CA 94042, USA.
 
 import re                               ## Basislib voor reguliere expressies
-import time                             ## Voor timeout om venster te sluiten na login etc.
-import getpass                          ## Voor invoer wachtwoord zonder feedback
+import time                             ## Voor timeout om venster te sluiten
 import curses                           ## Voor tekenen op scherm.
-import sys                              ## Basislib voor output en besturingssysteemintegratie
-import os                               ## Basislib voor besturingssysteemintegratie
+import sys                              ## Basislib
+import os                               ## Basislib
 
 class QuietCommunicator():
     def __init__(self):
@@ -86,8 +88,9 @@ class CursesCommunicator():
         curses.start_color()                ## Kleuren aanmaken
         curses.use_default_colors()
         curses.init_pair(1, 1, -1)          ## Paren aanmaken: ndz vr curses.
-        curses.init_pair(2, 2, -1)          ## Ik heb de curses-conventie aangehouden, 1 is dus rood,
-        curses.init_pair(3, 3, -1)          ## 2 is groen, 3 is geel.
+        curses.init_pair(2, 2, -1)          ## Ik heb de curses-conventie
+        curses.init_pair(3, 3, -1)          ## aangehouden, 1 is dus rood,
+                                            ## 2 is groen, 3 is geel.
         
         self.tekstKleurRood = curses.color_pair(1)
         self.tekstKleurGroen = curses.color_pair(2)
@@ -97,19 +100,10 @@ class CursesCommunicator():
         self.tekstKleurRoodOpmaakVet = curses.color_pair(1) | curses.A_BOLD
         self.tekstKleurGroenOpmaakVet = curses.color_pair(2) | curses.A_BOLD
         self.tekstKleurGeelOpmaakVet = curses.color_pair(3) | curses.A_BOLD
-        ## Ingevoegd omdat het moeilijk is om | te parsen.
-        
-        #self.tekstKleurRood = None
-        #self.tekstKleurGroen = None
-        #self.tekstKleurGeel = None
-        #self.tekstOpmaakVet = None
-        
 
     def kprint(self, pos_y, pos_x, tekst, *args):
         #print args
         if args:
-            #print args[0]
-            #self.scherm.addstr(0, 0, "SHOW ME THE TEXT", args)
             self.scherm.addstr(pos_y, pos_x, tekst, args[0])
             self.scherm.refresh()
         else:

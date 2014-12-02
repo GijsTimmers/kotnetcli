@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 ## Dependencies:    python-mechanize, python-keyring, curses
-## Author:          Gijs Timmers
+## Author:          Gijs Timmers: https://github.com/GijsTimmers
+## Contributors:    https://github.com/jovanbulck
+
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
 
@@ -13,17 +15,16 @@
 ## CA 94042, USA.
 
 import re                               ## Basislib voor reguliere expressies
-import time                             ## Voor timeout om venster te sluiten na login etc.
+import time                             ## Voor timeout om venster te sluiten
 import keyring                          ## Voor ophalen wachtwoord
 import argparse                         ## Parst argumenten
 import mechanize                        ## Emuleert een browser
-import getpass                          ## Voor invoer wachtwoord zonder feedback
+import getpass                          ## Voor invoer wachtwoord zonder print
 import curses                           ## Voor tekenen op scherm.
-import sys                              ## Basislib voor output en besturingssysteemintegratie
-import os
+import sys                              ## Basislib
+import os                               ## Basislib
 
-import communicator
-#from communicator import QuietCommunicator   ## Zorgt voor al dan niet afdrukken in de terminal.
+import communicator                     ## Voor output op maat
 
 class Credentials():
     def getset(self):
@@ -40,9 +41,12 @@ class Credentials():
         return gebruikersnaam, wachtwoord
     
     def forget(self):
-        keyring.delete_password("kotnetcli", "gebruikersnaam")
-        keyring.delete_password("kotnetcli", "wachtwoord")
-        print "You have succesfully removed your kotnetcli credentials."
+        try:                
+            keyring.delete_password("kotnetcli", "gebruikersnaam")
+            keyring.delete_password("kotnetcli", "wachtwoord")
+            print "You have succesfully removed your kotnetcli credentials."
+        except keyring.errors.PasswordDeleteError:
+            print "You have already removed your kotnetcli credentials."
     
     def guest(self):
         gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
@@ -77,19 +81,14 @@ class Kotnetlogin():
     
     def netlogin(self):
         try:
-            respons = self.browser.open("https://netlogin.kuleuven.be", timeout=1.8)
+            respons = self.browser.open("https://netlogin.kuleuven.be", \
+            timeout=1.8)
             html = respons.read()
             self.co.kprint(0, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
             self.co.kprint(1, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
-            
-            #self.scherm.addstr(0, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
-            #self.scherm.addstr(1, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-            #self.scherm.refresh()
         except:
             self.co.kprint(0, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
-            #self.scherm.addstr(0, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            #self.scherm.refresh()
-            sys.exit()
+            exit(1)
         
     def kuleuven(self):
         try:
@@ -97,21 +96,18 @@ class Kotnetlogin():
             self.browser.submit()
             self.co.kprint(1, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
             self.co.kprint(2, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
-            #self.scherm.addstr(1, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
-            #self.scherm.addstr(2, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-            #self.scherm.refresh()
         except:
             self.co.kprint(1, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
-            #self.scherm.addstr(1, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            #self.scherm.refresh()
-            sys.exit()
+            exit(1)
         
 
     def gegevensinvoeren(self):
         try:
             self.browser.select_form(nr=1)
             self.browser.form["uid"] = self.gebruikersnaam
-            wachtwoordvaknaam = self.browser.form.find_control(type="password").name
+            wachtwoordvaknaam = \
+            self.browser.form.find_control(type="password").name
+            
             self.browser.form[wachtwoordvaknaam] = self.wachtwoord
             self.co.kprint(2, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
             self.co.kprint(3, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
@@ -119,23 +115,18 @@ class Kotnetlogin():
             self.co.kprint(4, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
             self.co.kprint(5, 14, "WAIT", self.co.tekstKleurGeelOpmaakVet)
             self.co.kprint(5, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
-            #self.scherm.refresh()
         except:
             self.co.kprint(2, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
-            #self.scherm.addstr(2, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            #self.scherm.refresh()
-            sys.exit()
+            exit(1)
         
         
     def gegevensopsturen(self):
         try:
             self.browser.submit()
             self.co.kprint(3, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
-            #self.scherm.refresh()
         except:
             self.co.kprint(3, 23, "FAIL", self.co.tekstKleurGeelOpmaakVet) 
-            #self.scherm.refresh()
-            sys.exit()
+            exit(1)
         
         
     def tegoeden(self):
@@ -145,47 +136,60 @@ class Kotnetlogin():
         zoekresultaten = (re.findall("<br>\(\d*%\)</TD>", html))
         #print zoekresultaten
         ## zoek naar: <br>(40%)</TD>
-        self.downloadpercentage = int(zoekresultaten[0].strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
-        self.uploadpercentage   = int(zoekresultaten[1].strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
+        self.downloadpercentage = int(zoekresultaten[0]\
+        .strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
+        self.uploadpercentage   = int(zoekresultaten[1]\
+        .strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
 
 
-        self.balkgetal_download = int(round(float(self.downloadpercentage) / 10.0))
-        self.balkgetal_upload = int(round(float(self.uploadpercentage) / 10.0))
+        self.balkgetal_download = \
+        int(round(float(self.downloadpercentage) / 10.0))
+        self.balkgetal_upload = \
+        int(round(float(self.uploadpercentage) / 10.0))
         
         ## Balken tekenen in de terminal
         
         if self.downloadpercentage <= 10:
-            self.voorwaardelijke_kleur_download = self.co.tekstKleurRoodOpmaakVet
+            self.voorwaardelijke_kleur_download = \
+            self.co.tekstKleurRoodOpmaakVet
         elif 10 < self.downloadpercentage < 60:
-            self.voorwaardelijke_kleur_download = self.co.tekstKleurGeelOpmaakVet
+            self.voorwaardelijke_kleur_download = \
+            self.co.tekstKleurGeelOpmaakVet
         else:
-            self.voorwaardelijke_kleur_download = self.co.tekstKleurGroenOpmaakVet
+            self.voorwaardelijke_kleur_download = \
+            self.co.tekstKleurGroenOpmaakVet
         
         if self.uploadpercentage <= 10:
-            self.voorwaardelijke_kleur_upload = self.co.tekstKleurRoodOpmaakVet
+            self.voorwaardelijke_kleur_upload = \
+            self.co.tekstKleurRoodOpmaakVet
         elif 10 < self.uploadpercentage < 60:
-            self.voorwaardelijke_kleur_upload = self.co.tekstKleurGeelOpmaakVet
+            self.voorwaardelijke_kleur_upload = \
+            self.co.tekstKleurGeelOpmaakVet
         else:
-            self.voorwaardelijke_kleur_upload = self.co.tekstKleurGroenOpmaakVet
+            self.voorwaardelijke_kleur_upload = \
+            self.co.tekstKleurGroenOpmaakVet
         
         
         
-        self.co.kprint(4, 23, " " * (3 - len(str(self.downloadpercentage))) + str(self.downloadpercentage) + "%", self.voorwaardelijke_kleur_download)
-        self.co.kprint(5, 23, " " * (3 - len(str(self.uploadpercentage))) + str(self.uploadpercentage) + "%", self.voorwaardelijke_kleur_upload)
+        self.co.kprint(4, 23, " " * (3 - len(str(self.downloadpercentage))) + \
+        str(self.downloadpercentage) + \
+        "%", self.voorwaardelijke_kleur_download)
+        self.co.kprint(5, 23, " " * (3 - len(str(self.uploadpercentage))) + \
+        str(self.uploadpercentage) + \
+        "%", self.voorwaardelijke_kleur_upload)
     
-        self.co.kprint(4, 11, "=" * self.balkgetal_download + " " * (10-self.balkgetal_download), self.voorwaardelijke_kleur_download)
-        self.co.kprint(5, 11, "=" * self.balkgetal_upload + " " * (10-self.balkgetal_upload), self.voorwaardelijke_kleur_upload)
+        self.co.kprint(4, 11, "=" * self.balkgetal_download + \
+        " " * (10-self.balkgetal_download), self.voorwaardelijke_kleur_download)
+        self.co.kprint(5, 11, "=" * self.balkgetal_upload + \
+        " " * (10-self.balkgetal_upload), self.voorwaardelijke_kleur_upload)
         self.co.kprint(5, 28, "")
         
         
-        #self.scherm.refresh()
-        #time.sleep(10000)
         time.sleep(2)
         self.co.beeindig_sessie()
-        #self.scherm.getch()
         
 def main(co, gebruikersnaam, wachtwoord):
-    kl = Kotnetlogin(co, gebruikersnaam, wachtwoord) ## Vervang door jouw gegevens!        
+    kl = Kotnetlogin(co, gebruikersnaam, wachtwoord)
     kl.netlogin()
     kl.kuleuven()
     kl.gegevensinvoeren()
@@ -230,6 +234,7 @@ def aanstuurderObvArgumenten(argumenten, cr):
     if argumenten.forget:
         print "ik wil vergeten"
         cr.forget()
+        return()
     
     if argumenten.guest_mode:
         ## werkt alleen met login op het moment
