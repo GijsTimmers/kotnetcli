@@ -10,7 +10,7 @@
 
 ## This work is licensed under the Creative Commons
 ## Attribution-ShareAlike 4.0 International License. To view a copy of 
-## this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or
+## this license, visit http://cre   ativecommons.org/licenses/by-sa/4.0/ or
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
@@ -20,11 +20,11 @@ import keyring                          ## Voor ophalen wachtwoord
 import argparse                         ## Parst argumenten
 import mechanize                        ## Emuleert een browser
 import getpass                          ## Voor invoer wachtwoord zonder print
-import curses                           ## Voor tekenen op scherm.
 import sys                              ## Basislib
 import os                               ## Basislib
 
 import communicator                     ## Voor output op maat
+import platform
 
 class Credentials():
     def getset(self):
@@ -271,17 +271,23 @@ def aanstuurderObvArgumenten(argumenten, cr):
     if argumenten.login:    
         print "ik wil inloggen"
         gebruikersnaam, wachtwoord = cr.getset()
-        co = communicator.CursesCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        #curses.wrapper(main, gebruikersnaam, wachtwoord) 
-        ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
-    
+        if os.name == "posix":
+            co = communicator.CursesCommunicator()
+            main(co, gebruikersnaam, wachtwoord)
+        else:
+            co = communicator.PlaintextCommunicator()
+            main(co, gebruikersnaam, wachtwoord)
+        
     
     print "ik wil inloggen"
     gebruikersnaam, wachtwoord = cr.getset()
-    co = communicator.CursesCommunicator()
-    main(co, gebruikersnaam, wachtwoord)
-    ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
+    if os.name == "posix":
+        co = communicator.CursesCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+    else:
+        co = communicator.PlaintextCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+    
     
     ## .login op 't einde, zonder return, zodat er altijd wordt
     ## ingelogd, zowel met --login als zonder argumenten. Als er moet

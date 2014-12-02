@@ -17,9 +17,13 @@
 
 import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
-import curses                           ## Voor tekenen op scherm.
 import sys                              ## Basislib
 import os                               ## Basislib
+
+try:
+    import curses                       ## Voor tekenen op scherm.
+except ImportError:
+    print "Windows-system detected. Will not import curses."
 
 class QuietCommunicator():
     def __init__(self):
