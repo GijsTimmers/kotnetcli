@@ -61,42 +61,49 @@ class Kotnetlogin():
         self.co = co
         
         self.co.kprint(0, 0, "Netlogin openen.......")
-        self.co.kprint(0, 22, "[    ]", co.tekstOpmaakVet)
+        self.co.kprint(0, 22, "[    ]", self.co.tekstOpmaakVet)
         #self.co.kprint(0, 23, "WAIT", co.tekstOpmaakVet | co.tekstKleurGeel)
-        self.co.kprint(0, 23, "WAIT", co.tekstKleurGeelOpmaakVet)
+        self.co.kprint(0, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
         self.co.kprint(1, 0, "KU Leuven kiezen......")
-        self.co.kprint(1, 22, "[    ]", co.tekstOpmaakVet)
+        self.co.kprint(1, 22, "[    ]", self.co.tekstOpmaakVet)
         self.co.kprint(2, 0, "Gegevens invoeren.....")
-        self.co.kprint(2, 22, "[    ]", co.tekstOpmaakVet)
+        self.co.kprint(2, 22, "[    ]", self.co.tekstOpmaakVet)
         self.co.kprint(3, 0, "Gegevens opsturen.....")
-        self.co.kprint(3, 22, "[    ]", co.tekstOpmaakVet)
+        self.co.kprint(3, 22, "[    ]", self.co.tekstOpmaakVet)
         self.co.kprint(4, 0, "Download:")
-        self.co.kprint(4, 10, "[          ][    ]", co.tekstOpmaakVet)
+        self.co.kprint(4, 10, "[          ][    ]", self.co.tekstOpmaakVet)
         self.co.kprint(5, 0, "Upload:")
-        self.co.kprint(5, 10, "[          ][    ]", co.tekstOpmaakVet)
+        self.co.kprint(5, 10, "[          ][    ]", self.co.tekstOpmaakVet)
     
     def netlogin(self):
         try:
             respons = self.browser.open("https://netlogin.kuleuven.be", timeout=1.8)
             html = respons.read()
-            self.scherm.addstr(0, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
-            self.scherm.addstr(1, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(0, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
+            self.co.kprint(1, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
+            
+            #self.scherm.addstr(0, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
+            #self.scherm.addstr(1, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
+            #self.scherm.refresh()
         except:
-            self.scherm.addstr(0, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(0, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
+            #self.scherm.addstr(0, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
+            #self.scherm.refresh()
             sys.exit()
         
     def kuleuven(self):
         try:
             self.browser.select_form(nr=1)
             self.browser.submit()
-            self.scherm.addstr(1, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
-            self.scherm.addstr(2, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(1, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
+            self.co.kprint(2, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
+            #self.scherm.addstr(1, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
+            #self.scherm.addstr(2, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD)
+            #self.scherm.refresh()
         except:
-            self.scherm.addstr(1, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(1, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
+            #self.scherm.addstr(1, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
+            #self.scherm.refresh()
             sys.exit()
         
 
@@ -106,27 +113,28 @@ class Kotnetlogin():
             self.browser.form["uid"] = self.gebruikersnaam
             wachtwoordvaknaam = self.browser.form.find_control(type="password").name
             self.browser.form[wachtwoordvaknaam] = self.wachtwoord
-            self.scherm.addstr(2, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
-            self.scherm.addstr(3, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD) 
-            self.scherm.addstr(4, 14, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-            self.scherm.addstr(4, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD) 
-            self.scherm.addstr(5, 14, "WAIT", curses.color_pair(3) | curses.A_BOLD)
-            self.scherm.addstr(5, 23, "WAIT", curses.color_pair(3) | curses.A_BOLD) 
-            self.scherm.refresh()
+            self.co.kprint(2, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
+            self.co.kprint(3, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
+            self.co.kprint(4, 14, "WAIT", self.co.tekstKleurGeelOpmaakVet)
+            self.co.kprint(4, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
+            self.co.kprint(5, 14, "WAIT", self.co.tekstKleurGeelOpmaakVet)
+            self.co.kprint(5, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
+            #self.scherm.refresh()
         except:
-            self.scherm.addstr(2, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(2, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
+            #self.scherm.addstr(2, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
+            #self.scherm.refresh()
             sys.exit()
         
         
     def gegevensopsturen(self):
         try:
             self.browser.submit()
-            self.scherm.addstr(3, 23, " OK ", curses.color_pair(2) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(3, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
+            #self.scherm.refresh()
         except:
-            self.scherm.addstr(3, 23, "FAIL", curses.color_pair(1) | curses.A_BOLD)
-            self.scherm.refresh()
+            self.co.kprint(3, 23, "FAIL", self.co.tekstKleurGeelOpmaakVet) 
+            #self.scherm.refresh()
             sys.exit()
         
         
@@ -147,32 +155,33 @@ class Kotnetlogin():
         ## Balken tekenen in de terminal
         
         if self.downloadpercentage <= 10:
-            self.voorwaardelijke_kleur_download = curses.color_pair(1)
+            self.voorwaardelijke_kleur_download = self.co.tekstKleurRoodOpmaakVet
         elif 10 < self.downloadpercentage < 60:
-            self.voorwaardelijke_kleur_download = curses.color_pair(3)
+            self.voorwaardelijke_kleur_download = self.co.tekstKleurGeelOpmaakVet
         else:
-            self.voorwaardelijke_kleur_download = curses.color_pair(2)
+            self.voorwaardelijke_kleur_download = self.co.tekstKleurGroenOpmaakVet
         
         if self.uploadpercentage <= 10:
-            self.voorwaardelijke_kleur_upload = curses.color_pair(1)
+            self.voorwaardelijke_kleur_upload = self.co.tekstKleurRoodOpmaakVet
         elif 10 < self.uploadpercentage < 60:
-            self.voorwaardelijke_kleur_upload = curses.color_pair(3)
+            self.voorwaardelijke_kleur_upload = self.co.tekstKleurGeelOpmaakVet
         else:
-            self.voorwaardelijke_kleur_upload = curses.color_pair(2)
+            self.voorwaardelijke_kleur_upload = self.co.tekstKleurGroenOpmaakVet
         
         
-        #self.scherm.addstr(4, 23, " " * (3 - len(str(self.downloadpercentage))) + str(self.downloadpercentage), curses.color_pair(2) | curses.A_BOLD)
-        self.scherm.addstr(4, 23, " " * (3 - len(str(self.downloadpercentage))) + str(self.downloadpercentage) + "%", self.voorwaardelijke_kleur_download | curses.A_BOLD)
-        self.scherm.addstr(5, 23, " " * (3 - len(str(self.uploadpercentage))) + str(self.uploadpercentage) + "%", self.voorwaardelijke_kleur_upload | curses.A_BOLD)
+        
+        self.co.kprint(4, 23, " " * (3 - len(str(self.downloadpercentage))) + str(self.downloadpercentage) + "%", self.voorwaardelijke_kleur_download)
+        self.co.kprint(5, 23, " " * (3 - len(str(self.uploadpercentage))) + str(self.uploadpercentage) + "%", self.voorwaardelijke_kleur_upload)
     
-        self.scherm.addstr(4, 11, "=" * self.balkgetal_download + " " * (10-self.balkgetal_download), self.voorwaardelijke_kleur_download | curses.A_BOLD)
-        self.scherm.addstr(5, 11, "=" * self.balkgetal_upload + " " * (10-self.balkgetal_upload), self.voorwaardelijke_kleur_upload | curses.A_BOLD)
-        self.scherm.addstr(5, 28, "")
+        self.co.kprint(4, 11, "=" * self.balkgetal_download + " " * (10-self.balkgetal_download), self.voorwaardelijke_kleur_download)
+        self.co.kprint(5, 11, "=" * self.balkgetal_upload + " " * (10-self.balkgetal_upload), self.voorwaardelijke_kleur_upload)
+        self.co.kprint(5, 28, "")
         
         
-        self.scherm.refresh()
+        #self.scherm.refresh()
         #time.sleep(10000)
         time.sleep(2)
+        self.co.beeindig_sessie()
         #self.scherm.getch()
         
 def main(co, gebruikersnaam, wachtwoord):
@@ -223,13 +232,17 @@ def aanstuurderObvArgumenten(argumenten, cr):
         print "ik wil me anders voordoen dan ik ben"
         gebruikersnaam, wachtwoord = cr.guest()
         co = communicator.CursesCommunicator()
-        curses.wrapper(main, gebruikersnaam, wachtwoord)
+        main(co, gebruikersnaam, wachtwoord)
+        #curses.wrapper(main, gebruikersnaam, wachtwoord)
         
     if argumenten.quiet:
         print "ik wil zwijgen"
         gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.QuietCommunicator()
         main(co, gebruikersnaam, wachtwoord)
+        return()
+        ## needs to be removed, but if I do that, it will log in as normal
+        ## login mode
         
     if argumenten.logout:
         print "ik wil uitloggen"
@@ -245,9 +258,11 @@ def aanstuurderObvArgumenten(argumenten, cr):
         #curses.wrapper(main, gebruikersnaam, wachtwoord) 
         ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
     
+    
     print "ik wil inloggen"
     gebruikersnaam, wachtwoord = cr.getset()
-    curses.wrapper(main, gebruikersnaam, wachtwoord) 
+    co = communicator.CursesCommunicator()
+    main(co, gebruikersnaam, wachtwoord)
     ## wrapper: Zorgt er voor dat curses netjes opstart en afsluit.
     
     ## .login op 't einde, zonder return, zodat er altijd wordt

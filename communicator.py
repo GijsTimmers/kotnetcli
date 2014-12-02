@@ -26,9 +26,15 @@ class QuietCommunicator():
         self.tekstKleurGeel = None
         self.tekstOpmaakVet = None
         self.tekstKleurGeelOpmaakVet = None
-        
+
+        self.tekstKleurRoodOpmaakVet = None
+        self.tekstKleurGroenOpmaakVet = None
+        self.tekstKleurGeelOpmaakVet = None
         
     def kprint(self, pos_y, pos_x, tekst, *args):
+        pass
+    
+    def beeindig_sessie(self):
         pass
 
 class PlaintextCommunicator():
@@ -54,6 +60,8 @@ class CursesCommunicator():
         self.tekstKleurGeel = curses.color_pair(3)
         self.tekstOpmaakVet = curses.A_BOLD
         
+        self.tekstKleurRoodOpmaakVet = curses.color_pair(1) | curses.A_BOLD
+        self.tekstKleurGroenOpmaakVet = curses.color_pair(2) | curses.A_BOLD
         self.tekstKleurGeelOpmaakVet = curses.color_pair(3) | curses.A_BOLD
         ## Ingevoegd omdat het moeilijk is om | te parsen.
         
@@ -73,4 +81,10 @@ class CursesCommunicator():
         else:
             self.scherm.addstr(pos_y, pos_x, tekst)
             self.scherm.refresh()
+    
+    def beeindig_sessie(self):
+        curses.nocbreak()
+        self.scherm.keypad(0)
+        curses.echo()
+        curses.endwin()
         
