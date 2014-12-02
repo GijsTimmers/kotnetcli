@@ -211,6 +211,10 @@ def argumentenParser():
     parser.add_argument("-q", "--quiet",\
     help="Hides all output",\
     action="store_true")
+    
+    parser.add_argument("-t", "--plaintext",\
+    help="Omits the curses inteface by using plaintext output",\
+    action="store_true")
 
     parser.add_argument("-g", "--guest-mode",\
     help="Logs you in as a different user without forgetting your \
@@ -239,6 +243,15 @@ def aanstuurderObvArgumenten(argumenten, cr):
         print "ik wil zwijgen"
         gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.QuietCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        return()
+        ## needs to be removed, but if I do that, it will log in as normal
+        ## login mode
+    
+    if argumenten.plaintext:
+        print "ik wil terug naar de basis"
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.PlaintextCommunicator()
         main(co, gebruikersnaam, wachtwoord)
         return()
         ## needs to be removed, but if I do that, it will log in as normal

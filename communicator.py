@@ -37,8 +37,42 @@ class QuietCommunicator():
     def beeindig_sessie(self):
         pass
 
-class PlaintextCommunicator():
-    pass
+class PlaintextCommunicator(QuietCommunicator):
+    def kprint(self, pos_y, pos_x, tekst, *args):
+        if pos_y == 0:
+            if tekst == "WAIT":
+                print "Netlogin openen.......",
+            if tekst == " OK ":
+                print "OK"
+        
+        if pos_y == 1:
+            if tekst == "WAIT":
+                print "KU Leuven kiezen......",
+            if tekst == " OK ":
+                print "OK"
+        
+        if pos_y == 2:
+            if tekst == "WAIT":
+                print "Gegevens invoeren.....",
+            if tekst == " OK ":
+                print "OK"
+                
+        if pos_y == 3:
+            if tekst == "WAIT":
+                print "Gegevens opsturen.....",
+            if tekst == " OK ":
+                print "OK"
+        
+        if pos_y == 4:
+            if re.compile(".[0-9]+.").match(tekst):
+                print "Download: " + tekst.strip(" ")
+        
+        if pos_y == 5:
+            if re.compile(".[0-9]+.").match(tekst):
+                print "Upload: " + tekst.strip(" ")
+        else:
+            pass
+        
 
 class SummaryCommunicator():
     pass
