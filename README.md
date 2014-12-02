@@ -72,9 +72,11 @@ platform-specific instructions
 
         $ ./kotnetcli.py
 
-When run for the first time, kotnetcli will ask you for your username
-and password. Both will be stored safely in the keyring of your desktop
-environment.
+When run for the first time, kotnetcli will ask you to unlock your keyring. For
+maximum ease-of-use, just enter the password you use to login to your system. If
+you do that, this keyring will only pop up once.
+After that, you'll have to enter your KotNet s-number or r-number and password.
+Both will be stored safely in the keyring of your desktop environment.
 
 You can add kotnetcli to your autostart programs to log in to Kotnet
 at boot-time.
