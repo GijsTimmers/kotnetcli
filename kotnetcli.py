@@ -68,6 +68,10 @@ def argumentenParser():
     help="Omits the curses inteface by using dialog based output",\
     action="store_true")
     
+    parser.add_argument("-b", "--bubble",\
+    help="Hides all output except for a bubble notification",\
+    action="store_true")
+    
     parser.add_argument("-s", "--summary",\
     help="Hides all output except for a small summary",\
     action="store_true")
@@ -118,6 +122,14 @@ def aanstuurderObvArgumenten(argumenten):
         cr = Credentials()
         gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.DialogCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        return()
+    
+    if argumenten.bubble:
+        print "ik wil bellen blazen"
+        cr = Credentials()
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.BubbleCommunicator()
         main(co, gebruikersnaam, wachtwoord)
         return()
     

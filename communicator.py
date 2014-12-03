@@ -19,13 +19,13 @@ import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
+import notify2                          ## OS-specifieke notificaties
+
 from colorama import (                  ## Om de tekst kleur te geven
     Fore,                               ## 
     Style,                              ## 
     init as colorama_init)              ## 
-
-#import pynotify                         ## OS-specifieke notificaties
-
+    
 try:
     import curses                       ## Voor tekenen op scherm.
     from dialog import Dialog           ## Voor tekenen op scherm.
@@ -69,16 +69,20 @@ class QuietCommunicator():
     def eventOpsturenFailure(self):
         pass
         
-    def eventDownloadtegoedBekend(self, downloadpercentage):
-        pass    
-    def eventUploadtegoedBekend(self, uploadpercentage):
+    def eventTegoedenBekend(self):
         pass
     
     def beeindig_sessie(self, error_code=0):
         pass
 
 class BubbleCommunicator(QuietCommunicator):
-    pass
+    def __init__(self):
+        notify2.init("kotnetcli")
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+        n = notify2.Notification("kotnetcli", "Download: %s%%, Upload: %s%%" % \
+        (downloadpercentage, uploadpercentage), \
+        "notification-network-ethernet-connected")
+        n.show()
 
 class DialogCommunicator(QuietCommunicator):
     def __init__(self):
@@ -153,27 +157,22 @@ class DialogCommunicator(QuietCommunicator):
         self.overal = 100        
         self.update()
     
-    def eventDownloadtegoedBekend(self, downloadpercentage):
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         self.download = -downloadpercentage
+        self.upload = -uploadpercentage
         self.overal = 100
         self.update()
-    
-    def eventUploadtegoedBekend(self, uploadpercentage):
-        self.upload = -uploadpercentage
-        self.overal = 100        
-        self.update()
-    
+        
     def beeindig_sessie(self, error_code=0):
         print "" # print newline to clean prompt under dialog
 
 class SummaryCommunicator(QuietCommunicator):
     def eventPingFailure(self):
         print "Niet verbonden met het KU Leuven-netwerk."
-        
-    def eventDownloadtegoedBekend(self, downloadpercentage):
+    
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         print "Download: " + str(downloadpercentage) + "%" + ",",
-    def eventUploadtegoedBekend(self, uploadpercentage):
-        print "Upload: " + str(uploadpercentage) + "%"
+        print "Upload: " + str(uploadpercentage) + "%"        
 
 class ColoramaCommunicator(QuietCommunicator):
     def __init__(self):
@@ -228,7 +227,7 @@ class ColoramaCommunicator(QuietCommunicator):
         print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
         Fore.RESET + "]" + Style.RESET_ALL
     
-    def eventDownloadtegoedBekend(self, downloadpercentage):
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         print "Download:  " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
         
@@ -255,8 +254,6 @@ class ColoramaCommunicator(QuietCommunicator):
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
         
-    
-    def eventUploadtegoedBekend(self, uploadpercentage):
         print "Upload:    " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
         
@@ -374,7 +371,7 @@ class CursesCommunicator():
     def eventOpsturenFailure(self):
         self.kprint(3, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
     
-    def eventDownloadtegoedBekend(self, downloadpercentage):
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         balkgetal_download = int(round(float(downloadpercentage) / 10.0))
         
         if downloadpercentage <= 10:
@@ -394,7 +391,6 @@ class CursesCommunicator():
         self.kprint(4, 11, "=" * balkgetal_download + \
         " " * (10-balkgetal_download), voorwaardelijke_kleur_download)
     
-    def eventUploadtegoedBekend(self, uploadpercentage):
         balkgetal_upload = \
         int(round(float(uploadpercentage) / 10.0))
         

@@ -12,7 +12,7 @@ else
 fi
 
 ./pyinstaller/pyinstaller.py compile-lin.spec &&\
-cp -v dist/kotnetcli . &&\
+
 echo "Compileren succesvol."
 
 

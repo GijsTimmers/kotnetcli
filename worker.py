@@ -87,8 +87,10 @@ class Kotnetlogin():
         self.uploadpercentage   = int(zoekresultaten[1]\
         .strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
         
-        self.co.eventDownloadtegoedBekend(self.downloadpercentage)
-        self.co.eventUploadtegoedBekend(self.uploadpercentage)
+        self.co.eventTegoedenBekend(self.downloadpercentage, \
+        self.uploadpercentage)
+        #self.co.eventDownloadtegoedBekend(self.downloadpercentage)
+        #self.co.eventUploadtegoedBekend(self.uploadpercentage)
 
         self.co.beeindig_sessie()
 
