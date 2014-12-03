@@ -118,8 +118,7 @@ class DialogCommunicator(QuietCommunicator):
                       ])
     
     def eventPingFailure(self):
-        print "Niet verbonden met het KU Leuven-netwerk."
-        ## A dialog should pop up here.
+        self.d.infobox("Niet verbonden met het KU Leuven-netwerk...", 5, 30)
     
     def eventNetloginSuccess(self):
         self.netlogin = self.DONE
@@ -177,6 +176,10 @@ class SummaryCommunicator(QuietCommunicator):
 class ColoramaCommunicator(QuietCommunicator):
     def __init__(self):
         colorama_init()
+        if os.name == 'posix':
+            ## hide the terminal cursor using ANSI escape codes
+            sys.stdout.write("\033[?25l")
+            sys.stdout.flush()
     
     def eventPingFailure(self):
         print Style.BRIGHT + Fore.RED + \
@@ -283,6 +286,11 @@ class ColoramaCommunicator(QuietCommunicator):
     def beeindig_sessie(self, error_code=0):
         if os.name == "nt":
             time.sleep(3)
+        else:
+            ## re-display the terminal cursor using ANSI escape codes
+            sys.stdout.write("\033[?25h")
+            sys.stdout.flush()
+
 
 class PlaintextCommunicator(ColoramaCommunicator):
     def __init__(self):
