@@ -20,6 +20,7 @@ import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
 from colorama import Fore, Style, init as c_init
+from dialog import Dialog
 
 try:
     import curses                       ## Voor tekenen op scherm.
@@ -65,6 +66,88 @@ class QuietCommunicator():
     
     def beeindig_sessie(self):
         pass
+
+# some constant definitions to avoid using magic numbers
+# for the DialogCommunicator mixedgauge dialog
+WAIT        = 7
+DONE        = 0
+FAIL        = 1
+
+class DialogCommunicator(QuietCommunicator):
+
+    def __init__(self):
+        self.d = Dialog(dialog="dialog")
+        self.d.set_background_title("kotnetcli")
+        self.netlogin = WAIT
+        self.kuleuven = WAIT
+        self.invoeren = WAIT
+        self.opsturen = WAIT
+        self.download = WAIT
+        self.upload = WAIT
+        self.overal = 0
+        self.update()
+    
+    def update(self):
+        self.d.mixedgauge("",
+            title="kotnetcli progress",
+            percent= self.overal,
+            elements= [ ("Netlogin openen", self.netlogin),
+                        ("KU Leuven kiezen", self.kuleuven),
+                        ("Gegevens invoeren", self.invoeren),
+                        ("Gegevens opsturen", self.opsturen),                                   
+                        ("", ""),
+                        ("Download", self.download),
+                        ("Upload", self.upload)
+                      ])
+    
+    def eventNetloginSuccess(self):
+        self.netlogin = DONE
+        self.overal = 40
+        self.update()
+    def eventNetloginFailure(self):
+        self.netlogin = FAIL
+        self.overal = 40
+        self.update()
+    
+    def eventKuleuvenSuccess(self):
+        self.kuleuven = DONE
+        self.overal = 60        
+        self.update()
+    def eventKuleuvenFailure(self):
+        self.kuleuven = FAIL
+        self.overal = 60        
+        self.update()
+    
+    def eventInvoerenSuccess(self):
+        self.invoeren = DONE
+        self.overal = 80
+        self.update()
+    def eventInvoerenFailure(self):
+        self.invoeren = FAIL
+        self.overal = 80        
+        self.update()
+
+    def eventOpsturenSuccess(self):
+        self.opsturen = DONE 
+        self.overal = 100        
+        self.update()
+    def eventOpsturenFailure(self):
+        self.opsturen = FAIL
+        self.overal = 100        
+        self.update()
+    
+    def eventDownloadtegoedBekend(self, downloadpercentage):
+        self.download = -downloadpercentage
+        self.overal = 100
+        self.update()
+    
+    def eventUploadtegoedBekend(self, uploadpercentage):
+        self.upload = -uploadpercentage
+        self.overal = 100        
+        self.update()
+    
+    def beeindig_sessie(self):
+        print "" # print newline to clean prompt under dialog
 
 class SummaryCommunicator(QuietCommunicator):
     def eventDownloadtegoedBekend(self, downloadpercentage):

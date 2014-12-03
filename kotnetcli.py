@@ -63,6 +63,10 @@ def argumentenParser():
     help="Omits the curses interface by using plaintext output",\
     action="store_true")
     
+    parser.add_argument("-d", "--dialog",\
+    help="Omits the curses inteface by using dialog based output",\
+    action="store_true")
+    
     parser.add_argument("-s", "--summary",\
     help="Hides all output except for a small summary",\
     action="store_true")
@@ -107,6 +111,14 @@ def aanstuurderObvArgumenten(argumenten):
         return()
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
+    
+    if argumenten.dialog:
+        print "ik wil fancy dialogs"
+        cr = Credentials()
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.DialogCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        return()
     
     if argumenten.summary:
         print "ik wil het mooie in de kleine dingen zien"
