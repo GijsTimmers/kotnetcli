@@ -15,8 +15,6 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-import re                               ## Basislib voor reguliere expressies
-import time                             ## Voor timeout om venster te sluiten
 import curses                           ## Voor mooie output
 import argparse                         ## Parst argumenten
 import platform                         ## Om te kunnen compileren op Windows

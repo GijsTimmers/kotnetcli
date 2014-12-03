@@ -27,58 +27,87 @@ except ImportError:
 
 class QuietCommunicator():
     def __init__(self):
-        self.tekstKleurRood = None
-        self.tekstKleurGroen = None
-        self.tekstKleurGeel = None
-        self.tekstOpmaakVet = None
-        self.tekstKleurGeelOpmaakVet = None
+        pass
 
-        self.tekstKleurRoodOpmaakVet = None
-        self.tekstKleurGroenOpmaakVet = None
-        self.tekstKleurGeelOpmaakVet = None
-    
-    def kprint(self, pos_y, pos_x, tekst, *args):
+    def eventNetloginStart(self):
+        pass
+    def eventNetloginSuccess(self):
+        pass
+    def eventNetloginFailure(self):
+        pass
+        
+    def eventKuleuvenStart(self):
+        pass
+    def eventKuleuvenSuccess(self):
+        pass
+    def eventKuleuvenFailure(self):
+        pass
+
+    def eventInvoerenStart(self):
+        pass
+    def eventInvoerenSuccess(self):
+        pass
+    def eventInvoerenFailure(self):
+        pass
+
+    def eventOpsturenStart(self):
+        pass
+    def eventOpsturenSuccess(self):
+        pass
+    def eventOpsturenFailure(self):
+        pass
+        
+    def eventDownloadtegoedBekend(self, downloadpercentage):
+        pass    
+    def eventUploadtegoedBekend(self, uploadpercentage):
         pass
     
     def beeindig_sessie(self):
         pass
 
 class PlaintextCommunicator(QuietCommunicator):
-    def kprint(self, pos_y, pos_x, tekst, *args):
-        if pos_y == 0:
-            if tekst == "WAIT":
-                print "Netlogin openen.......",
-            if tekst == " OK ":
-                print "OK"
+    def eventNetloginStart(self):
+        print "Netlogin openen.......",
+        sys.stdout.flush()
+    def eventNetloginSuccess(self):
+        print "[ OK ]"
+    def eventNetloginFailure(self):
+        print "[FAIL]"
         
-        if pos_y == 1:
-            if tekst == "WAIT":
-                print "KU Leuven kiezen......",
-            if tekst == " OK ":
-                print "OK"
-        
-        if pos_y == 2:
-            if tekst == "WAIT":
-                print "Gegevens invoeren.....",
-            if tekst == " OK ":
-                print "OK"
-                
-        if pos_y == 3:
-            if tekst == "WAIT":
-                print "Gegevens opsturen.....",
-            if tekst == " OK ":
-                print "OK"
-        
-        if pos_y == 4:
-            if re.compile(".[0-9]+.").match(tekst):
-                print "Download: " + tekst.strip(" ")
-        
-        if pos_y == 5:
-            if re.compile(".[0-9]+.").match(tekst):
-                print "Upload: " + tekst.strip(" ")
-        else:
-            pass
-        
+    def eventKuleuvenStart(self):
+        print "KU Leuven kiezen......",
+        sys.stdout.flush()
+    def eventKuleuvenSuccess(self):
+        print "[ OK ]"
+    def eventKuleuvenFailure(self):
+        print "[FAIL]"
+
+    def eventInvoerenStart(self):
+        print "Gegevens invoeren.....",
+        sys.stdout.flush()
+    def eventInvoerenSuccess(self):
+        print "[ OK ]"
+    def eventInvoerenFailure(self):
+        print "[FAIL]"
+
+    def eventOpsturenStart(self):
+        print "Gegevens opsturen.....",
+        sys.stdout.flush()
+    def eventOpsturenSuccess(self):
+        print "[ OK ]"
+    def eventOpsturenFailure(self):
+        print "[FAIL]"
+    
+    def eventDownloadtegoedBekend(self, downloadpercentage):
+        print "Download: " + " " * (3 - len(str(downloadpercentage))) + \
+        str(downloadpercentage) + "%"
+    
+    def eventUploadtegoedBekend(self, uploadpercentage):
+        print "Upload:   " + " " * (3 - len(str(uploadpercentage))) + \
+        str(uploadpercentage) + "%"
+
+class ColoramaCommunicator():
+    pass
 
 class SummaryCommunicator():
     pass
@@ -104,16 +133,100 @@ class CursesCommunicator():
         self.tekstKleurRoodOpmaakVet = curses.color_pair(1) | curses.A_BOLD
         self.tekstKleurGroenOpmaakVet = curses.color_pair(2) | curses.A_BOLD
         self.tekstKleurGeelOpmaakVet = curses.color_pair(3) | curses.A_BOLD
-
+        
+        self.scherm.addstr(0, 0, "Netlogin openen.......")
+        self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+        self.scherm.addstr(1, 0, "KU Leuven kiezen......")
+        self.scherm.addstr(1, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(2, 0, "Gegevens invoeren.....")
+        self.scherm.addstr(2, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(3, 0, "Gegevens opsturen.....")
+        self.scherm.addstr(3, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(4, 0, "Download:")
+        self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(5, 0, "Upload:")
+        self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
+        
+        self.scherm.refresh()
+    
     def kprint(self, pos_y, pos_x, tekst, *args):
-        #print args
         if args:
             self.scherm.addstr(pos_y, pos_x, tekst, args[0])
             self.scherm.refresh()
         else:
             self.scherm.addstr(pos_y, pos_x, tekst)
             self.scherm.refresh()
+
+    def eventNetloginStart(self):
+        self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventNetloginSuccess(self):
+        self.kprint(0, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventNetloginFailure(self):
+        self.kprint(0, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
+    def eventKuleuvenStart(self):
+        self.kprint(1, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventKuleuvenSuccess(self):
+        self.kprint(1, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventKuleuvenFailure(self):
+        self.kprint(1, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+
+    def eventInvoerenStart(self):
+        self.kprint(2, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventInvoerenSuccess(self):
+        self.kprint(2, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventInvoerenFailure(self):
+        self.kprint(2, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+
+    def eventOpsturenStart(self):
+        self.kprint(3, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventOpsturenSuccess(self):
+        self.kprint(3, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventOpsturenFailure(self):
+        self.kprint(3, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
     
+    def eventDownloadtegoedBekend(self, downloadpercentage):
+        balkgetal_download = int(round(float(downloadpercentage) / 10.0))
+        
+        if downloadpercentage <= 10:
+            voorwaardelijke_kleur_download = \
+            self.tekstKleurRoodOpmaakVet
+        elif 10 < downloadpercentage < 60:
+            voorwaardelijke_kleur_download = \
+            self.tekstKleurGeelOpmaakVet
+        else:
+            voorwaardelijke_kleur_download = \
+            self.tekstKleurGroenOpmaakVet
+            
+        self.kprint(4, 23, " " * (3 - len(str(downloadpercentage))) + \
+        str(downloadpercentage) + \
+        "%", voorwaardelijke_kleur_download)
+        
+        self.kprint(4, 11, "=" * balkgetal_download + \
+        " " * (10-balkgetal_download), voorwaardelijke_kleur_download)
+    
+    def eventUploadtegoedBekend(self, uploadpercentage):
+        balkgetal_upload = \
+        int(round(float(uploadpercentage) / 10.0))
+        
+        if uploadpercentage <= 10:
+            voorwaardelijke_kleur_upload = \
+            self.tekstKleurRoodOpmaakVet
+        elif 10 < uploadpercentage < 60:
+            voorwaardelijke_kleur_upload = \
+            self.tekstKleurGeelOpmaakVet
+        else:
+            voorwaardelijke_kleur_upload = \
+            self.tekstKleurGroenOpmaakVet
+        
+        self.kprint(5, 23, " " * (3 - len(str(uploadpercentage))) + \
+        str(uploadpercentage) + \
+        "%", voorwaardelijke_kleur_upload)
+    
+        self.kprint(5, 11, "=" * balkgetal_upload + \
+        " " * (10-balkgetal_upload), voorwaardelijke_kleur_upload)
+        
     def beeindig_sessie(self):
         time.sleep(2)
         

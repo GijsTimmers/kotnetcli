@@ -3,14 +3,15 @@
 
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
-## Contributors:    https://github.com/jovanbulck
+## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
+##                  https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
 
 ## This work is licensed under the Creative Commons
 ## Attribution-ShareAlike 4.0 International License. To view a copy of 
-## this license, visit http://cre   ativecommons.org/licenses/by-sa/4.0/ or
+## this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
