@@ -165,7 +165,7 @@ def aanstuurderObvArgumenten(argumenten):
     else:
         co = communicator.ColoramaCommunicator()
         main(co, gebruikersnaam, wachtwoord)
-        
+
 aanstuurderObvArgumenten(argumentenParser())
 
 """
