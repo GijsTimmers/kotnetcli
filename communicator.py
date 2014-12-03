@@ -20,12 +20,13 @@ import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
 from colorama import Fore, Style, init as c_init
-from dialog import Dialog
+
 
 try:
     import curses                       ## Voor tekenen op scherm.
+    from dialog import Dialog           ## Voor tekenen op scherm.
 except ImportError:
-    print "Windows-system detected. Will not import curses."
+    print "Windows-system detected. Will not import curses or dialog"
 
 class QuietCommunicator():
     def __init__(self):
@@ -67,23 +68,23 @@ class QuietCommunicator():
     def beeindig_sessie(self):
         pass
 
-# some constant definitions to avoid using magic numbers
-# for the DialogCommunicator mixedgauge dialog
-WAIT        = 7
-DONE        = 0
-FAIL        = 1
-
 class DialogCommunicator(QuietCommunicator):
-
     def __init__(self):
+        
+        # some constant definitions to avoid using magic numbers
+        # for the DialogCommunicator mixedgauge dialog
+        self.WAIT        = 7
+        self.DONE        = 0
+        self.FAIL        = 1
+        
         self.d = Dialog(dialog="dialog")
         self.d.set_background_title("kotnetcli")
-        self.netlogin = WAIT
-        self.kuleuven = WAIT
-        self.invoeren = WAIT
-        self.opsturen = WAIT
-        self.download = WAIT
-        self.upload = WAIT
+        self.netlogin = self.WAIT
+        self.kuleuven = self.WAIT
+        self.invoeren = self.WAIT
+        self.opsturen = self.WAIT
+        self.download = self.WAIT
+        self.upload = self.WAIT
         self.overal = 0
         self.update()
     
@@ -101,38 +102,38 @@ class DialogCommunicator(QuietCommunicator):
                       ])
     
     def eventNetloginSuccess(self):
-        self.netlogin = DONE
+        self.netlogin = self.DONE
         self.overal = 40
         self.update()
     def eventNetloginFailure(self):
-        self.netlogin = FAIL
+        self.netlogin = self.FAIL
         self.overal = 40
         self.update()
     
     def eventKuleuvenSuccess(self):
-        self.kuleuven = DONE
+        self.kuleuven = self.DONE
         self.overal = 60        
         self.update()
     def eventKuleuvenFailure(self):
-        self.kuleuven = FAIL
+        self.kuleuven = self.FAIL
         self.overal = 60        
         self.update()
     
     def eventInvoerenSuccess(self):
-        self.invoeren = DONE
+        self.invoeren = self.DONE
         self.overal = 80
         self.update()
     def eventInvoerenFailure(self):
-        self.invoeren = FAIL
+        self.invoeren = self.FAIL
         self.overal = 80        
         self.update()
 
     def eventOpsturenSuccess(self):
-        self.opsturen = DONE 
+        self.opsturen = self.DONE 
         self.overal = 100        
         self.update()
     def eventOpsturenFailure(self):
-        self.opsturen = FAIL
+        self.opsturen = self.FAIL
         self.overal = 100        
         self.update()
     
@@ -257,6 +258,10 @@ class ColoramaCommunicator(QuietCommunicator):
         voorwaardelijke_kleur_upload + str(uploadpercentage) + \
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
+    
+    def beeindig_sessie(self):
+        if os.name == "nt":
+            time.sleep(3)
 
 class PlaintextCommunicator(ColoramaCommunicator):
     def __init__(self):

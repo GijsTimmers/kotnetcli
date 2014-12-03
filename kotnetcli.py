@@ -15,7 +15,7 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-import curses                           ## Voor mooie output
+import subprocess                       ## Om systeemcommando's uit te voeren
 import argparse                         ## Parst argumenten
 import platform                         ## Om te kunnen compileren op Windows
 import sys                              ## Basislib
@@ -24,7 +24,7 @@ import os                               ## Basislib
 import communicator                     ## Voor output op maat
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
 from worker import Kotnetlogin          ## Eigenlijke loginmodule
-
+from pinger import ping                 ## Checken of we op KUL-net zitten
         
 def main(co, gebruikersnaam, wachtwoord):
     kl = Kotnetlogin(co, gebruikersnaam, wachtwoord)
@@ -164,6 +164,10 @@ def aanstuurderObvArgumenten(argumenten):
     else:
         co = communicator.ColoramaCommunicator()
         main(co, gebruikersnaam, wachtwoord)
-    
 
-aanstuurderObvArgumenten(argumentenParser())
+if ping() == True:
+    aanstuurderObvArgumenten(argumentenParser())
+    sys.exit(0)
+else:
+    print "Niet verbonden met het KU Leuven-netwerk."
+    sys.exit(1)

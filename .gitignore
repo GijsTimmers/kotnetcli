@@ -1,0 +1,6 @@
+*.pyc
+build/
+dist/
+pyinstaller/
+
+test-win.sh
