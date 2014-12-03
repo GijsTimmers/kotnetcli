@@ -55,7 +55,11 @@ def argumentenParser():
     action="store_true")
     
     parser.add_argument("-t", "--plaintext",\
-    help="Omits the curses inteface by using plaintext output",\
+    help="Omits the curses interface by using plaintext output",\
+    action="store_true")
+    
+    parser.add_argument("-c", "--colortext",\
+    help="Omits the curses interface by using plaintext output",\
     action="store_true")
 
     parser.add_argument("-g", "--guest-mode",\
@@ -91,6 +95,13 @@ def aanstuurderObvArgumenten(argumenten, cr):
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
     
+    if argumenten.colortext:
+        print "ik wil wat kleur in mijn leven aanbrengen"
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.ColoramaCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        return()
+        
     if argumenten.plaintext:
         print "ik wil terug naar de basis"
         gebruikersnaam, wachtwoord = cr.getset()

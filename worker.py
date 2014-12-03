@@ -38,11 +38,8 @@ class Kotnetlogin():
             timeout=1.8)
             html = respons.read()
             self.co.eventNetloginSuccess()
-            #self.co.kprint(0, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
-            #self.co.kprint(1, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
         except:
             self.co.eventNetloginFailure()
-            #self.co.kprint(0, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
             sys.exit(1)
         
     def kuleuven(self):
@@ -51,11 +48,8 @@ class Kotnetlogin():
             self.browser.select_form(nr=1)
             self.browser.submit()
             self.co.eventKuleuvenSuccess()
-            #self.co.kprint(1, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
-            #self.co.kprint(2, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet)
         except:
             self.co.eventKuleuvenFailure()
-            #self.co.kprint(1, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
             sys.exit(1)
         
 
@@ -69,15 +63,8 @@ class Kotnetlogin():
             
             self.browser.form[wachtwoordvaknaam] = self.wachtwoord
             self.co.eventInvoerenSuccess()
-            #self.co.kprint(2, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
-            #self.co.kprint(3, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
-            #self.co.kprint(4, 14, "WAIT", self.co.tekstKleurGeelOpmaakVet)
-            #self.co.kprint(4, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
-            #self.co.kprint(5, 14, "WAIT", self.co.tekstKleurGeelOpmaakVet)
-            #self.co.kprint(5, 23, "WAIT", self.co.tekstKleurGeelOpmaakVet) 
         except:
             self.co.eventInvoerenFailure()
-            #self.co.kprint(2, 23, "FAIL", self.co.tekstKleurRoodOpmaakVet)
             sys.exit(1)
         
         
@@ -86,10 +73,8 @@ class Kotnetlogin():
         try:
             self.browser.submit()
             self.co.eventOpsturenSuccess()
-            #self.co.kprint(3, 23, " OK ", self.co.tekstKleurGroenOpmaakVet)
         except:
             self.co.eventOpsturenFailure()
-            #self.co.kprint(3, 23, "FAIL", self.co.tekstKleurGeelOpmaakVet) 
             sys.exit(1)
         
         
