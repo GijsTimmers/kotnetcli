@@ -4,7 +4,7 @@
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
 ## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
-##                  https://github.com/jovanbulck
+##                  Jo Van Bulck: https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
@@ -43,4 +43,9 @@ class Credentials():
     def guest(self):
         gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
         wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+        return gebruikersnaam, wachtwoord
+    
+    def dummy(self):
+        gebruikersnaam = "gebruikersnaam"
+        wachtwoord = "wachtwoord"
         return gebruikersnaam, wachtwoord

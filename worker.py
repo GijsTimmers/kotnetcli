@@ -4,7 +4,7 @@
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
 ## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
-##                  https://github.com/jovanbulck
+##                  Jo Van Bulck: https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
@@ -15,14 +15,14 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-import socket
-import urlparse
-import urllib
-import mechanize                        ## Emuleert een browser
-import time                             ## Voor timeout om venster te sluiten
 import re                               ## Basislib voor reguliere expressies
-import sys ## tijdelijk, haal later weg
-import os ## tijdelijk, haal later weg
+import time                             ## Voor timeout om venster te sluiten
+import urllib                           ## Diverse URL-manipulaties
+import urlparse                         ## Diverse URL-manipulaties
+import mechanize                        ## Emuleert een browser
+import socket                           ## Voor ophalen IP
+import sys                              ## Basislib
+import os                               ## Basislib
 
 class Kotnetlogin():
     def __init__(self, co, gebruikersnaam, wachtwoord):
@@ -178,4 +178,127 @@ class Kotnetloguit():
     
         
 class Dummylogin():
-    pass
+    def __init__(self, co, gebruikersnaam, wachtwoord):
+        
+        self.browser = mechanize.Browser()
+        self.browser.addheaders = [('User-agent', 'Firefox')]
+        
+        self.gebruikersnaam = gebruikersnaam
+        self.wachtwoord = wachtwoord
+        
+        self.co = co
+        
+    def netlogin(self):
+        self.co.eventNetloginStart()
+        try:
+            time.sleep(0.1)
+            self.co.eventNetloginSuccess()
+        except:
+            self.co.eventNetloginFailure()
+            sys.exit(1)
+        
+    def kuleuven(self):
+        self.co.eventKuleuvenStart()
+        try:
+            time.sleep(0.1)
+            self.co.eventKuleuvenSuccess()
+        except:
+            self.co.eventKuleuvenFailure()
+            sys.exit(1)
+
+    def gegevensinvoeren(self):
+        self.co.eventInvoerenStart()
+        try:
+            time.sleep(0.1)
+            self.co.eventInvoerenSuccess()
+        except:
+            self.co.eventInvoerenFailure()
+            sys.exit(1)
+        
+        
+    def gegevensopsturen(self):
+        self.co.eventOpsturenStart()
+        try:
+            time.sleep(0.1)
+            self.co.eventOpsturenSuccess()
+        except:
+            self.co.eventOpsturenFailure()
+            sys.exit(1)
+        
+        
+    def tegoeden(self):
+        self.downloadpercentage = 80
+        self.uploadpercentage   = 100
+        
+        self.co.eventTegoedenBekend(self.downloadpercentage, \
+        self.uploadpercentage)
+        
+        self.co.beeindig_sessie()
+
+class Dummyloguit():
+    def __init__(self, co, gebruikersnaam, wachtwoord):
+        
+        self.browser = mechanize.Browser()
+        self.browser.addheaders = [('User-agent', 'Firefox')]
+        
+        self.gebruikersnaam = gebruikersnaam
+        self.wachtwoord = wachtwoord
+        
+        self.co = co
+        
+        self.lokaleip = "192.168.1.1"
+        
+        ## Formulier aanmaken. Het opsturen van dit formulier geeft toegang
+        ## tot de noodzakelijke loguitpagina. 
+        bestand = open("formulier.html", "w")
+        bestand.write("<html><body>\n")
+        bestand.write('<FORM METHOD=POST ACTION=' \
+        '"https://netlogin.kuleuven.be/cgi-bin/wayf2.pl">\n')
+        bestand.write('<INPUT type=hidden name="inout" value="logout">\n')
+        bestand.write('<INPUT type=hidden name="ip" value="%s">\n' \
+        % self.lokaleip)
+        bestand.write('<INPUT type=hidden name="network" value="KotNet">\n')
+        bestand.write('<INPUT type=hidden name="uid" value="kuleuven/%s">\n' % \
+        self.gebruikersnaam)
+        bestand.write('<INPUT type=hidden name="lang" value="ned">\n')
+        bestand.write('<INPUT type=submit value="logout">\n')
+        bestand.write('</FORM>\n')
+        bestand.write('</body></html>\n')
+        bestand.close()
+        
+        self.lokatie_formulier = urlparse.urljoin("file:", \
+        urllib.pathname2url(os.path.join(os.getcwd(), "formulier.html")))
+    
+    def netlogin(self):
+        self.co.eventNetloginStart()
+        try:
+            time.sleep(0.1)
+            os.remove(os.path.join(os.getcwd(), "formulier.html"))
+            self.co.eventNetloginSuccess()
+        except:
+            self.co.eventNetloginFailure()
+            sys.exit(1)
+    
+    def kuleuven(self):
+        pass
+    
+    def gegevensinvoeren(self):
+        self.co.eventInvoerenStart()
+        try:
+            time.sleep(0.1)
+            self.co.eventInvoerenSuccess()
+        except:
+            self.co.eventInvoerenFailure()
+            sys.exit(1)
+    
+    def gegevensopsturen(self):
+        self.co.eventOpsturenStart()
+        try:
+            time.sleep(0.1)
+            self.co.eventOpsturenSuccess()
+        except:
+            self.co.eventOpsturenFailure()
+            sys.exit(1)
+    
+    def tegoeden(self):
+        self.co.beeindig_sessie()

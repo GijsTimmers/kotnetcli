@@ -4,7 +4,7 @@
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
 ## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
-##                  https://github.com/jovanbulck
+##                  Jo Van Bulck: https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
@@ -30,7 +30,7 @@ if os.name == "posix":
     import notify2                      ## OS-specifieke notificaties
     from dialog import Dialog           ## Voor tekenen op scherm.
 if os.name == "nt":
-    print "Windows system detected. Will not import curses or dialog"
+    print "Windows system detected. Will not import curses, notify and dialog"
 
 class QuietCommunicator():
     def __init__(self):

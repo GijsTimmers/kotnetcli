@@ -4,7 +4,7 @@
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
 ## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
-##                  https://github.com/jovanbulck
+##                  Jo Van Bulck: https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/

@@ -4,7 +4,7 @@
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
 ## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
-##                  https://github.com/jovanbulck
+##                  Jo Van Bulck: https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
 ##                  http://creativecommons.org/licenses/by-sa/4.0/
@@ -23,16 +23,22 @@ import os                               ## Basislib
 
 import communicator                     ## Voor output op maat
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
-from worker import Kotnetlogin, Kotnetloguit         ## Eigenlijke loginmodule
+import worker                           ## Eigenlijke loginmodule
 from pinger import ping                 ## Checken of we op KUL-net zitten
-        
+
+
 def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
-    ping(co)
     if actie == "inloggen":
-        kl = Kotnetlogin(co, gebruikersnaam, wachtwoord)
-    else:
-        kl = Kotnetloguit(co, gebruikersnaam, wachtwoord)
-    
+        ping(co)
+        kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    elif actie == "uitloggen":
+        ping(co)
+        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
+    elif actie == "dummyinloggen":
+        kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)
+    elif actie == "dummyuitloggen":
+        kl = worker.Dummyloguit(co, gebruikersnaam, wachtwoord)
+            
     kl.netlogin()
     kl.kuleuven()
     kl.gegevensinvoeren()
@@ -82,6 +88,14 @@ def argumentenParser():
 
     parser.add_argument("-q", "--quiet",\
     help="Hides all output",\
+    action="store_true")
+    
+    parser.add_argument("-1", "--dummy-login",\
+    help="Performs a dry-run logging in",\
+    action="store_true")
+    
+    parser.add_argument("-2", "--dummy-logout",\
+    help="Performs a dry-run logging out",\
     action="store_true")
 
     argumenten = parser.parse_args()
@@ -154,6 +168,22 @@ def aanstuurderObvArgumenten(argumenten):
         return()
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
+    
+    if argumenten.dummy_login:
+        print "ik wil inloggen voor spek en bonen"
+        cr = Credentials()
+        gebruikersnaam, wachtwoord = cr.dummy()
+        co = communicator.ColoramaCommunicator()
+        main(co, gebruikersnaam, wachtwoord, actie="dummyinloggen")
+        return()
+    
+    if argumenten.dummy_logout:
+        print "ik wil uitloggen voor spek en bonen"
+        cr = Credentials()
+        gebruikersnaam, wachtwoord = cr.dummy()
+        co = communicator.ColoramaCommunicator()
+        main(co, gebruikersnaam, wachtwoord, actie="dummyuitloggen")
+        return()
     
     if argumenten.logout:
         print "ik wil uitloggen"
