@@ -67,16 +67,23 @@ class QuietCommunicator():
     def beeindig_sessie(self):
         pass
 
+# some constant definitions to avoid using magic numbers
+# for the DialogCommunicator mixedgauge dialog
+WAIT        = 7
+DONE        = 0
+FAIL        = 1
+
 class DialogCommunicator(QuietCommunicator):
+
     def __init__(self):
         self.d = Dialog(dialog="dialog")
         self.d.set_background_title("kotnetcli")
-        self.netlogin = 7
-        self.kuleuven = 7
-        self.invoeren = 7
-        self.opsturen = 7
-        self.download = 7
-        self.upload = 7
+        self.netlogin = WAIT
+        self.kuleuven = WAIT
+        self.invoeren = WAIT
+        self.opsturen = WAIT
+        self.download = WAIT
+        self.upload = WAIT
         self.overal = 0
         self.update()
     
@@ -94,38 +101,38 @@ class DialogCommunicator(QuietCommunicator):
                       ])
     
     def eventNetloginSuccess(self):
-        self.netlogin = 0
+        self.netlogin = DONE
         self.overal = 40
         self.update()
     def eventNetloginFailure(self):
-        self.netlogin = 1
+        self.netlogin = FAIL
         self.overal = 40
         self.update()
     
     def eventKuleuvenSuccess(self):
-        self.kuleuven = 0
+        self.kuleuven = DONE
         self.overal = 60        
         self.update()
     def eventKuleuvenFailure(self):
-        self.kuleuven = 1
+        self.kuleuven = FAIL
         self.overal = 60        
         self.update()
     
     def eventInvoerenSuccess(self):
-        self.invoeren = 0
+        self.invoeren = DONE
         self.overal = 80
         self.update()
     def eventInvoerenFailure(self):
-        self.invoeren = 1
+        self.invoeren = FAIL
         self.overal = 80        
         self.update()
 
     def eventOpsturenSuccess(self):
-        self.opsturen = 0 
+        self.opsturen = DONE 
         self.overal = 100        
         self.update()
     def eventOpsturenFailure(self):
-        self.opsturen = 1
+        self.opsturen = FAIL
         self.overal = 100        
         self.update()
     
