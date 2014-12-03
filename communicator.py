@@ -19,17 +19,17 @@ import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
-import notify2                          ## OS-specifieke notificaties
 
 from colorama import (                  ## Om de tekst kleur te geven
     Fore,                               ## 
     Style,                              ## 
     init as colorama_init)              ## 
     
-try:
+if os.name == "posix":
     import curses                       ## Voor tekenen op scherm.
+    import notify2                      ## OS-specifieke notificaties
     from dialog import Dialog           ## Voor tekenen op scherm.
-except ImportError:
+if os.name == "nt":
     print "Windows system detected. Will not import curses or dialog"
 
 class QuietCommunicator():
@@ -79,7 +79,8 @@ class BubbleCommunicator(QuietCommunicator):
     def __init__(self):
         notify2.init("kotnetcli")
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
-        n = notify2.Notification("kotnetcli", "Download: %s%%, Upload: %s%%" % \
+        n = notify2.Notification("kotnetcli", \
+        "Download: %s%%, Upload: %s%%" % \
         (downloadpercentage, uploadpercentage), \
         "notification-network-ethernet-connected")
         n.show()
@@ -176,8 +177,8 @@ class SummaryCommunicator(QuietCommunicator):
 class ColoramaCommunicator(QuietCommunicator):
     def __init__(self):
         colorama_init()
-        if os.name == 'posix':
-            ## hide the terminal cursor using ANSI escape codes
+        if os.name == "posix":
+            ## Hide the terminal cursor using ANSI escape codes
             sys.stdout.write("\033[?25l")
             sys.stdout.flush()
     
@@ -284,12 +285,12 @@ class ColoramaCommunicator(QuietCommunicator):
         "]" + Style.RESET_ALL
     
     def beeindig_sessie(self, error_code=0):
-        if os.name == "nt":
-            time.sleep(3)
-        else:
+        if os.name == "posix":
             ## re-display the terminal cursor using ANSI escape codes
             sys.stdout.write("\033[?25h")
             sys.stdout.flush()
+        else:
+            time.sleep(3)            
 
 
 class PlaintextCommunicator(ColoramaCommunicator):

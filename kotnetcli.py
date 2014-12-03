@@ -23,12 +23,16 @@ import os                               ## Basislib
 
 import communicator                     ## Voor output op maat
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
-from worker import Kotnetlogin          ## Eigenlijke loginmodule
+from worker import Kotnetlogin, Kotnetloguit         ## Eigenlijke loginmodule
 from pinger import ping                 ## Checken of we op KUL-net zitten
         
-def main(co, gebruikersnaam, wachtwoord):
+def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
     ping(co)
-    kl = Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    if actie == "inloggen":
+        kl = Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    else:
+        kl = Kotnetloguit(co, gebruikersnaam, wachtwoord)
+    
     kl.netlogin()
     kl.kuleuven()
     kl.gegevensinvoeren()
@@ -107,7 +111,7 @@ def aanstuurderObvArgumenten(argumenten):
         main(co, gebruikersnaam, wachtwoord)
         return()
         
-    if argumenten.plaintext:
+    if argumenten.plaintext: ## Gekaapt voor Kotnetloguit()
         print "ik wil terug naar de basis"
         cr = Credentials()
         gebruikersnaam, wachtwoord = cr.getset()
@@ -154,19 +158,18 @@ def aanstuurderObvArgumenten(argumenten):
     if argumenten.logout:
         print "ik wil uitloggen"
         cr = Credentials()
-        print "(Nog niet geïmplementeerd)"
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.ColoramaCommunicator()
+        main(co, gebruikersnaam, wachtwoord, actie="uitloggen")
         return()
     
     if argumenten.login:    
         print "ik wil inloggen"
         cr = Credentials()
         gebruikersnaam, wachtwoord = cr.getset()
-        if os.name == "posix":
-            co = communicator.CursesCommunicator()
-            main(co, gebruikersnaam, wachtwoord)
-        else:
-            co = communicator.ColoramaCommunicator()
-            main(co, gebruikersnaam, wachtwoord)
+        co = communicator.ColoramaCommunicator()
+        main(co, gebruikersnaam, wachtwoord, actie="inloggen")
+        return()
     
     print "ik wil inloggen"
     cr = Credentials()
