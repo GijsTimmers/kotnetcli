@@ -36,7 +36,7 @@ class QuietCommunicator():
         self.tekstKleurRoodOpmaakVet = None
         self.tekstKleurGroenOpmaakVet = None
         self.tekstKleurGeelOpmaakVet = None
-        
+    
     def kprint(self, pos_y, pos_x, tekst, *args):
         pass
     
@@ -115,6 +115,8 @@ class CursesCommunicator():
             self.scherm.refresh()
     
     def beeindig_sessie(self):
+        time.sleep(2)
+        
         curses.nocbreak()
         self.scherm.keypad(0)
         curses.echo()

@@ -53,8 +53,8 @@ You can either install the dependencies and run the python file, or just
 download
 [the binary](https://github.com/GijsTimmers/kotnetcli/releases/latest).
 The general steps to get the latest `kotnetcli.py` are listed below.
-Currently, we only support 64-bit Linux. If you decide to download the
-binary, skip steps 1 and 2.
+Currently, we only support Linux and Windows (x86).
+If you decide to download the binary, skip steps 1 and 2.
 
 1. Resolve the dependencies: see the next section for an overview and
 platform-specific instructions

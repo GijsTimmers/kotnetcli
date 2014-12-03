@@ -16,16 +16,14 @@ a = Analysis(['kotnetcli.py'],
                  'keyring.backends.SecretService',
                  'keyring.backends.Windows'],
              hookspath=None,
-             runtime_hooks=None,
-             cipher=block_cipher)
-pyz = PYZ(a.pure,
-             cipher=block_cipher)
+             runtime_hooks=None)
+pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='kotnetcli-lin',
+          name='kotnetcli-win.exe',
           debug=False,
           strip=None,
           upx=True,
