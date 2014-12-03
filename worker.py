@@ -30,7 +30,6 @@ class Kotnetlogin():
         
         self.co = co
         
-    
     def netlogin(self):
         self.co.eventNetloginStart()
         try:
@@ -51,7 +50,6 @@ class Kotnetlogin():
         except:
             self.co.eventKuleuvenFailure()
             sys.exit(1)
-        
 
     def gegevensinvoeren(self):
         self.co.eventInvoerenStart()
@@ -93,3 +91,6 @@ class Kotnetlogin():
         self.co.eventUploadtegoedBekend(self.uploadpercentage)
 
         self.co.beeindig_sessie()
+
+class Dummylogin():
+    pass

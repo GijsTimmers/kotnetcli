@@ -24,12 +24,13 @@ from colorama import (                  ## Om de tekst kleur te geven
     Style,                              ## 
     init as colorama_init)              ## 
 
+import pynotify                         ## OS-specifieke notificaties
 
 try:
     import curses                       ## Voor tekenen op scherm.
     from dialog import Dialog           ## Voor tekenen op scherm.
 except ImportError:
-    print "Windows-system detected. Will not import curses or dialog"
+    print "Windows system detected. Will not import curses or dialog"
 
 class QuietCommunicator():
     def __init__(self):
@@ -75,6 +76,9 @@ class QuietCommunicator():
     
     def beeindig_sessie(self, error_code=0):
         pass
+
+class BubbleCommunicator(QuietCommunicator):
+    pass
 
 class DialogCommunicator(QuietCommunicator):
     def __init__(self):
