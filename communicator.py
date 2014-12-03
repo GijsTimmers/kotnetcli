@@ -66,46 +66,11 @@ class QuietCommunicator():
     def beeindig_sessie(self):
         pass
 
-class PlaintextCommunicator(QuietCommunicator):
-    def eventNetloginStart(self):
-        print "Netlogin openen.......",
-        sys.stdout.flush()
-    def eventNetloginSuccess(self):
-        print "[ OK ]"
-    def eventNetloginFailure(self):
-        print "[FAIL]"
-        
-    def eventKuleuvenStart(self):
-        print "KU Leuven kiezen......",
-        sys.stdout.flush()
-    def eventKuleuvenSuccess(self):
-        print "[ OK ]"
-    def eventKuleuvenFailure(self):
-        print "[FAIL]"
-
-    def eventInvoerenStart(self):
-        print "Gegevens invoeren.....",
-        sys.stdout.flush()
-    def eventInvoerenSuccess(self):
-        print "[ OK ]"
-    def eventInvoerenFailure(self):
-        print "[FAIL]"
-
-    def eventOpsturenStart(self):
-        print "Gegevens opsturen.....",
-        sys.stdout.flush()
-    def eventOpsturenSuccess(self):
-        print "[ OK ]"
-    def eventOpsturenFailure(self):
-        print "[FAIL]"
-    
+class SummaryCommunicator(QuietCommunicator):
     def eventDownloadtegoedBekend(self, downloadpercentage):
-        print "Download: " + " " * (3 - len(str(downloadpercentage))) + \
-        str(downloadpercentage) + "%"
-    
+        print "Download: " + str(downloadpercentage) + "%" + ",",
     def eventUploadtegoedBekend(self, uploadpercentage):
-        print "Upload:   " + " " * (3 - len(str(uploadpercentage))) + \
-        str(uploadpercentage) + "%"
+        print "Upload: " + str(uploadpercentage) + "%"
 
 class ColoramaCommunicator(QuietCommunicator):
     def __init__(self):
@@ -209,11 +174,16 @@ class ColoramaCommunicator(QuietCommunicator):
         voorwaardelijke_kleur_upload + str(uploadpercentage) + \
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
-        
-    
 
-class SummaryCommunicator():
-    pass
+class PlaintextCommunicator(ColoramaCommunicator):
+    def __init__(self):
+        Style.BRIGHT = ""
+        Style.RESET = ""
+        Fore.GREEN = ""
+        Fore.YELLOW = ""
+        Fore.RED = ""
+
+
 
 #class CursesCommunicator(QuietCommunicator):
 class CursesCommunicator():

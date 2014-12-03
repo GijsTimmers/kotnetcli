@@ -54,11 +54,15 @@ def argumentenParser():
     help="Hides all output",\
     action="store_true")
     
-    parser.add_argument("-t", "--plaintext",\
-    help="Omits the curses interface by using plaintext output",\
+    parser.add_argument("-s", "--summary",\
+    help="Hides all output except for a small summary",\
     action="store_true")
     
     parser.add_argument("-c", "--colortext",\
+    help="Omits the curses interface by using colortext output",\
+    action="store_true")
+    
+    parser.add_argument("-t", "--plaintext",\
     help="Omits the curses interface by using plaintext output",\
     action="store_true")
 
@@ -94,6 +98,13 @@ def aanstuurderObvArgumenten(argumenten, cr):
         return()
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
+    
+    if argumenten.summary:
+        print "ik wil het mooie in de kleine dingen zien"
+        gebruikersnaam, wachtwoord = cr.getset()
+        co = communicator.SummaryCommunicator()
+        main(co, gebruikersnaam, wachtwoord)
+        return()
     
     if argumenten.colortext:
         print "ik wil wat kleur in mijn leven aanbrengen"
