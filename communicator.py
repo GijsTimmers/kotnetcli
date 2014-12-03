@@ -24,7 +24,7 @@ from colorama import (                  ## Om de tekst kleur te geven
     Style,                              ## 
     init as colorama_init)              ## 
 
-import pynotify                         ## OS-specifieke notificaties
+#import pynotify                         ## OS-specifieke notificaties
 
 try:
     import curses                       ## Voor tekenen op scherm.
