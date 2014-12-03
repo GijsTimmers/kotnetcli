@@ -1,6 +1,51 @@
 # kotnetcli
 
-*KotNet Command Line Interface* -- An easy automated way to log in to [KotNet](https://admin.kuleuven.be/icts/english/kotnet).
+*KotNet Command Line Interface* -- An easy automated way to log in to
+[KotNet](https://admin.kuleuven.be/icts/english/kotnet).
+
+## Purpose
+
+Logging in on KotNet is a hassle. A method to autologin from within the
+browser
+[exists](https://code.google.com/p/kotnetloginextension/),
+but although this way of logging in is very user-friendly, it also has
+some downsides:
+
+- The login speed is suboptimal as the webbrowser has to draw the 
+website elements on the screen;
+- You can't use a custom start page because KotNet will always redirect
+you to netlogin.kuleuven.be when trying to open your custom start page;
+- You have to first open a web browser before being able to do internet-
+related stuff.
+
+`kotnetcli` tries to overcome this. Its downsides, compared to the 
+browser extension, are:
+
+- No support for KU Leuven authentication portals. For example, if you
+want to log in on Toledo, you'll still have to enter your credentials
+there.
+- There is no GUI method for changing your username/password
+combination.
+
+Of course, you can use both `kotnetloginextension` and `kotnetcli`. For
+example, you can set `kotnetcli` to autologin at boot-time, so 
+netlogin.kuleuven.be won't bother you when opening your web browser. 
+When you go to Toledo, `kotnetloginextension` will do the login work.
+
+Although ease-of-use is important, `kotnetcli` will probably stay
+"poweruser-ish" for a while.
+
+## Features
+
+- Safety: we'll store your login settings safely in your operating
+system's keyring;
+- Speed: there is no need to draw the website elements, which makes the
+login procedure faster;
+- Scriptable: kotnetcli is a command-line program and can thus be used
+in scripts to cater your needs. For example, you can put it in your
+autostart settings to log in after booting your computer, waking from
+sleep, etc. A `--quiet` mode and exit codes are planned for future
+releases to make this even better.
 
 ## Installation
 
@@ -8,10 +53,11 @@ You can either install the dependencies and run the python file, or just
 download
 [the binary](https://github.com/GijsTimmers/kotnetcli/releases/latest).
 The general steps to get the latest `kotnetcli.py` are listed below.
-Currently, we only support 64-bit Linux. If you decide to download the
-binary, skip steps 1 and 2.
+Currently, we only support Linux and Windows (x86).
+If you decide to download the binary, skip steps 1 and 2.
 
-1. Resolve the dependencies: see the next section for an overview and platform-specific instructions
+1. Resolve the dependencies: see the next section for an overview and
+platform-specific instructions
         
 2. Clone this repository and change the directory:
 
@@ -26,9 +72,11 @@ binary, skip steps 1 and 2.
 
         $ ./kotnetcli.py
 
-When run for the first time, kotnetcli will ask you for your username
-and password. Both will be stored safely in the keyring of your desktop
-environment.
+When run for the first time, kotnetcli will ask you to unlock your keyring. For
+maximum ease-of-use, just enter the password you use to login to your system. If
+you do that, this keyring will only pop up once.
+After that, you'll have to enter your KotNet s-number or r-number and password.
+Both will be stored safely in the keyring of your desktop environment.
 
 You can add kotnetcli to your autostart programs to log in to Kotnet
 at boot-time.
