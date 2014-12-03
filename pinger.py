@@ -19,21 +19,25 @@ import os
 import sys
 import subprocess
 
-def ping():    
+def ping(co):    
     if os.name == "posix":
         with open(os.devnull, 'w') as dev_null:
             if subprocess.call(["ping", "-c", "1", "-w", "1", "netlogin.kuleuven.be"], \
             stdout=dev_null, stderr=dev_null) == 0:
                 ## 0 staat voor een exit code van True van het ping-commando.
-                return(True)
+                co.eventPingSuccess()
             else:
-                return(False)
+                co.eventPingFailure()
+                co.beeindig_sessie()
+                sys.exit(1)
 
     elif os.name == "nt":
         with open("NUL", "w") as dev_null:
             if subprocess.call(["ping", "-n", "1", "-w", "1", "netlogin.kuleuven.be"], \
             stdout=dev_null, stderr=dev_null) == 0:
                 ## 0 staat voor een exit code van True van het ping-commando.
-                return(True)
+                co.eventPingSuccess()
             else:
-                return(False)
+                co.eventPingFailure()
+                co.beeindig_sessie()
+                sys.exit(1)

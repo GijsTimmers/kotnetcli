@@ -27,6 +27,7 @@ from worker import Kotnetlogin          ## Eigenlijke loginmodule
 from pinger import ping                 ## Checken of we op KUL-net zitten
         
 def main(co, gebruikersnaam, wachtwoord):
+    ping(co)
     kl = Kotnetlogin(co, gebruikersnaam, wachtwoord)
     kl.netlogin()
     kl.kuleuven()
@@ -164,10 +165,14 @@ def aanstuurderObvArgumenten(argumenten):
     else:
         co = communicator.ColoramaCommunicator()
         main(co, gebruikersnaam, wachtwoord)
+        
+aanstuurderObvArgumenten(argumentenParser())
 
+"""
 if ping() == True:
     aanstuurderObvArgumenten(argumentenParser())
     sys.exit(0)
 else:
     print "Niet verbonden met het KU Leuven-netwerk."
     sys.exit(1)
+"""

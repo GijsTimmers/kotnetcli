@@ -19,7 +19,10 @@ import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
-from colorama import Fore, Style, init as c_init
+from colorama import (                  ## Om de tekst kleur te geven
+    Fore,                               ## 
+    Style,                              ## 
+    init as colorama_init)              ## 
 
 
 try:
@@ -30,6 +33,11 @@ except ImportError:
 
 class QuietCommunicator():
     def __init__(self):
+        pass
+    
+    def eventPingSuccess(self):
+        pass
+    def eventPingFailure(self):
         pass
 
     def eventNetloginStart(self):
@@ -65,7 +73,7 @@ class QuietCommunicator():
     def eventUploadtegoedBekend(self, uploadpercentage):
         pass
     
-    def beeindig_sessie(self):
+    def beeindig_sessie(self, error_code=0):
         pass
 
 class DialogCommunicator(QuietCommunicator):
@@ -90,7 +98,7 @@ class DialogCommunicator(QuietCommunicator):
     
     def update(self):
         self.d.mixedgauge("",
-            title="kotnetcli progress",
+            title="kotnetcli",
             percent= self.overal,
             elements= [ ("Netlogin openen", self.netlogin),
                         ("KU Leuven kiezen", self.kuleuven),
@@ -100,6 +108,10 @@ class DialogCommunicator(QuietCommunicator):
                         ("Download", self.download),
                         ("Upload", self.upload)
                       ])
+    
+    def eventPingFailure(self):
+        print "Niet verbonden met het KU Leuven-netwerk."
+        ## A dialog should pop up here.
     
     def eventNetloginSuccess(self):
         self.netlogin = self.DONE
@@ -147,10 +159,13 @@ class DialogCommunicator(QuietCommunicator):
         self.overal = 100        
         self.update()
     
-    def beeindig_sessie(self):
+    def beeindig_sessie(self, error_code=0):
         print "" # print newline to clean prompt under dialog
 
 class SummaryCommunicator(QuietCommunicator):
+    def eventPingFailure(self):
+        print "Niet verbonden met het KU Leuven-netwerk."
+        
     def eventDownloadtegoedBekend(self, downloadpercentage):
         print "Download: " + str(downloadpercentage) + "%" + ",",
     def eventUploadtegoedBekend(self, uploadpercentage):
@@ -158,7 +173,12 @@ class SummaryCommunicator(QuietCommunicator):
 
 class ColoramaCommunicator(QuietCommunicator):
     def __init__(self):
-        c_init()
+        colorama_init()
+    
+    def eventPingFailure(self):
+        print Style.BRIGHT + Fore.RED + \
+        "Niet verbonden met het KU Leuven-netwerk." + \
+        Style.RESET_ALL + Fore.RESET
     
     def eventNetloginStart(self):
         print "Netlogin openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
@@ -259,7 +279,7 @@ class ColoramaCommunicator(QuietCommunicator):
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
     
-    def beeindig_sessie(self):
+    def beeindig_sessie(self, error_code=0):
         if os.name == "nt":
             time.sleep(3)
 
@@ -294,7 +314,6 @@ class CursesCommunicator():
         
         self.scherm.addstr(0, 0, "Netlogin openen.......")
         self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
-        self.scherm.addstr(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
         self.scherm.addstr(1, 0, "KU Leuven kiezen......")
         self.scherm.addstr(1, 22, "[    ]", self.tekstOpmaakVet)
         self.scherm.addstr(2, 0, "Gegevens invoeren.....")
@@ -315,7 +334,14 @@ class CursesCommunicator():
         else:
             self.scherm.addstr(pos_y, pos_x, tekst)
             self.scherm.refresh()
-
+    
+    def eventPingSuccess(self):
+        pass
+    
+    def eventPingFailure(self):
+        self.kprint(6, 0, "Niet verbonden met het KU Leuven-netwerk.", \
+        self.tekstKleurRoodOpmaakVet)
+        
     def eventNetloginStart(self):
         self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
     def eventNetloginSuccess(self):
@@ -385,7 +411,7 @@ class CursesCommunicator():
         self.kprint(5, 11, "=" * balkgetal_upload + \
         " " * (10-balkgetal_upload), voorwaardelijke_kleur_upload)
         
-    def beeindig_sessie(self):
+    def beeindig_sessie(self, error_code=0):
         time.sleep(2)
         
         curses.nocbreak()
