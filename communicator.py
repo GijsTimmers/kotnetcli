@@ -183,9 +183,6 @@ class PlaintextCommunicator(ColoramaCommunicator):
         Fore.YELLOW = ""
         Fore.RED = ""
 
-
-
-#class CursesCommunicator(QuietCommunicator):
 class CursesCommunicator():
     def __init__(self):
         self.scherm = curses.initscr()
