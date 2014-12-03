@@ -11,7 +11,7 @@ else
     git clone https://github.com/pyinstaller/pyinstaller.git
 fi
 
-./pyinstaller/pyinstaller.py kotnetcli.spec &&\
+./pyinstaller/pyinstaller.py compile-lin.spec &&\
 cp -v dist/kotnetcli . &&\
 echo "Compileren succesvol."
 
