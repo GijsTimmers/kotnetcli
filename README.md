@@ -90,7 +90,6 @@ at boot-time.
 | [mechanize lib](https://pypi.python.org/pypi/mechanize/) | A library emulating a browser in python. This is used by `kotnetcli` to access the netlogin.kuleuven.be page | The following section lists platform specific info to resolve this dependency.|
 | [keyring lib](https://pypi.python.org/pypi/keyring) | `kotnetcli` uses the keyring library to securely save your kotnet credentials to your operating system specific keyring back-end. | The following section lists platform specific info to resolve this dependency.|
 | [notify2](https://pypi.python.org/pypi/notify2) | `kotnetcli` uses `notify2` to send OS-specific notifications to your screen. | The following section lists platform specific info to resolve this dependency.|
-| 
 | [jovanbulck](https://github.com/jovanbulck) | `kotnetcli` uses `jovanbulck` to stay maintained even at night-time | `jovanbulck`s are pretty hard to acquire.|
 ## Platform dependent instructions
 This section lists the platform specific instructions to resolve the above dependencies:
