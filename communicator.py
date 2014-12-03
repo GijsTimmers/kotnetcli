@@ -110,8 +110,7 @@ class DialogCommunicator(QuietCommunicator):
                       ])
     
     def eventPingFailure(self):
-        print "Niet verbonden met het KU Leuven-netwerk."
-        ## A dialog should pop up here.
+        self.d.infobox("Niet verbonden met het KU Leuven-netwerk...", 5, 30)
     
     def eventNetloginSuccess(self):
         self.netlogin = self.DONE
