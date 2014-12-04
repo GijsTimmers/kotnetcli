@@ -175,12 +175,3 @@ def aanstuurderObvArgumenten(argumenten):
 
 
 aanstuurderObvArgumenten(argumentenParser())
-
-"""
-if ping() == True:
-    aanstuurderObvArgumenten(argumentenParser())
-    sys.exit(0)
-else:
-    print "Niet verbonden met het KU Leuven-netwerk."
-    sys.exit(1)
-"""
