@@ -66,8 +66,8 @@ def argumentenParser():
     default credentials",\
     action="store_true")
     
-    parser.add_argument("-c", "--colortext",\
-    help="Omits the curses interface by using colortext output",\
+    parser.add_argument("-c", "--curses",\
+    help="Logs you in using curses output",\
     action="store_true")
     
     parser.add_argument("-t", "--plaintext",\
@@ -119,10 +119,13 @@ def aanstuurderObvArgumenten(argumenten):
         
     ############## 2. switch on communicator-related flags ##############
         
-    if argumenten.colortext:
-        print "ik wil wat kleur in mijn leven aanbrengen"
-        co = communicator.ColoramaCommunicator()
-        
+    if argumenten.curses:
+        print "ik wil vloeken"
+        if os.name == "posix":
+            co = communicator.CursesCommunicator()
+        else:
+            co = communicator.ColoramaCommunicator()
+                
     elif argumenten.plaintext:
         print "ik wil terug naar de basis"
         co = communicator.PlaintextCommunicator()
@@ -144,11 +147,9 @@ def aanstuurderObvArgumenten(argumenten):
         co = communicator.QuietCommunicator()
     else:
         ## no communicator specified; choose default communicator
-        print "standaard communicator gekozen"
-        if os.name == "posix":
-            co = communicator.CursesCommunicator()
-        else:
-            co = communicator.ColoramaCommunicator()
+        print "ik wil wat kleur in mijn leven aanbrengen"
+        co = communicator.ColoramaCommunicator()
+        
     
     ############## 3. switch on login-type flags ##############
     
