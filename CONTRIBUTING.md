@@ -14,11 +14,12 @@ Some coding guidelines:
 1. Indentation: always use 4 spaces. No tabs.
 2. The lines shouldn't exceed 80 characters. Use backslashes to spread commands
 over multiple lines.
-2. Quotation marks: use double quotation marks ("like this") except for when you
-want or need to combine both of them. So:
-  - Allowed: print "Single quotation marks are evil"
-  - Allowed: print 'The developer thinks that double quotation marks are "evil"'
-  - Not allowed: print
+2. Quotation marks: use double quotation marks (`"like this"`) except for
+ when you want or need to combine both of them. So:
+  - Allowed: `print "Single quotation marks are evil"`
+  - Allowed: `print 'The developer thinks that double
+   quotation marks are "evil"'`
+  - Not allowed: `print('I want to print something')`
 3. Commenting: use `#` to enable/disable lines, use `## `
 (__with__ a trailing space) to write a comment. If the commment doesn't fit on
 the line, you can just write it above/under the line you want to write a comment
