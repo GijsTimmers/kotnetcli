@@ -102,114 +102,127 @@ def argumentenParser():
     return argumenten
 
 def aanstuurderObvArgumenten(argumenten):
+    
+    ############ 1. check credentials arguments
+    cr = Credentials()
     if argumenten.forget:
         print "ik wil vergeten"
-        cr = Credentials()
         cr.forget()
         return()
     
     if argumenten.guest_mode:
         ## werkt alleen met login op het moment
         print "ik wil me anders voordoen dan ik ben"
-        cr = Credentials()
         gebruikersnaam, wachtwoord = cr.guest()
-        co = communicator.CursesCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
+        #co = communicator.CursesCommunicator()
+        #main(co, gebruikersnaam, wachtwoord)
         #curses.wrapper(main, gebruikersnaam, wachtwoord)
+    else:
+        gebruikersnaam, wachtwoord = cr.getset()
+        
+    ############# 2. check for communicator type
+    # default communicator; can be overriden with option flags
+    co = communicator.ColoramaCommunicator()
         
     if argumenten.colortext:
         print "ik wil wat kleur in mijn leven aanbrengen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.ColoramaCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        return()
+        #main(co, gebruikersnaam, wachtwoord)
+        #return()
         
     if argumenten.plaintext: ## Gekaapt voor Kotnetloguit()
         print "ik wil terug naar de basis"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.PlaintextCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        return()
+        #main(co, gebruikersnaam, wachtwoord)
+        #return()
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
     
     if argumenten.dialog:
         print "ik wil fancy dialogs"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.DialogCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        return()
+        #main(co, gebruikersnaam, wachtwoord)
+        #return()
     
     if argumenten.bubble:
         print "ik wil bellen blazen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.BubbleCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        return()
+        #main(co, gebruikersnaam, wachtwoord)
+        #return()
     
     if argumenten.summary:
         print "ik wil het mooie in de kleine dingen zien"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.SummaryCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        return()
+        #main(co, gebruikersnaam, wachtwoord)
+        #return()
         
     if argumenten.quiet:
         print "ik wil zwijgen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
         co = communicator.QuietCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-        return()
+        #main(co, gebruikersnaam, wachtwoord)
+        #return()
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
     
+    
+    ############## 3. check login type "switch"
+    
     if argumenten.dummy_login:
         print "ik wil inloggen voor spek en bonen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.dummy()
-        co = communicator.ColoramaCommunicator()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.dummy()
+        #co = communicator.ColoramaCommunicator()
         main(co, gebruikersnaam, wachtwoord, actie="dummyinloggen")
         return()
     
     if argumenten.dummy_logout:
         print "ik wil uitloggen voor spek en bonen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.dummy()
-        co = communicator.ColoramaCommunicator()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.dummy()
+        #co = communicator.ColoramaCommunicator()
         main(co, gebruikersnaam, wachtwoord, actie="dummyuitloggen")
         return()
     
     if argumenten.logout:
         print "ik wil uitloggen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
-        co = communicator.ColoramaCommunicator()
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
+        #co = communicator.ColoramaCommunicator()
         main(co, gebruikersnaam, wachtwoord, actie="uitloggen")
         return()
     
     if argumenten.login:    
-        print "ik wil inloggen"
-        cr = Credentials()
-        gebruikersnaam, wachtwoord = cr.getset()
-        co = communicator.ColoramaCommunicator()
-        main(co, gebruikersnaam, wachtwoord, actie="inloggen")
-        return()
+        print "ik wil inloggen met een --login vlag"
+        #cr = Credentials()
+        #gebruikersnaam, wachtwoord = cr.getset()
+        #co = communicator.ColoramaCommunicator()
+        
+        # continue to the default below
+        #main(co, gebruikersnaam, wachtwoord, actie="inloggen")
+        #return()
     
     print "ik wil inloggen"
-    cr = Credentials()
-    gebruikersnaam, wachtwoord = cr.getset()
-    if os.name == "posix":
-        co = communicator.CursesCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
-    else:
-        co = communicator.ColoramaCommunicator()
-        main(co, gebruikersnaam, wachtwoord)
+    main(co, gebruikersnaam, wachtwoord, actie="inloggen")
+    #cr = Credentials()
+    #gebruikersnaam, wachtwoord = cr.getset()
+    #if os.name == "posix":
+    #    co = communicator.CursesCommunicator()
+    #    main(co, gebruikersnaam, wachtwoord)
+    #else:
+    #    co = communicator.ColoramaCommunicator()
+    #    main(co, gebruikersnaam, wachtwoord)
 
 aanstuurderObvArgumenten(argumentenParser())
 
