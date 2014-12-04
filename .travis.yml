@@ -3,6 +3,6 @@ python:
   - "2.7"
 
 # command to install dependencies
-install: "pip install mechanize keyring dbus notify2"
+install: "pip install mechanize keyring dbus-python notify2"
 # command to run tests
 script: ./kotnetcli.py -1
