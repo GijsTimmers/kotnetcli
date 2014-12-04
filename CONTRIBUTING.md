@@ -47,7 +47,7 @@ $ cd kotnetcli
 $ cd po
 $ cp default.po ru.po
 $ nano ru.po  ## make some changes here
-
+```
 Sounds too hard? You can always send me your po files:
 gijs.timmers@student.kuleuven.be
 
