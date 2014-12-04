@@ -120,9 +120,7 @@ def aanstuurderObvArgumenten(argumenten):
     else:
         gebruikersnaam, wachtwoord = cr.getset()
         
-    ############# 2. check for communicator type
-    # default communicator; can be overriden with option flags
-    co = communicator.ColoramaCommunicator()
+    ############# 2. check for communicator type "switch"
         
     if argumenten.colortext:
         print "ik wil wat kleur in mijn leven aanbrengen"
@@ -132,7 +130,7 @@ def aanstuurderObvArgumenten(argumenten):
         #main(co, gebruikersnaam, wachtwoord)
         #return()
         
-    if argumenten.plaintext: ## Gekaapt voor Kotnetloguit()
+    elif argumenten.plaintext:
         print "ik wil terug naar de basis"
         #cr = Credentials()
         #gebruikersnaam, wachtwoord = cr.getset()
@@ -142,7 +140,7 @@ def aanstuurderObvArgumenten(argumenten):
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
     
-    if argumenten.dialog:
+    elif argumenten.dialog:
         print "ik wil fancy dialogs"
         #cr = Credentials()
         #gebruikersnaam, wachtwoord = cr.getset()
@@ -150,7 +148,7 @@ def aanstuurderObvArgumenten(argumenten):
         #main(co, gebruikersnaam, wachtwoord)
         #return()
     
-    if argumenten.bubble:
+    elif argumenten.bubble:
         print "ik wil bellen blazen"
         #cr = Credentials()
         #gebruikersnaam, wachtwoord = cr.getset()
@@ -158,7 +156,7 @@ def aanstuurderObvArgumenten(argumenten):
         #main(co, gebruikersnaam, wachtwoord)
         #return()
     
-    if argumenten.summary:
+    elif argumenten.summary:
         print "ik wil het mooie in de kleine dingen zien"
         #cr = Credentials()
         #gebruikersnaam, wachtwoord = cr.getset()
@@ -166,7 +164,7 @@ def aanstuurderObvArgumenten(argumenten):
         #main(co, gebruikersnaam, wachtwoord)
         #return()
         
-    if argumenten.quiet:
+    elif argumenten.quiet:
         print "ik wil zwijgen"
         #cr = Credentials()
         #gebruikersnaam, wachtwoord = cr.getset()
@@ -175,7 +173,10 @@ def aanstuurderObvArgumenten(argumenten):
         #return()
         ## needs to be removed, but if I do that, it will log in as normal
         ## login mode
-    
+    else:
+        # default communicator; can be overriden with option flags
+        print "standaard communicator gekozen"
+        co = communicator.ColoramaCommunicator()
     
     ############## 3. check login type "switch"
     
