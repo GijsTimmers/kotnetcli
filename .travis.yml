@@ -3,6 +3,6 @@ python:
   - "2.7"
 
 # command to install dependencies
-install: "pip install mechanize keyring"
+install: "pip install mechanize keyring colorama"
 # command to run tests
 script: ./kotnetcli.py -1
