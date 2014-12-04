@@ -28,12 +28,12 @@ on.
 Don’t get discouraged! We estimate that the response time from the
 maintainers is around two days.
 
-# Bug triage
+## Bug triage
 
 You can notify us about bugs here:
 https://github.com/GijsTimmers/kotnetcli/issues
 
-# Translations
+## Translations
 
 Translations are needed. We would like you to use .po files to translate
 `kotnetcli` in your language. Just create a new branch, edit the default.po file
@@ -51,6 +51,6 @@ $ nano ru.po  ## make some changes here
 Sounds too hard? You can always send me your po files:
 gijs.timmers@student.kuleuven.be
 
-# Documentation
+## Documentation
 
 Not needed at the moment. Maybe there will be a `man` page in the future.
