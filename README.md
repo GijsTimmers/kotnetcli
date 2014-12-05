@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/GijsTimmers/kotnetcli.svg?branch=master)](https://travis-ci.org/GijsTimmers/kotnetcli)
+
 # kotnetcli
 
 *KotNet Command Line Interface* -- An easy automated way to log in to
