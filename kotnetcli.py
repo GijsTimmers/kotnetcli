@@ -76,7 +76,7 @@ def argumentenParser():
     help="Performs a dry-run logging in",\
     action="store_const", dest="worker", const="dummy_login")
     
-    workergroep.add_argument("-2", "--dummy-logout",\
+    workergroep.add_argument("-0", "--dummy-logout",\
     help="Performs a dry-run logging out",\
     action="store_const", dest="worker", const="dummy_logout")
     
@@ -94,7 +94,7 @@ def argumentenParser():
     default credentials",\
     action="store_const", dest="credentials", const="guest_mode")
     
-    communicatorgroep.add_argument("-c", "--colortext",\
+    communicatorgroep.add_argument("-c", "--color",\
     help="Logs you in using colored text output (default)",\
     action="store_const", dest="communicator", const="colortext", \
     default="colortext")
@@ -108,7 +108,7 @@ def argumentenParser():
     action="store_const", dest="communicator", const="plaintext")
     
     communicatorgroep.add_argument("-d", "--dialog",\
-    help="Omits the curses inteface by using dialog based output",\
+    help="Omits the curses interface by using dialog based output",\
     action="store_const", dest="communicator", const="dialog")
     
     communicatorgroep.add_argument("-b", "--bubble",\
@@ -116,7 +116,7 @@ def argumentenParser():
     action="store_const", dest="communicator", const="bubble")
     
     communicatorgroep.add_argument("-s", "--summary",\
-    help="Hides all output except for a small summary",\
+    help="Hides all output except for a short summary",\
     action="store_const", dest="communicator", const="summary")
 
     communicatorgroep.add_argument("-q", "--quiet",\
