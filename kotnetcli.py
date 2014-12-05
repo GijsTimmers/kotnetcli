@@ -126,31 +126,6 @@ def argumentenParser():
     argumenten = parser.parse_args()
     #print argumenten.__dict__
     
-    """
-    if \
-    argumenten.keyring      == False and \
-    argumenten.forget       == False and \
-    argumenten.guest_mode   == False:
-        argumenten.keyring   = True
-    
-    if \
-    argumenten.curses       == False and \
-    argumenten.colortext    == False and \
-    argumenten.plaintext    == False and \
-    argumenten.dialog       == False and \
-    argumenten.bubble       == False and \
-    argumenten.summary      == False and \
-    argumenten.quiet        == False:
-        argumenten.colortext = True
-    
-    if \
-    argumenten.login        == False and \
-    argumenten.logout       == False and \
-    argumenten.dummy_login  == False and \
-    argumenten.dummy_logout == False:
-        argumenten.login     = True
-    
-    """
     return(argumenten)
     
 def aanstuurderObvArgumenten(argumenten):    
