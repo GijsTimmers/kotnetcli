@@ -5,4 +5,7 @@ python:
 # command to install dependencies
 install: "pip install mechanize keyring colorama"
 # command to run tests
-script: ./kotnetcli.py -1 && ./kotnetcli.py -0
+script: ./kotnetcli.py -1 -c && ./kotnetcli.py -1 -u && ./kotnetcli.py -1 -t \
+&& ./kotnetcli.py -1 -d && ./kotnetcli.py -1 -s && ./kotnetcli.py -1 -q \
+&& ./kotnetcli.py -0 -c && ./kotnetcli.py -0 -u && ./kotnetcli.py -0 -t \
+&& ./kotnetcli.py -0 -d && ./kotnetcli.py -0 -s && ./kotnetcli.py -0 -q

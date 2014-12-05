@@ -28,10 +28,18 @@ from colorama import (                  ## Om de tekst kleur te geven
 if os.name == "posix":
     try:            
         import curses                       ## Voor tekenen op scherm.
+    except ImportError:
+        print "Couldn't import the curses library."
+        pass
+    try:            
         import notify2                      ## OS-specifieke notificaties
+    except ImportError:
+        print "Couldn't import the notify2 library."
+        pass
+    try:            
         from dialog import Dialog           ## Voor tekenen op scherm.
     except ImportError:
-        print "Couldn't import all Communicator libraries."
+        print "Couldn't import the dialog library."
         pass
 if os.name == "nt":
     print "Windows system detected. Will not import curses, notify and dialog"
@@ -73,7 +81,7 @@ class QuietCommunicator():
     def eventOpsturenFailure(self):
         pass
         
-    def eventTegoedenBekend(self):
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         pass
     
     def beeindig_sessie(self, error_code=0):
