@@ -132,17 +132,22 @@ def aanstuurderObvArgumenten(argumenten):
     ############## 1. parse credential-related flags ##############
     cr = Credentials()
     #print argumenten.__dict__
-    if argumenten.credentials == "keyring":
-        print "ik haal de credentials uit de keyring"
-        gebruikersnaam, wachtwoord = cr.getset()
+    if argumenten.worker == ("dummy_login" or "dummy_logout"):
+        print "ik wil credentials ophalen voor spek en bonen"
+        gebruikersnaam, wachtwoord = cr.dummy()
+    else:
+        if argumenten.credentials == "keyring":
+            print "ik haal de credentials uit de keyring"
+            gebruikersnaam, wachtwoord = cr.getset()
+        
+        elif argumenten.credentials == "forget":
+            print "ik wil vergeten"
+            cr.forget()
+        
+        elif argumenten.credentials == "guest_mode":
+            print "ik wil me anders voordoen dan ik ben"
+            gebruikersnaam, wachtwoord = cr.guest()
     
-    elif argumenten.credentials == "forget":
-        print "ik wil vergeten"
-        cr.forget()
-    
-    elif argumenten.credentials == "guest_mode":
-        print "ik wil me anders voordoen dan ik ben"
-        gebruikersnaam, wachtwoord = cr.guest()
         
     ############## 2. switch on communicator-related flags ##############
     if argumenten.communicator == "curses":
