@@ -26,9 +26,13 @@ from colorama import (                  ## Om de tekst kleur te geven
     init as colorama_init)              ## 
     
 if os.name == "posix":
-    import curses                       ## Voor tekenen op scherm.
-    import notify2                      ## OS-specifieke notificaties
-    from dialog import Dialog           ## Voor tekenen op scherm.
+    try:            
+        import curses                       ## Voor tekenen op scherm.
+        import notify2                      ## OS-specifieke notificaties
+        from dialog import Dialog           ## Voor tekenen op scherm.
+    except ImportError:
+        print "Couldn't import all Communicator libraries."
+        pass
 if os.name == "nt":
     print "Windows system detected. Will not import curses, notify and dialog"
 
