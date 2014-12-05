@@ -132,10 +132,10 @@ def aanstuurderObvArgumenten(argumenten):
     ############## 1. parse credential-related flags ##############
     cr = Credentials()
     #print argumenten.__dict__
-    if argumenten.worker == "dummy_login"
+    if argumenten.worker == "dummy_login":
         print "ik wil credentials ophalen voor spek en bonen"
         gebruikersnaam, wachtwoord = cr.dummy()
-    elif argumenten.worker == "dummy_logout"
+    elif argumenten.worker == "dummy_logout":
         print "ik wil credentials ophalen voor spek en bonen"
         gebruikersnaam, wachtwoord = cr.dummy()
     else:
