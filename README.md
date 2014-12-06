@@ -1,6 +1,12 @@
 [![Build Status](https://travis-ci.org/GijsTimmers/kotnetcli.svg?branch=master)](https://travis-ci.org/GijsTimmers/kotnetcli)
 
-# kotnetcli
+______       _____            _____      __________ 
+___  /_________  /______________  /_________  /__(_)
+__  //_/  __ \  __/_  __ \  _ \  __/  ___/_  /__  / 
+_  ,<  / /_/ / /_ _  / / /  __/ /_ / /__ _  / _  /  
+/_/|_| \____/\__/ /_/ /_/\___/\__/ \___/ /_/  /_/   
+                                                    
+
 
 *KotNet Command Line Interface* -- An easy automated way to log in to
 [KotNet](https://admin.kuleuven.be/icts/english/kotnet).
