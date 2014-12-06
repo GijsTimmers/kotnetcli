@@ -44,18 +44,7 @@ When you go to Toledo, `kotnetloginextension` will do the login work.
 Although ease-of-use is important, `kotnetcli` will probably stay
 "poweruser-ish" for a while.
 
-## Features
-
-- Safety: we'll store your login settings safely in your operating
-system's keyring;
-- Speed: there is no need to draw the website elements, which makes the
-login procedure faster;
-- Scriptable: kotnetcli is a command-line program and can thus be used
-in scripts to cater your needs. For example, you can put it in your
-autostart settings to log in after booting your computer, waking from
-sleep, etc. A `--quiet` mode and exit codes are planned for future
-releases to make this even better.
-
+You can find more information about the kotnecli features [in the wiki!](https://github.com/GijsTimmers/kotnetcli/wiki/Features)
 ## Installation
 
 You can either install the dependencies and run the python file, or just
@@ -90,16 +79,6 @@ Both will be stored safely in the keyring of your desktop environment.
 You can add kotnetcli to your autostart programs to log in to Kotnet
 at boot-time.
 
-## Dependencies overview
-
-| Dependency | Rationale | Where to get it|
-|------------|-----------|--------------|
-| [Python 2](https://www.python.org) | The `kotnetcli` application is entirely written in python.  Since python is an interpreted language, running the `kotnetcli.py` script implies having a python interpreter installed. Running the compiled [binary](https://github.com/GijsTimmers/kotnetcli/releases/latest) however doesn't require having python installed. The newer `python3` isn't backwards compatible with `python2`. | Python2 is pre-installed on many UNIX systems. If not most of them provide `python2` in the standard package manager.|
-| [curses lib](https://docs.python.org/2/library/curses.html) | `kotnetcli` uses the `curses` library to display dynamic colorized progress-output  | Most UNIX versions are shipped with a version of the `ncurses` library. If not, most of them provide `ncurses` in the standard package manager. |
-| [mechanize lib](https://pypi.python.org/pypi/mechanize/) | A library emulating a browser in python. This is used by `kotnetcli` to access the netlogin.kuleuven.be page | The following section lists platform specific info to resolve this dependency.|
-| [keyring lib](https://pypi.python.org/pypi/keyring) | `kotnetcli` uses the keyring library to securely save your kotnet credentials to your operating system specific keyring back-end. | The following section lists platform specific info to resolve this dependency.|
-| [notify2](https://pypi.python.org/pypi/notify2) | `kotnetcli` uses `notify2` to send OS-specific notifications to your screen. | The following section lists platform specific info to resolve this dependency.|
-| [jovanbulck](https://github.com/jovanbulck) | `kotnetcli` uses `jovanbulck` to stay maintained even at night-time | `jovanbulck` is pretty hard to acquire.|
 ## Platform dependent instructions
 This section lists the platform specific instructions to resolve the above dependencies:
 
@@ -115,3 +94,5 @@ This section lists the platform specific instructions to resolve the above depen
   - Pip:
   
             $ sudo pip install mechanize keyring notify2
+
+[Why do we need these dependencies?](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)
