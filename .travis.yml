@@ -3,11 +3,27 @@ python:
   - "2.7"
 
 
+## Command to install system dependencies
 before_install: 
   - sudo apt-get update -qq
-  - sudo apt-get install dialog ncurses-base ncurses-bin
-# command to install dependencies
+  - sudo apt-get install dialog
+  
+## Command to install pip dependencies
 install: "pip install mechanize keyring colorama python2-pythondialog"
-# command to run tests
-script: ./kotnetcli.py -1 -c && ./kotnetcli.py -1 -u && ./kotnetcli.py -1 -t && ./kotnetcli.py -1 -d && ./kotnetcli.py -1 -s && ./kotnetcli.py -1 -q && ./kotnetcli.py -0 -c && ./kotnetcli.py -0 -u && ./kotnetcli.py -0 -t && ./kotnetcli.py -0 -d && ./kotnetcli.py -0 -s && ./kotnetcli.py -0 -q
+
+## command to run tests
+#script: ./kotnetcli.py -1 -c && ./kotnetcli.py -1 -u && ./kotnetcli.py -1 -t && ./kotnetcli.py -1 -d && ./kotnetcli.py -1 -s && ./kotnetcli.py -1 -q && ./kotnetcli.py -0 -c && ./kotnetcli.py -0 -u && ./kotnetcli.py -0 -t && ./kotnetcli.py -0 -d && ./kotnetcli.py -0 -s && ./kotnetcli.py -0 -q
+script: 
+  - ./kotnetcli.py -1 -c 
+  - ./kotnetcli.py -1 -u
+  - ./kotnetcli.py -1 -t
+  - ./kotnetcli.py -1 -d
+  - ./kotnetcli.py -1 -s
+  - ./kotnetcli.py -1 -q
+  - ./kotnetcli.py -0 -c
+  - ./kotnetcli.py -0 -u
+  - ./kotnetcli.py -0 -t
+  - ./kotnetcli.py -0 -d
+  - ./kotnetcli.py -0 -s
+  - ./kotnetcli.py -0 -q
 
