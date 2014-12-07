@@ -7,13 +7,12 @@ python:
 before_install: 
   - sudo apt-get update -qq
   - sudo apt-get install dialog
+  - git clone https://github.com/pyinstaller/pyinstaller.git
   
 ## Command to install pip dependencies
-before_install: git clone https://github.com/pyinstaller/pyinstaller.git
 install: "pip install mechanize keyring colorama python2-pythondialog"
 
 ## command to run tests
-#script: ./kotnetcli.py -1 -c && ./kotnetcli.py -1 -u && ./kotnetcli.py -1 -t && ./kotnetcli.py -1 -d && ./kotnetcli.py -1 -s && ./kotnetcli.py -1 -q && ./kotnetcli.py -0 -c && ./kotnetcli.py -0 -u && ./kotnetcli.py -0 -t && ./kotnetcli.py -0 -d && ./kotnetcli.py -0 -s && ./kotnetcli.py -0 -q
 script: 
   - ./kotnetcli.py -1 -c 
   - ./kotnetcli.py -1 -u
@@ -28,4 +27,16 @@ script:
   - ./kotnetcli.py -0 -s
   - ./kotnetcli.py -0 -q
   - ./pyinstaller/pyinstaller.py compile-lin.spec
+  - ./dist/kotnetcli-lin -1 -c 
+  - ./dist/kotnetcli-lin -1 -u
+  - ./dist/kotnetcli-lin -1 -t
+  - ./dist/kotnetcli-lin -1 -d
+  - ./dist/kotnetcli-lin -1 -s
+  - ./dist/kotnetcli-lin -1 -q
+  - ./dist/kotnetcli-lin -0 -c
+  - ./dist/kotnetcli-lin -0 -u
+  - ./dist/kotnetcli-lin -0 -t
+  - ./dist/kotnetcli-lin -0 -d
+  - ./dist/kotnetcli-lin -0 -s
+  - ./dist/kotnetcli-lin -0 -q
 
