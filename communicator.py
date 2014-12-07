@@ -52,6 +52,8 @@ class QuietCommunicator():
         pass
     def eventPingFailure(self):
         pass
+    def eventPingAlreadyOnline(self):
+        pass
 
     def eventNetloginStart(self):
         pass
@@ -131,7 +133,9 @@ class DialogCommunicator(QuietCommunicator):
                       ])
     
     def eventPingFailure(self):
-        self.d.infobox("Niet verbonden met het KU Leuven-netwerk...", 5, 30)
+        self.d.infobox("Niet verbonden met het KU Leuven-netwerk.", 5, 30)
+    def eventPingAlreadyOnline(self):
+        self.d.infobox("U bent al online.", 5, 30)
     
     def eventNetloginSuccess(self):
         self.netlogin = self.DONE
@@ -181,6 +185,8 @@ class DialogCommunicator(QuietCommunicator):
 class SummaryCommunicator(QuietCommunicator):
     def eventPingFailure(self):
         print "Niet verbonden met het KU Leuven-netwerk."
+    def eventPingAlreadyOnline(self):
+        print "U bent al online."
     
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         print "Download: " + str(downloadpercentage) + "%" + ",",
@@ -198,6 +204,10 @@ class ColoramaCommunicator(QuietCommunicator):
         print Style.BRIGHT + Fore.RED + \
         "Niet verbonden met het KU Leuven-netwerk." + \
         Style.RESET_ALL + Fore.RESET
+    def eventPingAlreadyOnline(self):
+        print Style.BRIGHT + Fore.YELLOW + \
+        "U bent al online." + \
+        Fore.RESET + Style.RESET_ALL
     
     def eventNetloginStart(self):
         print "Netlogin openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
@@ -363,6 +373,9 @@ class CursesCommunicator():
     def eventPingFailure(self):
         self.kprint(6, 0, "Niet verbonden met het KU Leuven-netwerk.", \
         self.tekstKleurRoodOpmaakVet)
+    def eventPingAlreadyOnline(self):
+        self.kprint(6, 0, "U bent al online.", \
+        self.tekstKleurGeelOpmaakVet)
         
     def eventNetloginStart(self):
         self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)

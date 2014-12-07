@@ -25,19 +25,37 @@ def ping(co):
             if subprocess.call(["ping", "-c", "1", "-w", "1", "netlogin.kuleuven.be"], \
             stdout=dev_null, stderr=dev_null) == 0:
                 ## 0 staat voor een exit code van True van het ping-commando.
-                co.eventPingSuccess()
+                if subprocess.call(["ping", "-c", "1", "-w", "1", "toledo.kuleuven.be"], \
+                stdout=dev_null, stderr=dev_null) == 0:
+                    ## we zijn al online
+                    co.eventPingAlreadyOnline()
+                    co.beeindig_sessie()
+                    sys.exit(1)
+                else:
+                    ## we moeten nog inloggen
+                    co.eventPingSuccess()
             else:
+                ## geen netwerkverbinding
                 co.eventPingFailure()
                 co.beeindig_sessie()
                 sys.exit(1)
-
+    
     elif os.name == "nt":
-        with open("NUL", "w") as dev_null:
+        with open("NUL", 'w') as dev_null:
             if subprocess.call(["ping", "-n", "1", "-w", "1", "netlogin.kuleuven.be"], \
             stdout=dev_null, stderr=dev_null) == 0:
                 ## 0 staat voor een exit code van True van het ping-commando.
-                co.eventPingSuccess()
+                if subprocess.call(["ping", "-c", "1", "-w", "1", "toledo.kuleuven.be"], \
+                stdout=dev_null, stderr=dev_null) == 0:
+                    ## we zijn al online
+                    co.eventPingAlreadyOnline()
+                    co.beeindig_sessie()
+                    sys.exit(1)
+                else:
+                    ## we moeten nog inloggen
+                    co.eventPingSuccess()
             else:
+                ## geen netwerkverbinding
                 co.eventPingFailure()
                 co.beeindig_sessie()
                 sys.exit(1)
