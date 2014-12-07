@@ -9,6 +9,7 @@ before_install:
   - sudo apt-get install dialog
   
 ## Command to install pip dependencies
+before_install: git clone https://github.com/pyinstaller/pyinstaller.git
 install: "pip install mechanize keyring colorama python2-pythondialog"
 
 ## command to run tests
@@ -26,4 +27,5 @@ script:
   - ./kotnetcli.py -0 -d
   - ./kotnetcli.py -0 -s
   - ./kotnetcli.py -0 -q
+  - ./pyinstaller/pyinstaller.py compile-lin.spec
 
