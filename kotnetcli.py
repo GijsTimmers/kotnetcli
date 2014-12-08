@@ -32,7 +32,7 @@ def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
         ping(co)
         kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
     elif actie == "uitloggen":
-        ping(co)
+        #ping(co)
         kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
     elif actie == "dummyinloggen":
         kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)

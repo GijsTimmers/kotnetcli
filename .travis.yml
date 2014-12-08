@@ -9,8 +9,8 @@ before_install:
   - sudo apt-get install dialog
   - git clone https://github.com/pyinstaller/pyinstaller.git
   - sudo apt-get install python-dbus python-dbus-dev
-  - cp -r /usr/lib/python2.7/dist-packages/dbus myvirtenv/usr/lib/pythonX.X/site-packages/    
-  - cp -r /usr/lib/python2.7/dist-packages/_dbus_*.so myvirtenv/usr/lib/pythonX.X/site-packages/
+  - cp -r /usr/lib/python2.7/dist-packages/dbus /home/travis/virtualenv/python2.7.8/site-packages/    
+  - cp -r /usr/lib/python2.7/dist-packages/_dbus_*.so /home/travis/virtualenv/python2.7.8/site-packages/
 #  - sudo apt-get install libdbus-glib-1-dev
 #  - wget http://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.2.0.tar.gz
 #  - mkdir dbus
