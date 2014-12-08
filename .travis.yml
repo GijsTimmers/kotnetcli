@@ -8,12 +8,23 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install dialog
   - git clone https://github.com/pyinstaller/pyinstaller.git
+  - sudo apt-get install libdbus-glib-1-dev
+  - wget http://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.2.0.tar.gz
+  - mkdir dbus
+  - tar xvzf dbus-python-1.2.0.tar.gz -C dbus --strip-components=1
+  - cd dbus
+  - ./configure --prefix=/tmp/dbus-python
+  - make
+  - sudo make install
   
 ## Command to install pip dependencies
-install: "pip install mechanize keyring colorama python2-pythondialog"
+install: 
+  - pip install mechanize keyring colorama python2-pythondialog
+  - pip install dbus-python
 
 ## command to run tests
 script: 
+  - ./kotnetcli.py -h
   - ./kotnetcli.py -1 -c 
   - ./kotnetcli.py -1 -u
   - ./kotnetcli.py -1 -t
@@ -27,6 +38,7 @@ script:
   - ./kotnetcli.py -0 -s
   - ./kotnetcli.py -0 -q
   - ./pyinstaller/pyinstaller.py compile-lin.spec
+  - ./dist/kotnetcli-lin -h
   - ./dist/kotnetcli-lin -1 -c 
   - ./dist/kotnetcli-lin -1 -u
   - ./dist/kotnetcli-lin -1 -t
@@ -40,3 +52,5 @@ script:
   - ./dist/kotnetcli-lin -0 -s
   - ./dist/kotnetcli-lin -0 -q
 
+notifications:
+  - email: false
