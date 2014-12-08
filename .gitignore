@@ -4,3 +4,5 @@ dist/
 pyinstaller/
 
 test-win.sh
+test2.py
+test*

@@ -11,7 +11,7 @@ _  ,<  / /_/ / /_ _  / / /  __/ /_ / /__ _  / _  /
 [KotNet](https://admin.kuleuven.be/icts/english/kotnet).
 
 [![Build Status](https://travis-ci.org/GijsTimmers/kotnetcli.svg?branch=master)](https://travis-ci.org/GijsTimmers/kotnetcli)
-
+[![cc-logo](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-sa/4.0/)
 ## Purpose
 
 Logging in on KotNet is a hassle. A method to autologin from within the
