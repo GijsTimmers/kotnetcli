@@ -23,7 +23,7 @@ before_install:
 ## Command to install pip dependencies
 install: 
     - pip install mechanize keyring colorama python2-pythondialog
-    - pip install dbus-python
+#    - pip install dbus-python
 
 ## command to run tests
 script: 
