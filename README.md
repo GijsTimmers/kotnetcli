@@ -91,8 +91,14 @@ This section lists the platform specific instructions to resolve the above depen
             $ sudo pacman -S python2-mechanize python2-keyring
             $ sudo yaourt -S python-notify2 
         
+  - Mac OS X (using Homebrew)
+
+            $ brew install ncurses
+            $ brew install homebrew/python/python-dbus
+            $ sudo pip install mechanize keyring notify2 colorama
+
   - Pip:
-  
-            $ sudo pip install mechanize keyring notify2
+
+            $ sudo pip install mechanize keyring notify2 colorama
 
 [Why do we need these dependencies?](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)
