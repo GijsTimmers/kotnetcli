@@ -29,7 +29,7 @@ from pinger import ping                 ## Checken of we op KUL-net zitten
 
 def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
     if actie == "inloggen":
-        ping(co)
+        #ping(co)
         kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
     elif actie == "uitloggen":
         #ping(co)
@@ -99,6 +99,12 @@ def argumentenParser():
     action="store_const", dest="communicator", const="colortext", \
     default="colortext")
     
+    """
+    communicatorgroep.add_argument("-a", "--android",\
+    help="Logs you in using the Android login system",\
+    action="store_const", dest="communicator", const="android")
+    """
+    
     communicatorgroep.add_argument("-u", "--curses",\
     help="Logs you in using curses output",\
     action="store_const", dest="communicator", const="curses")
@@ -159,6 +165,10 @@ def aanstuurderObvArgumenten(argumenten):
             co = communicator.CursesCommunicator()
         else:
             co = communicator.ColoramaCommunicator()
+    
+    elif argumenten.communicator == "android":
+        print "ik wou dat ik een robot was"
+        co = communicator.AndroidCommunicator()
     
     elif argumenten.communicator == "colortext":
         print "ik wil vrolijke kleuren"
