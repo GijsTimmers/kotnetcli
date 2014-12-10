@@ -24,6 +24,8 @@ import socket                           ## Voor ophalen IP
 import sys                              ## Basislib
 import os                               ## Basislib
 
+from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
+
 class Kotnetlogin():
     def __init__(self, co, gebruikersnaam, wachtwoord):
         
@@ -83,24 +85,60 @@ class Kotnetlogin():
         
     def tegoeden(self):
         html = self.browser.response().read()
-        #print html
-        zoekresultaten = (re.findall("<br>\(\d*%\)</TD>", html))
-        #print zoekresultaten
-        ## zoek naar: <br>(40%)</TD>
-        self.downloadpercentage = int(zoekresultaten[0]\
-        .strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
-        self.uploadpercentage   = int(zoekresultaten[1]\
-        .strip("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ%()<>br/"))
         
-        self.co.eventTegoedenBekend(self.downloadpercentage, \
-        self.uploadpercentage)
-        #self.co.eventDownloadtegoedBekend(self.downloadpercentage)
-        #self.co.eventUploadtegoedBekend(self.uploadpercentage)
+        soup = BeautifulSoup(html)
+        
+        ## Zoek naar de rc-code in de comments van het html-bestand. Deze
+        ## bevat de status.
+        comments = soup.findAll(text=lambda text:isinstance(text, Comment))
+        p = re.compile("weblogin: rc=\d+")
+        for c in comments:
+            m = p.search(c)
+            #m = p.findall(c)
+            #print m
+            if m:
+                rccode = int(m.group().strip("weblogin: rc="))
+                ## m = p.search(c): zoekt naar de RE p in c. Indien die is
+                ## gevonden, is m een object; m.group() geeft vervolgens 
+                ## weer waar de RE matcht. Dit doet het maar één keer; als
+                ## je strings op meerdere matches wilt controleren, moet je
+                ## p.findall(c) gebruiken, zoals hieronder.
+        
+        if rccode == 100:            
+            ## succesvolle login
+            ## downloadpercentage parsen
+            p = re.compile("\d+")
+            m = p.findall(comments[6])
+            self.downloadpercentage = int(float(m[0]) / float(m[1]) * 100)
+            
+            ## uploadpercentage parsen
+            p = re.compile("\d+")
+            m = p.findall(comments[7])
+            self.uploadpercentage = int(float(m[0]) / float(m[1]) * 100)
+            
+            
+            self.co.eventTegoedenBekend(self.downloadpercentage, \
+            self.uploadpercentage)
 
+            self.co.beeindig_sessie()
+            
+        elif rccode == 202:
+            ## verkeerd wachtwoord
+            print "Uw logingegevens kloppen niet. Gebruik kotnetcli -f om " + \
+            "deze te resetten."
+        
+        else:
+            print html
+        
+        
+    def uitteloggenipophalen(self):
+        html = self.browser.response().read()
+        print html
+        ## Put IP-parsing code right here.
         self.co.beeindig_sessie()
 
 class Kotnetloguit():
-    def __init__(self, co, gebruikersnaam, wachtwoord):
+    def __init__(self, co, gebruikersnaam, wachtwoord, uitteloggenip=None):
         
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
@@ -174,7 +212,34 @@ class Kotnetloguit():
             sys.exit(1)
     
     def tegoeden(self):
-        self.co.beeindig_sessie()
+        html = self.browser.response().read()
+        #print html
+        soup = BeautifulSoup(html)
+        
+        ## Zoek naar de rc-code in de comments van het html-bestand. Deze
+        ## bevat de status.
+        comments = soup.findAll(text=lambda text:isinstance(text, Comment))
+        p = re.compile("weblogout: rc=\d+")
+        
+        rccode = 100 
+        ## if not error codes appear, assume that everything went OK.
+        for c in comments:
+            m = p.search(c)
+            #m = p.findall(c)
+            #print m
+            if m:
+                rccode = int(m.group().strip("weblogout: rc="))
+            
+        if rccode == 100:
+            ## succesvolle logout
+            self.co.beeindig_sessie()
+            
+        elif rccode == 207:
+            ## al uitgelogd
+            print "U had uzelf reeds succesvol uitgelogd."
+            self.co.beeindig_sessie()
+        else:
+            print html
     
         
 class Dummylogin():

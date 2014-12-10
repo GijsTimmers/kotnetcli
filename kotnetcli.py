@@ -45,6 +45,55 @@ def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
     kl.gegevensopsturen()
     kl.tegoeden()
 
+def mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
+    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    if dummy == True:
+        kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)
+        ## kl remains Kotnetlogin if dummy mode is not activated.
+            
+    kl.netlogin()
+    kl.kuleuven()
+    kl.gegevensinvoeren()
+    kl.gegevensopsturen()
+    kl.tegoeden()
+    
+def mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
+    kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
+    if dummy == True:
+        kl = worker.Dummyloguit(co, gebruikersnaam, wachtwoord)
+            
+    kl.netlogin()
+    kl.kuleuven()
+    kl.gegevensinvoeren()
+    kl.gegevensopsturen()
+    kl.tegoeden()
+
+def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
+    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    
+    ## IP van uit te loggen apparaat opzoeken
+    kl.netlogin()
+    kl.kuleuven()
+    kl.gegevensinvoeren()
+    kl.gegevensopsturen()
+    uitteloggenip = kl.uitteloggenipophalen()
+    
+    ## Ander apparaat uitloggen
+    kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
+    kl.netlogin()
+    kl.kuleuven()
+    kl.gegevensinvoeren()
+    kl.gegevensopsturen()
+    kl.tegoeden()
+    
+    ## Conventionele login
+    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    kl.netlogin()
+    kl.kuleuven()
+    kl.gegevensinvoeren()
+    kl.gegevensopsturen()
+    kl.tegoeden()
+
 def argumentenParser():
     parser = argparse.ArgumentParser(description="Script om in- of uit \
     te loggen op KotNet")
@@ -67,6 +116,10 @@ def argumentenParser():
     workergroep.add_argument("-i", "--login",\
     help="Logs you in on KotNet (default)",\
     action="store_const", dest="worker", const="login", default="login")
+    
+    workergroep.add_argument("-!", "--force-login",\
+    help="Logs you out on other IP's, and then in on this one",\
+    action="store_const", dest="worker", const="login")
 
     workergroep.add_argument("-o", "--logout",\
     help="Logs you out off KotNet",\
@@ -138,12 +191,10 @@ def aanstuurderObvArgumenten(argumenten):
     ############## 1. parse credential-related flags ##############
     cr = Credentials()
     #print argumenten.__dict__
-    if argumenten.worker == "dummy_login":
+    if argumenten.worker == "dummy_login" or argumenten.worker == "dummy_logout":
         print "ik wil credentials ophalen voor spek en bonen"
         gebruikersnaam, wachtwoord = cr.dummy()
-    elif argumenten.worker == "dummy_logout":
-        print "ik wil credentials ophalen voor spek en bonen"
-        gebruikersnaam, wachtwoord = cr.dummy()
+
     else:
         if argumenten.credentials == "keyring":
             print "ik haal de credentials uit de keyring"
@@ -152,6 +203,7 @@ def aanstuurderObvArgumenten(argumenten):
         elif argumenten.credentials == "forget":
             print "ik wil vergeten"
             cr.forget()
+            exit(0)
         
         elif argumenten.credentials == "guest_mode":
             print "ik wil me anders voordoen dan ik ben"
@@ -203,18 +255,18 @@ def aanstuurderObvArgumenten(argumenten):
     ############## 3. switch on login-type flags ##############
     if argumenten.worker == "login":
         print "ik wil inloggen"
-        main(co, gebruikersnaam, wachtwoord, actie="inloggen")
+        mainLoginprocedure(co, gebruikersnaam, wachtwoord)
     
     elif argumenten.worker == "logout":
         print "ik wil uitloggen"
-        main(co, gebruikersnaam, wachtwoord, actie="uitloggen")
+        mainLoguitprocedure(co, gebruikersnaam, wachtwoord)
     
     elif argumenten.worker == "dummy_login":
         print "ik wil inloggen voor spek en bonen"
-        main(co, gebruikersnaam, wachtwoord, actie="dummyinloggen")
+        mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
     
     elif argumenten.worker == "dummy_logout":
         print "ik wil uitloggen voor spek en bonen"
-        main(co, gebruikersnaam, wachtwoord, actie="dummyuitloggen")
+        mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
 
 aanstuurderObvArgumenten(argumentenParser())
