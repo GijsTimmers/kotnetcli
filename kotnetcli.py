@@ -97,7 +97,7 @@ def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
         kl.gegevensopsturen()
         kl.tegoeden()
 
-## An argument parse action that prints version information
+## An argument parse action that prints license information
 ##  on stdout and exits
 class PrintVersionAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
