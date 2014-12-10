@@ -77,25 +77,25 @@ def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
     kl.kuleuven()
     kl.gegevensinvoeren()
     kl.gegevensopsturen()
-    kl.tegoeden()
-    uitteloggenip = kl.uitteloggenipophalen()
-    print uitteloggenip
+    if kl.tegoeden() == False:
+        uitteloggenip = kl.uitteloggenipophalen()
+        print uitteloggenip
     
-    ## Ander apparaat uitloggen
-    kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-    
-    ## Conventionele login
-    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
+        ## Ander apparaat uitloggen
+        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
+        kl.netlogin()
+        kl.kuleuven()
+        kl.gegevensinvoeren()
+        kl.gegevensopsturen()
+        kl.tegoeden()
+        
+        ## Conventionele login
+        kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
+        kl.netlogin()
+        kl.kuleuven()
+        kl.gegevensinvoeren()
+        kl.gegevensopsturen()
+        kl.tegoeden()
 
 def argumentenParser():
     parser = argparse.ArgumentParser(description="Script om in- of uit \

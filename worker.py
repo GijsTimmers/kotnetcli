@@ -122,21 +122,29 @@ class Kotnetlogin():
             self.uploadpercentage)
 
             self.co.beeindig_sessie()
+            return(True)
             
         elif rccode == 202:
             ## verkeerd wachtwoord
             print "Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
             "--forget om deze te resetten."
+            self.co.beeindig_sessie()
+            return(True)
         
         elif rccode == 206:
             ## al ingelogd op ander IP
             print "U bent al ingelogd op een ander IP-adres. Gebruik " + \
             "kotnetcli --force-login om u toch in te loggen." 
+            self.co.beeindig_sessie()
+            return(False)
         
         else:
+            self.co.beeindig_sessie()
             print html
             print "\nrc-code onbekend. Stuur bovenstaande informatie naar"
             print "gijs.timmers@student.kuleuven.be om ondersteuning te krijgen."
+            
+            return(True)
             
         #print self.afsluiten
         if self.afsluiten:
