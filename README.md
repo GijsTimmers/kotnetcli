@@ -97,7 +97,7 @@ This section lists the platform specific instructions to resolve the above depen
 
             $ brew install ncurses
             $ brew install homebrew/python/python-dbus
-            $ sudo pip install mechanize keyring notify2 colorama
+            $ sudo pip install mechanize keyring notify2 colorama python2-pythondialog
 
   - Pip:
 
