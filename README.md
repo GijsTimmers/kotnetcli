@@ -86,21 +86,29 @@ This section lists the platform specific instructions to resolve the above depen
 
   - Ubuntu:
   
-            $ sudo apt-get install python-mechanize python-keyring python-notify2
+            $ sudo apt-get install python-pip
+            $ sudo pip install mechanize keyring notify2 \
+              colorama python2-pythondialog beautifulsoup4
+
         
   - Arch:
   
-            $ sudo pacman -S python2-mechanize python2-keyring
-            $ sudo yaourt -S python-notify2 
+            $ sudo pacman -S python2-pip
+            $ sudo pip install mechanize keyring notify2 \
+              colorama python2-pythondialog beautifulsoup4
+
         
-  - Mac OS X (using Homebrew)
+  - Mac OS X (using [Homebrew](http://brew.sh/)):
 
             $ brew install ncurses
             $ brew install homebrew/python/python-dbus
-            $ sudo pip install mechanize keyring notify2 colorama python2-pythondialog
+            $ sudo pip install mechanize keyring notify2 \
+              colorama python2-pythondialog beautifulsoup4
+
 
   - Pip:
 
-            $ sudo pip install mechanize keyring notify2 colorama
+            $ sudo pip install mechanize keyring notify2 \
+              colorama python2-pythondialog beautifulsoup4
 
 [Why do we need these dependencies?](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)

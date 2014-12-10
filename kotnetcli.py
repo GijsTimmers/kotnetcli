@@ -69,7 +69,7 @@ def mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
     kl.tegoeden()
 
 def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
+    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord, afsluiten=False)
     
     ## IP van uit te loggen apparaat opzoeken
     kl.netlogin()
@@ -77,6 +77,7 @@ def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
     kl.gegevensinvoeren()
     kl.gegevensopsturen()
     uitteloggenip = kl.uitteloggenipophalen()
+    print uitteloggenip
     
     ## Ander apparaat uitloggen
     kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
@@ -119,7 +120,7 @@ def argumentenParser():
     
     workergroep.add_argument("-!", "--force-login",\
     help="Logs you out on other IP's, and then in on this one",\
-    action="store_const", dest="worker", const="login")
+    action="store_const", dest="worker", const="force_login")
 
     workergroep.add_argument("-o", "--logout",\
     help="Logs you out off KotNet",\
@@ -252,14 +253,20 @@ def aanstuurderObvArgumenten(argumenten):
         print "ik wil zwijgen"
         co = communicator.QuietCommunicator()
     
-    ############## 3. switch on login-type flags ##############
+    ############## 3. switch on login-type flags ##############    
     if argumenten.worker == "login":
         print "ik wil inloggen"
         mainLoginprocedure(co, gebruikersnaam, wachtwoord)
     
+    elif argumenten.worker == "force_login":
+        print "ik moet en zal inloggen"
+        mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
+    
     elif argumenten.worker == "logout":
         print "ik wil uitloggen"
         mainLoguitprocedure(co, gebruikersnaam, wachtwoord)
+        
+    
     
     elif argumenten.worker == "dummy_login":
         print "ik wil inloggen voor spek en bonen"

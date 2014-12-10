@@ -27,7 +27,7 @@ import os                               ## Basislib
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 class Kotnetlogin():
-    def __init__(self, co, gebruikersnaam, wachtwoord):
+    def __init__(self, co, gebruikersnaam, wachtwoord, afsluiten=True):
         
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
@@ -36,6 +36,7 @@ class Kotnetlogin():
         self.wachtwoord = wachtwoord
         
         self.co = co
+        self.afsluiten = afsluiten
         
     def netlogin(self):
         self.co.eventNetloginStart()
@@ -130,15 +131,19 @@ class Kotnetlogin():
         else:
             print html
         
+        #print self.afsluiten
+        if self.afsluiten:
+            self.co.beeindig_sessie()
         
     def uitteloggenipophalen(self):
         html = self.browser.response().read()
-        print html
+        #print html
         ## Put IP-parsing code right here.
-        self.co.beeindig_sessie()
+        return None
+        return "1.2.3.4"
 
 class Kotnetloguit():
-    def __init__(self, co, gebruikersnaam, wachtwoord, uitteloggenip=None):
+    def __init__(self, co, gebruikersnaam, wachtwoord, uitteloggenip=None, afsluiten=True):
         
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
@@ -147,12 +152,15 @@ class Kotnetloguit():
         self.wachtwoord = wachtwoord
         
         self.co = co
+        self.uitteloggenip = uitteloggenip
+        self.afsluiten = afsluiten
         
-        ## Lokale IP ophalen: lelijk, maar werkt.
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("gmail.com",80))
-        self.lokaleip = s.getsockname()[0]
-        s.close()
+        if self.uitteloggenip == None:
+            ## Lokale IP ophalen: lelijk, maar werkt.
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("gmail.com",80))
+            self.uitteloggenip = s.getsockname()[0]
+            s.close()
         
         ## Formulier aanmaken. Het opsturen van dit formulier geeft toegang
         ## tot de noodzakelijke loguitpagina. 
@@ -162,7 +170,7 @@ class Kotnetloguit():
         '"https://netlogin.kuleuven.be/cgi-bin/wayf2.pl">\n')
         bestand.write('<INPUT type=hidden name="inout" value="logout">\n')
         bestand.write('<INPUT type=hidden name="ip" value="%s">\n' \
-        % self.lokaleip)
+        % self.uitteloggenip)
         bestand.write('<INPUT type=hidden name="network" value="KotNet">\n')
         bestand.write('<INPUT type=hidden name="uid" value="kuleuven/%s">\n' % \
         self.gebruikersnaam)
@@ -232,15 +240,17 @@ class Kotnetloguit():
             
         if rccode == 100:
             ## succesvolle logout
-            self.co.beeindig_sessie()
+            pass
             
         elif rccode == 207:
             ## al uitgelogd
             print "U had uzelf reeds succesvol uitgelogd."
-            self.co.beeindig_sessie()
         else:
             print html
-    
+        
+        #print self.afsluiten
+        if self.afsluiten:
+            self.co.beeindig_sessie()
         
 class Dummylogin():
     def __init__(self, co, gebruikersnaam, wachtwoord):
