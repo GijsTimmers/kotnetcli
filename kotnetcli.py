@@ -77,6 +77,7 @@ def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
     kl.kuleuven()
     kl.gegevensinvoeren()
     kl.gegevensopsturen()
+    kl.tegoeden()
     uitteloggenip = kl.uitteloggenipophalen()
     print uitteloggenip
     

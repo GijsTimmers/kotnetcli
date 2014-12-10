@@ -125,22 +125,32 @@ class Kotnetlogin():
             
         elif rccode == 202:
             ## verkeerd wachtwoord
-            print "Uw logingegevens kloppen niet. Gebruik kotnetcli -f om " + \
-            "deze te resetten."
+            print "Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
+            "--forget om deze te resetten."
+        
+        elif rccode == 206:
+            ## al ingelogd op ander IP
+            print "U bent al ingelogd op een ander IP-adres. Gebruik " + \
+            "kotnetcli --force-login om u toch in te loggen." 
         
         else:
             print html
-        
+            print "\nrc-code onbekend. Stuur bovenstaande informatie naar"
+            print "gijs.timmers@student.kuleuven.be om ondersteuning te krijgen."
+            
         #print self.afsluiten
         if self.afsluiten:
             self.co.beeindig_sessie()
         
     def uitteloggenipophalen(self):
         html = self.browser.response().read()
-        #print html
-        ## Put IP-parsing code right here.
-        return None
-        return "1.2.3.4"
+        soup = BeautifulSoup(html)
+        
+        forms = soup.findAll("form")
+        form = forms[1]
+        uitteloggenip = form.contents[3]["value"]
+        
+        return uitteloggenip
 
 class Kotnetloguit():
     def __init__(self, co, gebruikersnaam, wachtwoord, uitteloggenip=None, afsluiten=True):
@@ -175,7 +185,8 @@ class Kotnetloguit():
         bestand.write('<INPUT type=hidden name="uid" value="kuleuven/%s">\n' % \
         self.gebruikersnaam)
         bestand.write('<INPUT type=hidden name="lang" value="ned">\n')
-        bestand.write('<INPUT type=submit value="logout">\n')
+        #bestand.write('<INPUT type=submit value="logout">\n')
+        bestand.write('<INPUT type=submit value="logout kuleuven/%s@%s">\n' % (self.gebruikersnaam, self.uitteloggenip))
         bestand.write('</FORM>\n')
         bestand.write('</body></html>\n')
         bestand.close()
