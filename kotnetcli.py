@@ -26,6 +26,7 @@ from credentials import Credentials     ## Opvragen van nummer en wachtwoord
 import worker                           ## Eigenlijke loginmodule
 from pinger import ping                 ## Checken of we op KUL-net zitten
 
+version = "1.3.0-dev"
 
 def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
     if actie == "inloggen":
@@ -183,6 +184,8 @@ def argumentenParser():
     help="Hides all output",\
     action="store_const", dest="communicator", const="quiet")
     
+    parser.add_argument("-v", "--version", action="version", version=version)
+        
     argumenten = parser.parse_args()
     #print argumenten.__dict__
     
