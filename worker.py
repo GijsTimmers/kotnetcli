@@ -110,12 +110,12 @@ class Kotnetlogin():
             ## downloadpercentage parsen
             p = re.compile("\d+")
             m = p.findall(comments[6])
-            self.downloadpercentage = int(float(m[0]) / float(m[1]) * 100)
+            self.downloadpercentage = int(round(float(m[0]) / float(m[1]) * 100, 0))
             
             ## uploadpercentage parsen
             p = re.compile("\d+")
             m = p.findall(comments[7])
-            self.uploadpercentage = int(float(m[0]) / float(m[1]) * 100)
+            self.uploadpercentage = int(round(float(m[0]) / float(m[1]) * 100, 0))
             
             
             self.co.eventTegoedenBekend(self.downloadpercentage, \
