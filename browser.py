@@ -24,6 +24,8 @@ import socket                           ## Voor ophalen IP
 import sys                              ## Basislib
 import os                               ## Basislib
 
+from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
+
 ## The class doing the actual browser emulation work. One can extend this
 ##  class to add specific behavior (e.g. communicating; err catching; etc)
 class KotnetBrowser():

@@ -25,8 +25,6 @@ import os                               ## Basislib
 
 import browser
 
-from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
-
 EXIT_FAILURE = 1
 
 class SuperWorker():
