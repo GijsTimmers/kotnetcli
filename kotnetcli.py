@@ -202,7 +202,7 @@ def aanstuurderObvArgumenten(argumenten):
     ############## 3. switch on login-type flags ##############
     if argumenten.worker == "login":
         print "ik wil inloggen"
-        worker.Kotnetlogin(co, gebruikersnaam, wachtwoord).run()
+        worker.Kotnetlogin(co, gebruikersnaam, wachtwoord).go()
 
     elif argumenten.worker == "force_login":
         print "ik moet en zal inloggen"
@@ -210,15 +210,15 @@ def aanstuurderObvArgumenten(argumenten):
 
     elif argumenten.worker == "logout":
         print "ik wil uitloggen"
-        worker.Dummylogout(co, gebruikersnaam, wachtwoord).run()
+        worker.Kotnetloguit(co, gebruikersnaam, wachtwoord).go()
 
     elif argumenten.worker == "dummy_login":
         print "ik wil inloggen voor spek en bonen"
-        worker.Dummylogin(co, gebruikersnaam, wachtwoord).run()
+        worker.Dummylogin(co, gebruikersnaam, wachtwoord).go()
 
     elif argumenten.worker == "dummy_logout":
         print "ik wil uitloggen voor spek en bonen"
-        worker.Dummylogout(co, gebruikersnaam, wachtwoord).run()
+        worker.Dummylogout(co, gebruikersnaam, wachtwoord).go()
 
 ## parse cmd line arguments and act accordingly
 aanstuurderObvArgumenten(argumentenParser())
