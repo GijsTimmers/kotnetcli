@@ -166,3 +166,36 @@ class Dummylogout(Kotnetloguit):
     def __init__(self, co, gebruikersnaam, wachtwoord):
         Kotnetloguit.__init__(self, co, gebruikersnaam, wachtwoord)
         self.browser = browser.DummyBrowser(gebruikersnaam, wachtwoord);
+
+class KotnetForceer(Kotnetlogin):
+
+    def __init__(self, co, gebruikersnaam, wachtwoord):
+        self.my_super_kl = Kotnetlogin.__init__(self, co, gebruikersnaam, wachtwoord)
+
+    def go(self):
+        ## IP van uit te loggen apparaat opzoeken
+        self.netlogin()
+        self.kuleuven()
+        self.gegevensinvoeren()
+        self.gegevensopsturen()
+        self.browser.parse_percentages()
+        uitteloggenip = self.browser.uitteloggenipophalen()
+        print uitteloggenip    #TODO communicator
+
+        ## Ander apparaat uitloggen
+        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
+        kl.go()
+
+        ## Conventionele login
+        self.my_super_kl.go()
+
+'''
+    def tegoeden(self):
+        tup = self.browser.parse_percentages()
+
+        ## check whether it worked out
+        if (len(tup) == 1):
+            print tup[0]
+        else:
+            self.co.eventTegoedenBekend(tup[0], tup[1])
+'''

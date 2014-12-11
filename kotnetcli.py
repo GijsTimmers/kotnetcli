@@ -207,6 +207,7 @@ def aanstuurderObvArgumenten(argumenten):
     elif argumenten.worker == "force_login":
         print "ik moet en zal inloggen"
         #mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
+        worker.KotnetForceer(co, gebruikernaam, wachtwoord)
 
     elif argumenten.worker == "logout":
         print "ik wil uitloggen"
