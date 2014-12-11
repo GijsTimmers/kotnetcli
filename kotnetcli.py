@@ -99,7 +99,7 @@ def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
 
 ## An argument parse action that prints license information
 ##  on stdout and exits
-class PrintVersionAction(argparse.Action):
+class PrintLicenceAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         print "This work is licensed under the Creative Commons"
         print "Attribution-ShareAlike 4.0 International License. To  view a copy of"
@@ -115,7 +115,7 @@ def argumentenParser():
     te loggen op KotNet")
 
     parser.add_argument("-v", "--version", action="version", version=version)
-    parser.add_argument("-l", "--license", action=PrintVersionAction, nargs=0)
+    parser.add_argument("-l", "--license", action=PrintLicenceAction, nargs=0)
 
     ## We create three different groups, whose arguments can't be mixed (using
     ## the add_mutually_exclusive_group() option. If you enter non-combinable
