@@ -50,7 +50,7 @@ class SuperWorker():
     def gegevensinvoeren(self):
         self.co.eventInvoerenStart()
         try:
-            Superworker.gegevensinvoeren(self)
+            self.browser.input_credentials()
             self.co.eventInvoerenSuccess()
         except:
             self.co.eventInvoerenFailure()
@@ -107,8 +107,10 @@ class Dummylogin(Kotnetlogin):
 
 ## A worker class that either succesfull logs you off from kotnet
 ##  or exits with failure, reporting events to the given communicator
-class Kotnetloguit():
+class Kotnetloguit(SuperWorker):
     def __init__(self, co, gebruikersnaam, wachtwoord, uitteloggenip=None):
+        self.gebruikersnaam = gebruikersnaam
+        self.wachtwoord = wachtwoord
         self.browser = browser.KotnetBrowser(gebruikersnaam, wachtwoord)
         self.co = co
 
@@ -154,8 +156,7 @@ class Kotnetloguit():
             sys.exit(EXIT_FAILURE)
 
     def tegoeden(self):
-        rv = self.browser.parse_logout()
-        if (rv):
+        if (self.browser.parse_logout()):
             print "success!"
         else:
             print "outch!"
@@ -163,5 +164,5 @@ class Kotnetloguit():
 
 class Dummylogout(Kotnetloguit):
     def __init__(self, co, gebruikersnaam, wachtwoord):
-        self.co = co
+        Kotnetloguit.__init__(self, co, gebruikersnaam, wachtwoord)
         self.browser = browser.DummyBrowser(gebruikersnaam, wachtwoord);

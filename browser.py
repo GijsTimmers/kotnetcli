@@ -141,12 +141,12 @@ class KotnetBrowser():
 
         if rccode == 100:
             ## succesvolle logout
-            return true
+            return True
 
         elif rccode == 207:
             ## al uitgelogd
             print "U had uzelf reeds succesvol uitgelogd."
-            return false
+            return False
         else:
             print html
 
@@ -180,4 +180,4 @@ class DummyBrowser():
 
     ## returns true iff succes; else false
     def parse_logout(self):
-        return true
+        return True
