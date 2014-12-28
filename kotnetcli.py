@@ -78,6 +78,9 @@ def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
     kl.gegevensinvoeren()
     kl.gegevensopsturen()
     if kl.tegoeden() == False:
+        ## --force-login gaat alleen verder als de gebruiker nog niet is in-
+        ## gelogd op dit IP-adres; dan neemt kl.tegoeden namelijk de waarde
+        ## False aan.
         uitteloggenip = kl.uitteloggenipophalen()
         print uitteloggenip
     
