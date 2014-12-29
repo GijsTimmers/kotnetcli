@@ -19,16 +19,35 @@ import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
+import platform
 
-#import colorama
-"""
-from colorama import (                  ## Om de tekst kleur te geven
-    Fore,                               ## 
-    Style,                              ## 
-    init as colorama_init)              ## 
-"""
+if os.name == "nt":
+    try:            
+        from colorama import (              ## Voor gekleurde tekst.
+            Fore,
+            Style,
+            init
+            )
+    except ImportError:
+        print "Couldn't import the colorama library."
+        pass
 
-if os.name == "posix":
+
+if os.name == "posix" and platform.system() == "Darwin": ## Is een Mac
+    try:            
+        from colorama import (              ## Voor gekleurde tekst.
+            Fore,
+            Style,
+            init
+            )
+    except ImportError:
+        print "Couldn't import the colorama library."
+        pass
+
+
+if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
+    print "Import Linux stuff"
+
     try:            
         import curses                       ## Voor tekenen op scherm.
     except ImportError:
@@ -44,8 +63,17 @@ if os.name == "posix":
     except ImportError:
         print "Couldn't import the dialog library."
         pass
-if os.name == "nt":
-    print "Windows system detected. Will not import curses, notify and dialog"
+    
+    try:            
+        from colorama import (              ## Voor gekleurde tekst.
+            Fore,
+            Style,
+            init
+            )
+    except ImportError:
+        print "Couldn't import the colorama library."
+        pass
+
 
 class QuietCommunicator():
     def __init__(self):
@@ -87,6 +115,10 @@ class QuietCommunicator():
         pass
         
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+        pass
+    
+    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
+        ## This method will post a summary of what happened, and if it went OK.
         pass
     
     def beeindig_sessie(self, error_code=0):
@@ -181,6 +213,11 @@ class DialogCommunicator(QuietCommunicator):
         self.upload = -uploadpercentage
         self.overal = 100
         self.update()
+    
+    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
+        ## Jo Van Buclk: please take a look if we need this here. If not:
+        ## please remove.
+        pass
         
     def beeindig_sessie(self, error_code=0):
         print "" # print newline to clean prompt under dialog
@@ -190,10 +227,24 @@ class SummaryCommunicator(QuietCommunicator):
         print "Niet verbonden met het KU Leuven-netwerk."
     def eventPingAlreadyOnline(self):
         print "U bent al online."
+    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
+        if uitgevoerde_procedure == "login":
+            print "Inloggen: ",
+        elif uitgevoerde_procedure == "loguit":
+            print "Uitloggen: ",
+        elif uitgevoerde_procedure == "forceer_login":
+            print "Geforceerd inloggen: ",
+            
+        if success == True:
+            print "gelukt"
+        elif success == False:
+            print "mislukt"
     
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         print "Download: " + str(downloadpercentage) + "%" + ",",
         print "Upload: " + str(uploadpercentage) + "%"        
+    
+    
 
 class PlaintextCommunicator(QuietCommunicator):
     def __init__(self):
@@ -311,6 +362,21 @@ class PlaintextCommunicator(QuietCommunicator):
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
     
+    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
+        if uitgevoerde_procedure == "login":
+            print "Inloggen............. ",
+        elif uitgevoerde_procedure == "loguit":
+            print "Uitloggen............. ",
+        elif uitgevoerde_procedure == "forceer_login":
+            print "Geforceerd inloggen... ",
+            
+        if success == True:
+            print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
+            Fore.RESET + "]" + Style.RESET_ALL
+        elif success == False:
+            print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
+            Fore.RESET + "]" + Style.RESET_ALL
+    
     def beeindig_sessie(self, error_code=0):
         if os.name == "posix":
             ## re-display the terminal cursor using ANSI escape codes
@@ -335,138 +401,7 @@ class ColoramaCommunicator(PlaintextCommunicator):
             ## Hide the terminal cursor using ANSI escape codes
             sys.stdout.write("\033[?25l")
             sys.stdout.flush()
-"""
-class ColoramaCommunicator(QuietCommunicator):
-    def __init__(self):
-        colorama_init()
-        if os.name == "posix":
-            ## Hide the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25l")
-            sys.stdout.flush()
-    
-    def eventPingFailure(self):
-        print Style.BRIGHT + Fore.RED + \
-        "Niet verbonden met het KU Leuven-netwerk." + \
-        Style.RESET_ALL + Fore.RESET
-    def eventPingAlreadyOnline(self):
-        print Style.BRIGHT + Fore.YELLOW + \
-        "U bent al online." + \
-        Fore.RESET + Style.RESET_ALL
-    
-    def eventNetloginStart(self):
-        print "Netlogin openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
-    def eventNetloginSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    def eventNetloginFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
-        
-    def eventKuleuvenStart(self):
-        print "KU Leuven kiezen...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
-    def eventKuleuvenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    def eventKuleuvenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
 
-    def eventInvoerenStart(self):
-        print "Gegevens invoeren..... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
-    def eventInvoerenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    def eventInvoerenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
-
-    def eventOpsturenStart(self):
-        print "Gegevens opsturen..... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
-    def eventOpsturenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    def eventOpsturenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
-        print "Download:  " + Style.BRIGHT + "[          ][    ]" + \
-        Style.RESET_ALL + "\r",
-        
-        balkgetal_download = int(round(float(downloadpercentage) / 10.0))
-        
-        if downloadpercentage <= 10:
-            voorwaardelijke_kleur_download = \
-            Fore.RED
-        elif 10 < downloadpercentage < 60:
-            voorwaardelijke_kleur_download = \
-            Fore.YELLOW
-        else:
-            voorwaardelijke_kleur_download = \
-            Fore.GREEN
-        
-        print "Download:  " + \
-        Style.BRIGHT + "[" + voorwaardelijke_kleur_download + \
-        "=" * balkgetal_download + Fore.RESET + \
-        " " * (10-balkgetal_download) + \
-        "]" + \
-        "[" + \
-        " " * (3 - len(str(downloadpercentage))) + \
-        voorwaardelijke_kleur_download + str(downloadpercentage) + \
-        "%" + Fore.RESET + \
-        "]" + Style.RESET_ALL
-        
-        print "Upload:    " + Style.BRIGHT + "[          ][    ]" + \
-        Style.RESET_ALL + "\r",
-        
-        balkgetal_upload = int(round(float(uploadpercentage) / 10.0))
-            
-        if uploadpercentage <= 10:
-            voorwaardelijke_kleur_upload = \
-            Fore.RED
-        elif 10 < uploadpercentage < 60:
-            voorwaardelijke_kleur_upload = \
-            Fore.YELLOW
-        else:
-            voorwaardelijke_kleur_upload = \
-            Fore.GREEN
-        
-        print "Upload:    " +  \
-        Style.BRIGHT + "[" + voorwaardelijke_kleur_upload + \
-        "=" * balkgetal_upload + Fore.RESET + \
-        " " * (10-balkgetal_upload) + \
-        "]" + \
-        "[" + \
-        " " * (3 - len(str(uploadpercentage))) + \
-        voorwaardelijke_kleur_upload + str(uploadpercentage) + \
-        "%" + Fore.RESET + \
-        "]" + Style.RESET_ALL
-    
-    def beeindig_sessie(self, error_code=0):
-        if os.name == "posix":
-            ## re-display the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25h")
-            sys.stdout.flush()
-        else:
-            time.sleep(3)            
-
-
-class PlaintextCommunicator(ColoramaCommunicator):
-    def __init__(self):
-        Style.BRIGHT = ""
-        Style.RESET = ""
-        Fore.GREEN = ""
-        Fore.YELLOW = ""
-        Fore.RED = ""
-"""
 class CursesCommunicator():
     def __init__(self):
         self.scherm = curses.initscr()

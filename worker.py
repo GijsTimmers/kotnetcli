@@ -120,12 +120,14 @@ class Kotnetlogin():
             
             self.co.eventTegoedenBekend(self.downloadpercentage, \
             self.uploadpercentage)
-
+            
+            self.co.eventSamenvattingGeven("login", True)
             self.co.beeindig_sessie()
             return(True)
             
         elif rccode == 202:
             ## verkeerd wachtwoord
+            self.co.eventSamenvattingGeven("login", False)
             print "Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
             "--forget om deze te resetten."
             self.co.beeindig_sessie()
@@ -133,12 +135,15 @@ class Kotnetlogin():
         
         elif rccode == 206:
             ## al ingelogd op ander IP
+            self.co.eventSamenvattingGeven("login", False)
             print "U bent al ingelogd op een ander IP-adres. Gebruik " + \
             "kotnetcli --force-login om u toch in te loggen." 
+            
             self.co.beeindig_sessie()
             return(False)
         
         else:
+            self.co.eventSamenvattingGeven("login", False)
             self.co.beeindig_sessie()
             print html
             print "\nrc-code onbekend. Stuur bovenstaande informatie naar"
@@ -259,12 +264,15 @@ class Kotnetloguit():
             
         if rccode == 100:
             ## succesvolle logout
-            pass
+            self.co.eventSamenvattingGeven("loguit", True)
             
         elif rccode == 207:
             ## al uitgelogd
             print "U had uzelf reeds succesvol uitgelogd."
+            self.co.eventSamenvattingGeven("loguit", True)
+            
         else:
+            self.co.eventSamenvattingGeven("loguit", False)
             print html
         
         #print self.afsluiten
@@ -327,6 +335,7 @@ class Dummylogin():
         self.co.eventTegoedenBekend(self.downloadpercentage, \
         self.uploadpercentage)
         
+        self.co.eventSamenvattingGeven("login", True)
         self.co.beeindig_sessie()
 
 class Dummyloguit():
@@ -395,4 +404,5 @@ class Dummyloguit():
             sys.exit(1)
     
     def tegoeden(self):
+        self.co.eventSamenvattingGeven("loguit", True)
         self.co.beeindig_sessie()

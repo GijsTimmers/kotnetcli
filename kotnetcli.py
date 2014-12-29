@@ -292,4 +292,6 @@ def aanstuurderObvArgumenten(argumenten):
         print "ik wil uitloggen voor spek en bonen"
         mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
 
+
+
 aanstuurderObvArgumenten(argumentenParser())
