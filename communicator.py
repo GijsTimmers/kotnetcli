@@ -22,7 +22,6 @@ import os                               ## Basislib
 import platform
 import cursor
 
-
 if os.name == "nt":
     try:            
         from colorama import (              ## Voor gekleurde tekst.
@@ -76,12 +75,9 @@ if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
         print "Couldn't import the colorama library."
         pass
 
-
 class QuietCommunicator():
     def __init__(self, uit_te_voeren_procedure):
-        self.uit_te_voeren_procedure = uit_te_voeren_procedure
-        ## De 'self' is hier nutteloos, maar bij de erfgenamen (o.a. summary)
-        ## wel. Daarom hier vast noemen.
+        pass
     
     def eventPingSuccess(self):
         pass
@@ -124,15 +120,68 @@ class QuietCommunicator():
     def beeindig_sessie(self, error_code=0):
         pass
 
-class BubbleCommunicator(QuietCommunicator):
-    def __init__(self, uit_te_voeren_procedure):
+## Abstract super class (not intended to directly create), encapsulating 
+## things common to a Login- and LogoutSummaryCommunicator
+class SuperSummaryCommunicator(QuietCommunicator):
+    def eventPingFailure(self):
+        print "Niet verbonden met het KU Leuven-netwerk."
+    def eventPingAlreadyOnline(self):
+        print "U bent al online."
+
+class LoginSummaryCommunicator(SuperSummaryCommunicator):
+
+    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+        print "Download: " + str(downloadpercentage) + "%" + ",",
+        print "Upload: " + str(uploadpercentage) + "%"
+
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            print "login succesvol."
+        else:
+            print "login mislukt."
+            sys.exit(error_code)
+
+class LogoutSummaryCommunicator(SuperSummaryCommunicator):
+
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            print "logout succesvol."
+        else:
+            print "logout mislukt."
+
+
+class SuperBubbleCommunicator(QuietCommunicator):
+    def __init__(self):
         notify2.init("kotnetcli")
+
+class LoginBubbleCommunicator(SuperBubbleCommunicator):
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         n = notify2.Notification("kotnetcli", \
         "Download: %s%%, Upload: %s%%" % \
         (downloadpercentage, uploadpercentage), \
         "notification-network-ethernet-connected")
         n.show()
+    
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            pass
+        else:
+            n = notify2.Notification("kotnetcli", \
+            "Login mislukt. Errorcode: %s" % \
+            (error_code), \
+            "notification-network-ethernet-disconnected")
+            n.show()
+
+class LogoutBubbleCommunicator(SuperBubbleCommunicator):
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            pass
+        else:
+            n = notify2.Notification("kotnetcli", \
+            "Logout mislukt. Errorcode: %s" % \
+            (error_code), \
+            "notification-network-ethernet-connected")
+            n.show()
 
 class DialogCommunicator(QuietCommunicator):
     def __init__(self, uit_te_voeren_procedure):
@@ -217,36 +266,6 @@ class DialogCommunicator(QuietCommunicator):
     def beeindig_sessie(self, uitgevoerde_procedure=None, error_code=0):
         print "" # print newline to clean prompt under dialog
 
-class SummaryCommunicator(QuietCommunicator):
-    def eventPingFailure(self):
-        print "Niet verbonden met het KU Leuven-netwerk."
-    def eventPingAlreadyOnline(self):
-        print "U bent al online."
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        if uitgevoerde_procedure == "login":
-            print "Inloggen: ",
-        elif uitgevoerde_procedure == "loguit":
-            print "Uitloggen: ",
-        elif uitgevoerde_procedure == "forceer_login":
-            print "Geforceerd inloggen: ",
-            
-        if success == True:
-            print "gelukt"
-        elif success == False:
-            print "mislukt"
-    
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
-        print "Download: " + str(downloadpercentage) + "%" + ",",
-        print "Upload: " + str(uploadpercentage) + "%"
-    
-    def beeindig_sessie(self, error_code=0):
-        print self.uit_te_voeren_procedure,
-        if error_code == 0:
-            print "succesvol."
-        
-        elif error_code != 0:
-            print uitgevoerde_procedure,
-            print "mislukt."
     
 class PlaintextCommunicator(QuietCommunicator):
     def __init__(self, uit_te_voeren_procedure):
@@ -542,3 +561,16 @@ class CursesCommunicator():
         curses.echo()
         curses.endwin()
         
+## The abstract factory specifying the interface and maybe returning 
+## some defaults (or just passing)
+class SuperCommunicatorFabriek:
+   def createSummaryCommunicator():
+     pass
+
+class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
+    def createSummaryCommunicator():
+        LoginSummaryCommunicator()
+
+class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
+    def createSummaryCommunicator():
+        LogoutSummaryCommunicator()
