@@ -20,6 +20,8 @@ import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
 import platform
+import cursor
+
 
 if os.name == "nt":
     try:            
@@ -257,15 +259,7 @@ class PlaintextCommunicator(QuietCommunicator):
         
         self.uit_te_voeren_procedure = uit_te_voeren_procedure
         
-        if os.name == "posix":
-            ## Hide the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25l")
-            sys.stdout.flush()
-        
-        if os.name == "nt":
-            ## Cursor verbergen op de lelijke Windows-manier
-            pass
-        
+        cursor.hide()        
         
     
     def eventPingFailure(self):
@@ -390,14 +384,7 @@ class PlaintextCommunicator(QuietCommunicator):
             print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
             Fore.RESET + "]" + Style.RESET_ALL
     
-        if os.name == "posix":
-            ## re-display the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25h")
-            sys.stdout.flush()
-        
-        if os.name == "nt":
-            ## Cursor weer laten zien onder Windows
-            pass
+        cursor.show()
         
         else:
             time.sleep(3)      
