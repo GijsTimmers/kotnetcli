@@ -76,8 +76,10 @@ if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
 
 
 class QuietCommunicator():
-    def __init__(self):
-        pass
+    def __init__(self, uit_te_voeren_procedure):
+        self.uit_te_voeren_procedure = uit_te_voeren_procedure
+        ## De 'self' is hier nutteloos, maar bij de erfgenamen (o.a. summary)
+        ## wel. Daarom hier vast noemen.
     
     def eventPingSuccess(self):
         pass
@@ -117,15 +119,11 @@ class QuietCommunicator():
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         pass
     
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        ## This method will post a summary of what happened, and if it went OK.
-        pass
-    
     def beeindig_sessie(self, error_code=0):
         pass
 
 class BubbleCommunicator(QuietCommunicator):
-    def __init__(self):
+    def __init__(self, uit_te_voeren_procedure):
         notify2.init("kotnetcli")
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         n = notify2.Notification("kotnetcli", \
@@ -135,7 +133,7 @@ class BubbleCommunicator(QuietCommunicator):
         n.show()
 
 class DialogCommunicator(QuietCommunicator):
-    def __init__(self):
+    def __init__(self, uit_te_voeren_procedure):
         
         # some constant definitions to avoid using magic numbers
         # for the DialogCommunicator mixedgauge dialog
@@ -213,13 +211,8 @@ class DialogCommunicator(QuietCommunicator):
         self.upload = -uploadpercentage
         self.overal = 100
         self.update()
-    
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        ## Jo Van Buclk: please take a look if we need this here. If not:
-        ## please remove.
-        pass
         
-    def beeindig_sessie(self, error_code=0):
+    def beeindig_sessie(self, uitgevoerde_procedure=None, error_code=0):
         print "" # print newline to clean prompt under dialog
 
 class SummaryCommunicator(QuietCommunicator):
@@ -242,18 +235,38 @@ class SummaryCommunicator(QuietCommunicator):
     
     def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
         print "Download: " + str(downloadpercentage) + "%" + ",",
-        print "Upload: " + str(uploadpercentage) + "%"        
+        print "Upload: " + str(uploadpercentage) + "%"
     
+    def beeindig_sessie(self, error_code=0):
+        print self.uit_te_voeren_procedure,
+        if error_code == 0:
+            print "succesvol."
+        
+        elif error_code != 0:
+            print uitgevoerde_procedure,
+            print "mislukt."
     
-
 class PlaintextCommunicator(QuietCommunicator):
-    def __init__(self):
+    def __init__(self, uit_te_voeren_procedure):
         Style.BRIGHT = ""
         Style.RESET_ALL = ""
         Fore.GREEN = ""
         Fore.YELLOW = ""
         Fore.RED = ""
         Fore.RESET = ""
+        
+        self.uit_te_voeren_procedure = uit_te_voeren_procedure
+        
+        if os.name == "posix":
+            ## Hide the terminal cursor using ANSI escape codes
+            sys.stdout.write("\033[?25l")
+            sys.stdout.flush()
+        
+        if os.name == "nt":
+            ## Cursor verbergen op de lelijke Windows-manier
+            pass
+        
+        
     
     def eventPingFailure(self):
         print Style.BRIGHT + Fore.RED + \
@@ -361,27 +374,31 @@ class PlaintextCommunicator(QuietCommunicator):
         voorwaardelijke_kleur_upload + str(uploadpercentage) + \
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
-    
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        if uitgevoerde_procedure == "login":
+        
+    def beeindig_sessie(self, error_code=0):
+        if uit_te_voeren_procedure == "login":
             print "Inloggen............. ",
-        elif uitgevoerde_procedure == "loguit":
+        elif uit_te_voeren_procedure == "loguit":
             print "Uitloggen............. ",
-        elif uitgevoerde_procedure == "forceer_login":
+        elif uit_te_voeren_procedure == "forceer_login":
             print "Geforceerd inloggen... ",
             
-        if success == True:
-            print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
+        if error_code == 0:
+            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
             Fore.RESET + "]" + Style.RESET_ALL
-        elif success == False:
+        elif error_code != 0:
             print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
             Fore.RESET + "]" + Style.RESET_ALL
     
-    def beeindig_sessie(self, error_code=0):
         if os.name == "posix":
             ## re-display the terminal cursor using ANSI escape codes
             sys.stdout.write("\033[?25h")
             sys.stdout.flush()
+        
+        if os.name == "nt":
+            ## Cursor weer laten zien onder Windows
+            pass
+        
         else:
             time.sleep(3)      
 
@@ -392,19 +409,12 @@ class ColoramaCommunicator(PlaintextCommunicator):
             Style,                              ## 
             init as colorama_init)              ## 
         colorama_init()
-        #Style.BRIGHT = ""
-        #Style.RESET = ""
-        #Fore.GREEN = ""
-        #Fore.YELLOW = ""
-        #Fore.RED = ""
-        if os.name == "posix":
-            ## Hide the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25l")
-            sys.stdout.flush()
+        
 
 class CursesCommunicator():
-    def __init__(self):
+    def __init__(self, uit_te_voeren_procedure):
         self.scherm = curses.initscr()
+        
         
         curses.curs_set(0)                  ## cursor invisible
         curses.start_color()                ## Kleuren aanmaken
@@ -435,6 +445,14 @@ class CursesCommunicator():
         self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
         self.scherm.addstr(5, 0, "Upload:")
         self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
+        
+
+        if uit_te_voeren_procedure == "login":
+            self.scherm.addstr(6, 0, "Inloggen..............")
+        elif uit_te_voeren_procedure == "loguit":
+            self.scherm.addstr(6, 0, "Uitloggen.............")
+        elif uit_te_voeren_procedure == "forceer_login":
+            self.scherm.addstr(6, 0, "Geforceerd inloggen...")
         
         self.scherm.refresh()
     
@@ -525,6 +543,11 @@ class CursesCommunicator():
         " " * (10-balkgetal_upload), voorwaardelijke_kleur_upload)
         
     def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            self.kprint(6, 23, "DONE", self.tekstKleurGroenOpmaakVet)
+        elif error_code != 0:
+            self.kprint(6, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
         time.sleep(2)
         
         curses.nocbreak()
