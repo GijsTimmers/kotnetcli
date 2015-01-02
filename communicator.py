@@ -116,6 +116,8 @@ class QuietCommunicator():
         
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         pass
+    def eventLogoutGeslaagd(self):
+        pass
     
     def beeindig_sessie(self, error_code=0):
         pass
@@ -130,22 +132,27 @@ class SuperSummaryCommunicator(QuietCommunicator):
 
 class LoginSummaryCommunicator(SuperSummaryCommunicator):
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
+        print "Login geslaagd."
         print "Download: " + str(downloadpercentage) + "%" + ",",
         print "Upload: " + str(uploadpercentage) + "%"
 
     def beeindig_sessie(self, error_code=0):
         if error_code == 0:
-            print "login succesvol."
+            pass
         else:
-            print "login mislukt."
-            sys.exit(error_code)
+            print "Login mislukt."
+        sys.exit(error_code)
 
 class LogoutSummaryCommunicator(SuperSummaryCommunicator):
+    def eventLogoutGeslaagd(self):
+        print "Logout geslaagd."
+        
     def beeindig_sessie(self, error_code=0):
         if error_code == 0:
-            print "logout succesvol."
+            pass
         else:
-            print "logout mislukt."
+            print "Logout mislukt."
+        sys.exit(error_code)
 
 
 class SuperBubbleCommunicator(QuietCommunicator):
@@ -154,7 +161,7 @@ class SuperBubbleCommunicator(QuietCommunicator):
 
 class LoginBubbleCommunicator(SuperBubbleCommunicator):
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        n = notify2.Notification("kotnetcli", \
+        n = notify2.Notification("Login geslaagd", \
         "Download: %s%%, Upload: %s%%" % \
         (downloadpercentage, uploadpercentage), \
         "notification-network-ethernet-connected")
@@ -164,24 +171,33 @@ class LoginBubbleCommunicator(SuperBubbleCommunicator):
         if error_code == 0:
             pass
         else:
-            n = notify2.Notification("kotnetcli", \
-            "Login mislukt. Errorcode: %s" % \
+            n = notify2.Notification("Login mislukt", \
+            "Errorcode: %s" % \
             (error_code), \
             "notification-network-ethernet-disconnected")
             n.show()
+        sys.exit(error_code)
 
 class LogoutBubbleCommunicator(SuperBubbleCommunicator):
+    def eventLogoutGeslaagd(self):
+        n = notify2.Notification("Logout geslaagd", "", \
+        "notification-network-ethernet-connected")
+        n.show()
+        
     def beeindig_sessie(self, error_code=0):
         if error_code == 0:
             pass
         else:
-            n = notify2.Notification("kotnetcli", \
-            "Logout mislukt. Errorcode: %s" % \
-            (error_code), \
-            "notification-network-ethernet-connected")
+            n = notify2.Notification("Logout mislukt", \
+            "Errorcode: %s" % (error_code), \
+            "notification-network-ethernet-disconnected")
             n.show()
+        sys.exit(error_code)
 
 class DialogCommunicator(QuietCommunicator):
+    ## @Jo: please update this class to the factory model 
+    ## when you've got some time on your hands
+    
     def __init__(self, uit_te_voeren_procedure):
         
         # some constant definitions to avoid using magic numbers
@@ -288,7 +304,9 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
-        print "Netlogin openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
+        print "           Inloggen           "
+        print "------------------------------"
+        print "Netlogin openen........ " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
     def eventNetloginSuccess(self):
@@ -299,7 +317,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         Fore.RESET + "]" + Style.RESET_ALL
         
     def eventKuleuvenStart(self):
-        print "KU Leuven kiezen...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
+        print "KU Leuven kiezen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
     def eventKuleuvenSuccess(self):
@@ -310,7 +328,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         Fore.RESET + "]" + Style.RESET_ALL
 
     def eventInvoerenStart(self):
-        print "Gegevens invoeren..... " + Style.BRIGHT + "[" + Fore.YELLOW + \
+        print "Gegevens invoeren...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
     def eventInvoerenSuccess(self):
@@ -321,7 +339,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         Fore.RESET + "]" + Style.RESET_ALL
 
     def eventOpsturenStart(self):
-        print "Gegevens opsturen..... " + Style.BRIGHT + "[" + Fore.YELLOW + \
+        print "Gegevens opsturen...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
     def eventOpsturenSuccess(self):
@@ -332,7 +350,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         Fore.RESET + "]" + Style.RESET_ALL
     
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        print "Download:  " + Style.BRIGHT + "[          ][    ]" + \
+        print "Download:   " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
         
         balkgetal_download = int(round(float(downloadpercentage) / 10.0))
@@ -347,7 +365,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
             voorwaardelijke_kleur_download = \
             Fore.GREEN
         
-        print "Download:  " + \
+        print "Download:   " + \
         Style.BRIGHT + "[" + voorwaardelijke_kleur_download + \
         "=" * balkgetal_download + Fore.RESET + \
         " " * (10-balkgetal_download) + \
@@ -358,7 +376,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
         
-        print "Upload:    " + Style.BRIGHT + "[          ][    ]" + \
+        print "Upload:     " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
         
         balkgetal_upload = int(round(float(uploadpercentage) / 10.0))
@@ -373,7 +391,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
             voorwaardelijke_kleur_upload = \
             Fore.GREEN
         
-        print "Upload:    " +  \
+        print "Upload:     " +  \
         Style.BRIGHT + "[" + voorwaardelijke_kleur_upload + \
         "=" * balkgetal_upload + Fore.RESET + \
         " " * (10-balkgetal_upload) + \
@@ -384,29 +402,58 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
         
+        print "Inloggen............... " + Style.BRIGHT + "[" + Fore.GREEN + \
+        "DONE" + Fore.RESET + "]" + Style.RESET_ALL
+        
     def beeindig_sessie(self, error_code=0):
-        print "Inloggen............. ",            
         if error_code == 0:
-            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
-            Fore.RESET + "]" + Style.RESET_ALL
+            print 
+        elif error_code != 0:
+            print "Inloggen............... " + Style.BRIGHT + "[" + Fore.RED + \
+            "FAIL" + Fore.RESET + "]" + Style.RESET_ALL
+        cursor.show()
+
+class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):
+    def eventNetloginStart(self):
+        print "          Uitloggen           "
+        print "------------------------------"
+        print "Formulier openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
+        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
+        sys.stdout.flush()
+    def eventNetloginSuccess(self):
+        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
+        Fore.RESET + "]" + Style.RESET_ALL
+    def eventNetloginFailure(self):
+        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
+        Fore.RESET + "]" + Style.RESET_ALL
+    
+    def eventLogoutGeslaagd(self):
+        print "Uitloggen.............. " + Style.BRIGHT + "[" + Fore.GREEN + \
+        "DONE" + Fore.RESET + "]" + Style.RESET_ALL
+    
+    def beeindig_sessie(self, error_code=0):
+        print "Uitloggen.............. ",
+        if error_code == 0:
+            pass
         elif error_code != 0:
             print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
             Fore.RESET + "]" + Style.RESET_ALL
         cursor.show()
 
-class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):     
-    def beeindig_sessie(self, error_code=0):
-        print "Uitloggen............. ",
-        if error_code == 0:
-            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
-            Fore.RESET + "]" + Style.RESET_ALL
-        elif error_code != 0:
-            print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-            Fore.RESET + "]" + Style.RESET_ALL
-        cursor.show()
-
-
-class SuperColoramaCommunicator(LoginPlaintextCommunicator):
+class SuperColoramaCommunicator(LoginPlaintextCommunicator, LogoutPlaintextCommunicator):
+    ## I changed the structure: it used to be:
+    ## SuperColoramaCommunicator(QuietCommunicator)
+    ## LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator)
+    ## 
+    ## This caused a quiet print. See: https://github.com/GijsTimmers/kotnetcli/issues/56.
+    ##
+    ## Solution:
+    ## Let the superclass inherit directly from LoginPlaintextCommunicator.
+    ##
+    ## Challenge:
+    ## Make sure that LoginColoramaCommunicator inherits LoginPlaintextCommunicator
+    ## and LogoutColoramaCommunicator inherits LogoutPlaintextCommunicator
+    
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
@@ -421,7 +468,6 @@ class LogoutColoramaCommunicator(SuperColoramaCommunicator):
     pass
 
 
-    
 class SuperCursesCommunicator(QuietCommunicator):
     def __init__(self):
         self.scherm = curses.initscr()

@@ -243,11 +243,12 @@ def aanstuurderObvArgumenten(argumenten):
 
     elif argumenten.communicator == "colortext":
         print "ik wil vrolijke kleuren"
-        co = communicator.ColoramaCommunicator()
+        #co = communicator.LoginColoramaCommunicator()
+        co = communicator.LogoutColoramaCommunicator()
 
     elif argumenten.communicator == "plaintext":
         print "ik wil terug naar de basis"
-        co = communicator.PlaintextCommunicator()
+        co = communicator.LoginPlaintextCommunicator()
 
     elif argumenten.communicator == "dialog":
         print "ik wil fancy dialogs"
