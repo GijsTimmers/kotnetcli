@@ -10,19 +10,20 @@
 ##                  https://creativecommons.org/licenses/by-sa/4.0/
 
 ## This work is licensed under the Creative Commons
-## Attribution-ShareAlike 4.0 International License. To view a copy of
+## Attribution-ShareAlike 4.0 International License. To view a copy of 
 ## this license, visit https://creativecommons.org/licenses/by-sa/4.0/ or
-## send a letter to Creative Commons, PO Box 1866, Mountain View,
+## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
 import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
-import platform
+import platform                         ## Om onderscheid Lin/Mac te maken
+import cursor                           ## Om cursor te verbergen/tonen
 
 if os.name == "nt":
-    try:
+    try:            
         from colorama import (              ## Voor gekleurde tekst.
             Fore,
             Style,
@@ -34,7 +35,7 @@ if os.name == "nt":
 
 
 if os.name == "posix" and platform.system() == "Darwin": ## Is een Mac
-    try:
+    try:            
         from colorama import (              ## Voor gekleurde tekst.
             Fore,
             Style,
@@ -48,23 +49,23 @@ if os.name == "posix" and platform.system() == "Darwin": ## Is een Mac
 if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
     print "Import Linux stuff"
 
-    try:
+    try:            
         import curses                       ## Voor tekenen op scherm.
     except ImportError:
         print "Couldn't import the curses library."
         pass
-    try:
+    try:            
         import notify2                      ## OS-specifieke notificaties
     except ImportError:
         print "Couldn't import the notify2 library."
         pass
-    try:
+    try:            
         from dialog import Dialog           ## Voor tekenen op scherm.
     except ImportError:
         print "Couldn't import the dialog library."
         pass
-
-    try:
+    
+    try:            
         from colorama import (              ## Voor gekleurde tekst.
             Fore,
             Style,
@@ -74,11 +75,12 @@ if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
         print "Couldn't import the colorama library."
         pass
 
-
 class QuietCommunicator():
+    ## jo: removed 'uit_te_voeren_procedure' argument, omdat procedure-specific
+    ## behavior in de klasse hierarchy komt te zitten
     def __init__(self):
         pass
-
+    
     def eventPingSuccess(self):
         pass
     def eventPingFailure(self):
@@ -92,7 +94,7 @@ class QuietCommunicator():
         pass
     def eventNetloginFailure(self):
         pass
-
+        
     def eventKuleuvenStart(self):
         pass
     def eventKuleuvenSuccess(self):
@@ -113,36 +115,83 @@ class QuietCommunicator():
         pass
     def eventOpsturenFailure(self):
         pass
-
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+        
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         pass
-
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        ## This method will post a summary of what happened, and if it went OK.
-        pass
-
+    
+    ## jo: moet 'error_code=0' hier niet vervangen worden door
+    ## gewoon 'error_code'? en ook in de child classes??
     def beeindig_sessie(self, error_code=0):
         pass
 
-class BubbleCommunicator(QuietCommunicator):
+## Abstract super class (not intended to directly create), encapsulating 
+## things common to a Login- and LogoutSummaryCommunicator
+class SuperSummaryCommunicator(QuietCommunicator):
+    def eventPingFailure(self):
+        print "Niet verbonden met het KU Leuven-netwerk."
+    def eventPingAlreadyOnline(self):
+        print "U bent al online."
+
+class LoginSummaryCommunicator(SuperSummaryCommunicator):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
+        print "Download: " + str(downloadpercentage) + "%" + ",",
+        print "Upload: " + str(uploadpercentage) + "%"
+
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            print "login succesvol."
+        else:
+            print "login mislukt."
+            sys.exit(error_code)
+
+class LogoutSummaryCommunicator(SuperSummaryCommunicator):
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            print "logout succesvol."
+        else:
+            print "logout mislukt."
+
+
+class SuperBubbleCommunicator(QuietCommunicator):
     def __init__(self):
         notify2.init("kotnetcli")
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
-        n = notify2.Notification("kotnetcli", \
-        "Download: %s%%, Upload: %s%%" % \
-        (downloadpercentage, uploadpercentage), \
-        "notification-network-ethernet-connected")
+
+    def createAndShowNotification(message, icon):
+        n = notify2.Notification("kotnetcli", message, icon)
         n.show()
 
-class DialogCommunicator(QuietCommunicator):
-    def __init__(self):
+class LoginBubbleCommunicator(SuperBubbleCommunicator):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
+        createAndShowNotification( "Download: %s%%, Upload: %s%%" % \
+        (downloadpercentage, uploadpercentage), \
+        "notification-network-ethernet-connected")
+    
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            pass
+        else:
+            createAndShowNotification( "Login mislukt. Errorcode: %s" % \
+            (error_code), "notification-network-ethernet-disconnected")
 
+class LogoutBubbleCommunicator(SuperBubbleCommunicator):
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            pass
+        else:
+            createAndShowNotification( "Logout mislukt. Errorcode: %s" % \
+            (error_code), "notification-network-ethernet-connected")
+
+## jo: ik zal deze communicator nog opslitsen in een
+## super en 2 subklassen als ik tijd heb...
+class DialogCommunicator(QuietCommunicator):
+    def __init__(self, uit_te_voeren_procedure):
+        
         # some constant definitions to avoid using magic numbers
         # for the DialogCommunicator mixedgauge dialog
         self.WAIT        = 7
         self.DONE        = 0
         self.FAIL        = 1
-
+        
         self.d = Dialog(dialog="dialog")
         self.d.set_background_title("kotnetcli")
         self.netlogin = self.WAIT
@@ -151,28 +200,27 @@ class DialogCommunicator(QuietCommunicator):
         self.opsturen = self.WAIT
         self.download = self.WAIT
         self.upload = self.WAIT
-        self.msg = ""
         self.overal = 0
         self.update()
-
+    
     def update(self):
-        self.d.mixedgauge(self.msg,
+        self.d.mixedgauge("",
             title="kotnetcli",
             percent= self.overal,
             elements= [ ("Netlogin openen", self.netlogin),
                         ("KU Leuven kiezen", self.kuleuven),
                         ("Gegevens invoeren", self.invoeren),
-                        ("Gegevens opsturen", self.opsturen),
+                        ("Gegevens opsturen", self.opsturen),                                   
                         ("", ""),
                         ("Download", self.download),
                         ("Upload", self.upload)
                       ])
-
+    
     def eventPingFailure(self):
         self.d.infobox("Niet verbonden met het KU Leuven-netwerk.", 5, 30)
     def eventPingAlreadyOnline(self):
         self.d.infobox("U bent al online.", 5, 30)
-
+    
     def eventNetloginSuccess(self):
         self.netlogin = self.DONE
         self.overal = 40
@@ -181,150 +229,113 @@ class DialogCommunicator(QuietCommunicator):
         self.netlogin = self.FAIL
         self.overal = 40
         self.update()
-
+    
     def eventKuleuvenSuccess(self):
         self.kuleuven = self.DONE
-        self.overal = 60
+        self.overal = 60        
         self.update()
     def eventKuleuvenFailure(self):
         self.kuleuven = self.FAIL
-        self.overal = 60
+        self.overal = 60        
         self.update()
-
+    
     def eventInvoerenSuccess(self):
         self.invoeren = self.DONE
         self.overal = 80
         self.update()
     def eventInvoerenFailure(self):
         self.invoeren = self.FAIL
-        self.overal = 80
+        self.overal = 80        
         self.update()
 
     def eventOpsturenSuccess(self):
-        self.opsturen = self.DONE
-        self.overal = 100
+        self.opsturen = self.DONE 
+        self.overal = 100        
         self.update()
     def eventOpsturenFailure(self):
         self.opsturen = self.FAIL
-        self.overal = 100
+        self.overal = 100        
         self.update()
-
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         self.download = -downloadpercentage
         self.upload = -uploadpercentage
         self.overal = 100
         self.update()
-
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        if uitgevoerde_procedure == "login":
-            self.msg = "Inloggen: "
-        elif uitgevoerde_procedure == "loguit":
-            self.msg = "Uitloggen: "
-        elif uitgevoerde_procedure == "forceer_login":
-            self.msg = "Geforceerd inloggen: "
-
-        if success:
-            self.msg += "gelukt"
-        else:
-            self.msg += "mislukt"
-        self.update()
-
-    def beeindig_sessie(self, error_code=0):
+        
+    def beeindig_sessie(self, uitgevoerde_procedure=None, error_code=0):
         print "" # print newline to clean prompt under dialog
 
-class SummaryCommunicator(QuietCommunicator):
-    def eventPingFailure(self):
-        print "Niet verbonden met het KU Leuven-netwerk."
-    def eventPingAlreadyOnline(self):
-        print "U bent al online."
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        if uitgevoerde_procedure == "login":
-            print "Inloggen: ",
-        elif uitgevoerde_procedure == "loguit":
-            print "Uitloggen: ",
-        elif uitgevoerde_procedure == "forceer_login":
-            print "Geforceerd inloggen: ",
 
-        if success == True:
-            print "gelukt"
-        elif success == False:
-            print "mislukt"
-
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
-        print "Download: " + str(downloadpercentage) + "%" + ",",
-        print "Upload: " + str(uploadpercentage) + "%"
-
-
-
-class PlaintextCommunicator(QuietCommunicator):
+class SuperPlaintextCommunicator(QuietCommunicator):
     def __init__(self):
-        Style.BRIGHT = ""
-        Style.RESET_ALL = ""
-        Fore.GREEN = ""
-        Fore.YELLOW = ""
-        Fore.RED = ""
-        Fore.RESET = ""
+        cursor.hide()
+
+    ## Encapsulates the printing of an error string on stderr
+    ## Override this method to change the appearance of the printed string.
+    def printerr(self, msg):
+        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR + msg + self.RESET_ALL)
+        sys.stderr.flush()
+
+    ## Encapsulates the printing of a "wait" event on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_wait(self, msg):
+        print msg + "[WAIT]" + "\b\b\b\b\b\b\b",
+        sys.stdout.flush()
+
+    ## Encapsulates the printing of a "succes" event on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_success(self):
+        print "[ OK ]"
+
+    ## Encapsulates the printing of a "fail" event on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_fail(self):
+        print "[ FAIL ]"
 
     def eventPingFailure(self):
-        print Style.BRIGHT + Fore.RED + \
-        "Niet verbonden met het KU Leuven-netwerk." + \
-        Style.RESET_ALL + Fore.RESET
-
+        self.printerr "Niet verbonden met het KU Leuven-netwerk."
+        
     def eventPingAlreadyOnline(self):
-        print Style.BRIGHT + Fore.YELLOW + \
-        "U bent al online." + \
-        Fore.RESET + Style.RESET_ALL
-
+        self.printerr "U bent al online."
+    
+class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
-        print "Netlogin openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
+        self.print_wait "Netlogin openen....... "
     def eventNetloginSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventNetloginFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
-
+        self.print_fail()
+        
     def eventKuleuvenStart(self):
-        print "KU Leuven kiezen...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
+        self.print_wait "KU Leuven kiezen...... "
     def eventKuleuvenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventKuleuvenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_fail()
 
     def eventInvoerenStart(self):
-        print "Gegevens invoeren..... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
+        self.print_wait "Gegevens invoeren..... "
     def eventInvoerenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventInvoerenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_fail()
 
     def eventOpsturenStart(self):
-        print "Gegevens opsturen..... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        sys.stdout.flush()
+        self.
     def eventOpsturenSuccess(self):
         print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
         Fore.RESET + "]" + Style.RESET_ALL
     def eventOpsturenFailure(self):
         print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
         Fore.RESET + "]" + Style.RESET_ALL
-
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         print "Download:  " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
-
+        
         balkgetal_download = int(round(float(downloadpercentage) / 10.0))
-
+        
         if downloadpercentage <= 10:
             voorwaardelijke_kleur_download = \
             Fore.RED
@@ -334,7 +345,7 @@ class PlaintextCommunicator(QuietCommunicator):
         else:
             voorwaardelijke_kleur_download = \
             Fore.GREEN
-
+        
         print "Download:  " + \
         Style.BRIGHT + "[" + voorwaardelijke_kleur_download + \
         "=" * balkgetal_download + Fore.RESET + \
@@ -345,12 +356,12 @@ class PlaintextCommunicator(QuietCommunicator):
         voorwaardelijke_kleur_download + str(downloadpercentage) + \
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
-
+        
         print "Upload:    " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
-
+        
         balkgetal_upload = int(round(float(uploadpercentage) / 10.0))
-
+            
         if uploadpercentage <= 10:
             voorwaardelijke_kleur_upload = \
             Fore.RED
@@ -360,7 +371,7 @@ class PlaintextCommunicator(QuietCommunicator):
         else:
             voorwaardelijke_kleur_upload = \
             Fore.GREEN
-
+        
         print "Upload:    " +  \
         Style.BRIGHT + "[" + voorwaardelijke_kleur_upload + \
         "=" * balkgetal_upload + Fore.RESET + \
@@ -371,51 +382,57 @@ class PlaintextCommunicator(QuietCommunicator):
         voorwaardelijke_kleur_upload + str(uploadpercentage) + \
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
-
-    def eventSamenvattingGeven(self, uitgevoerde_procedure, success=True):
-        if uitgevoerde_procedure == "login":
-            print "Inloggen............. ",
-        elif uitgevoerde_procedure == "loguit":
-            print "Uitloggen............. ",
-        elif uitgevoerde_procedure == "forceer_login":
-            print "Geforceerd inloggen... ",
-
-        if success == True:
-            print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
+        
+    def beeindig_sessie(self, error_code=0):
+        print "Inloggen............. ",            
+        if error_code == 0:
+            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
             Fore.RESET + "]" + Style.RESET_ALL
-        elif success == False:
+        elif error_code != 0:
             print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
             Fore.RESET + "]" + Style.RESET_ALL
+        cursor.show()
 
+class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):     
     def beeindig_sessie(self, error_code=0):
-        if os.name == "posix":
-            ## re-display the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25h")
-            sys.stdout.flush()
-        else:
-            time.sleep(3)
+        print "Uitloggen............. ",
+        if error_code == 0:
+            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
+            Fore.RESET + "]" + Style.RESET_ALL
+        elif error_code != 0:
+            print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
+            Fore.RESET + "]" + Style.RESET_ALL
+        cursor.show()
 
-class ColoramaCommunicator(PlaintextCommunicator):
+
+class ColoramaCommunicator(LoginPlaintextCommunicator):
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
-            Fore,                               ##
-            Style,                              ##
-            init as colorama_init)              ##
+            Fore,                               ## 
+            Style,                              ## 
+            init as colorama_init)              ## 
         colorama_init()
-        #Style.BRIGHT = ""
-        #Style.RESET = ""
-        #Fore.GREEN = ""
-        #Fore.YELLOW = ""
-        #Fore.RED = ""
-        if os.name == "posix":
-            ## Hide the terminal cursor using ANSI escape codes
-            sys.stdout.write("\033[?25l")
-            sys.stdout.flush()
 
-class CursesCommunicator():
+    ## This method encapsulates the printing of an error string Any subclass
+    ## can override this method to change the appearance of the printed string.
+    def printError(msg):
+    printMsg msg
+        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR + msg + self.RESET_ALL)
+
+
+class LoginColoramaCommunicator(SuperColoramaCommunicator):
+    pass
+
+class LogoutColoramaCommunicator(SuperColoramaCommunicator):
+    pass
+
+
+    
+class SuperCursesCommunicator(QuietCommunicator):
     def __init__(self):
         self.scherm = curses.initscr()
-
+        
+        
         curses.curs_set(0)                  ## cursor invisible
         curses.start_color()                ## Kleuren aanmaken
         curses.use_default_colors()
@@ -423,16 +440,53 @@ class CursesCommunicator():
         curses.init_pair(2, 2, -1)          ## Ik heb de curses-conventie
         curses.init_pair(3, 3, -1)          ## aangehouden, 1 is dus rood,
                                             ## 2 is groen, 3 is geel.
-
+        
         self.tekstKleurRood = curses.color_pair(1)
         self.tekstKleurGroen = curses.color_pair(2)
         self.tekstKleurGeel = curses.color_pair(3)
         self.tekstOpmaakVet = curses.A_BOLD
-
+        
         self.tekstKleurRoodOpmaakVet = curses.color_pair(1) | curses.A_BOLD
         self.tekstKleurGroenOpmaakVet = curses.color_pair(2) | curses.A_BOLD
         self.tekstKleurGeelOpmaakVet = curses.color_pair(3) | curses.A_BOLD
+        
 
+        """
+        elif uit_te_voeren_procedure == "loguit":
+            self.scherm.addstr(6, 0, "Uitloggen.............")
+        elif uit_te_voeren_procedure == "forceer_login":
+            self.scherm.addstr(6, 0, "Geforceerd inloggen...")
+        """
+        
+    def kprint(self, pos_y, pos_x, tekst, *args):
+        if args:
+            self.scherm.addstr(pos_y, pos_x, tekst, args[0])
+            self.scherm.refresh()
+        else:
+            self.scherm.addstr(pos_y, pos_x, tekst)
+            self.scherm.refresh()
+    
+    def eventPingSuccess(self):
+        pass
+    
+    def eventPingFailure(self):
+        self.kprint(6, 0, "Niet verbonden met het KU Leuven-netwerk.", \
+        self.tekstKleurRoodOpmaakVet)
+    def eventPingAlreadyOnline(self):
+        self.kprint(6, 0, "U bent al online.", \
+        self.tekstKleurGeelOpmaakVet)
+
+class LoginCursesCommunicator(SuperCursesCommunicator):
+    def __init__(self):
+        SuperCursesCommunicator.__init__(self)
+        ## We hebben hier het probleem dat we twee __init__s nodig hebben:
+        ## we kunnen namelijk niet alles in de superklasse-init zetten.
+        ## Want dan zouden we ook bijvoorbeeld Download: en Upload: daar al
+        ## moeten plaatsen.
+        ## Een elegante oplossing is het gebruiken van een extra init hier.
+        ## Gewoonlijk zou dat de __init__ van de superklasse overschrijven,
+        ## daarom roepen we deze nog eens expliciet aan.
+        
         self.scherm.addstr(0, 0, "Netlogin openen.......")
         self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
         self.scherm.addstr(1, 0, "KU Leuven kiezen......")
@@ -445,34 +499,17 @@ class CursesCommunicator():
         self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
         self.scherm.addstr(5, 0, "Upload:")
         self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
-
+        self.scherm.addstr(6, 0, "Inloggen..............")
+        
         self.scherm.refresh()
-
-    def kprint(self, pos_y, pos_x, tekst, *args):
-        if args:
-            self.scherm.addstr(pos_y, pos_x, tekst, args[0])
-            self.scherm.refresh()
-        else:
-            self.scherm.addstr(pos_y, pos_x, tekst)
-            self.scherm.refresh()
-
-    def eventPingSuccess(self):
-        pass
-
-    def eventPingFailure(self):
-        self.kprint(6, 0, "Niet verbonden met het KU Leuven-netwerk.", \
-        self.tekstKleurRoodOpmaakVet)
-    def eventPingAlreadyOnline(self):
-        self.kprint(6, 0, "U bent al online.", \
-        self.tekstKleurGeelOpmaakVet)
-
+        
     def eventNetloginStart(self):
         self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
     def eventNetloginSuccess(self):
         self.kprint(0, 23, " OK ", self.tekstKleurGroenOpmaakVet)
     def eventNetloginFailure(self):
         self.kprint(0, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
-
+        
     def eventKuleuvenStart(self):
         self.kprint(1, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
     def eventKuleuvenSuccess(self):
@@ -493,10 +530,10 @@ class CursesCommunicator():
         self.kprint(3, 23, " OK ", self.tekstKleurGroenOpmaakVet)
     def eventOpsturenFailure(self):
         self.kprint(3, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
-
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         balkgetal_download = int(round(float(downloadpercentage) / 10.0))
-
+        
         if downloadpercentage <= 10:
             voorwaardelijke_kleur_download = \
             self.tekstKleurRoodOpmaakVet
@@ -506,17 +543,17 @@ class CursesCommunicator():
         else:
             voorwaardelijke_kleur_download = \
             self.tekstKleurGroenOpmaakVet
-
+            
         self.kprint(4, 23, " " * (3 - len(str(downloadpercentage))) + \
         str(downloadpercentage) + \
         "%", voorwaardelijke_kleur_download)
-
+        
         self.kprint(4, 11, "=" * balkgetal_download + \
         " " * (10-balkgetal_download), voorwaardelijke_kleur_download)
-
+    
         balkgetal_upload = \
         int(round(float(uploadpercentage) / 10.0))
-
+        
         if uploadpercentage <= 10:
             voorwaardelijke_kleur_upload = \
             self.tekstKleurRoodOpmaakVet
@@ -526,18 +563,98 @@ class CursesCommunicator():
         else:
             voorwaardelijke_kleur_upload = \
             self.tekstKleurGroenOpmaakVet
-
+        
         self.kprint(5, 23, " " * (3 - len(str(uploadpercentage))) + \
         str(uploadpercentage) + \
         "%", voorwaardelijke_kleur_upload)
-
+    
         self.kprint(5, 11, "=" * balkgetal_upload + \
         " " * (10-balkgetal_upload), voorwaardelijke_kleur_upload)
-
+        
     def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            self.kprint(6, 23, "DONE", self.tekstKleurGroenOpmaakVet)
+        elif error_code != 0:
+            self.kprint(6, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
         time.sleep(2)
-
+        
         curses.nocbreak()
         self.scherm.keypad(0)
         curses.echo()
         curses.endwin()
+
+class LogoutCursesCommunicator(SuperCursesCommunicator):
+    def __init__(self):
+        SuperCursesCommunicator.__init__(self)
+        ## We hebben hier het probleem dat we twee __init__s nodig hebben:
+        ## we kunnen namelijk niet alles in de superklasse-init zetten.
+        ## Want dan zouden we ook bijvoorbeeld Download: en Upload: daar al
+        ## moeten plaatsen.
+        ## Een elegante oplossing is het gebruiken van een extra init hier.
+        ## Gewoonlijk zou dat de __init__ van de superklasse overschrijven,
+        ## daarom roepen we deze nog eens expliciet aan.
+        
+        self.scherm.addstr(0, 0, "Formulier openen......")
+        self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
+        #self.scherm.addstr(1, 0, "IP-adres invoeren......")
+        #self.scherm.addstr(1, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(2, 0, "Gegevens invoeren.....")
+        self.scherm.addstr(2, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(3, 0, "Gegevens opsturen.....")
+        self.scherm.addstr(3, 22, "[    ]", self.tekstOpmaakVet)
+        #self.scherm.addstr(4, 0, "Download:")
+        #self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
+        #self.scherm.addstr(5, 0, "Upload:")
+        #self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(4, 0, "Uitloggen.............")
+        
+        self.scherm.refresh()
+        
+    def eventNetloginStart(self):
+        self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventNetloginSuccess(self):
+        self.kprint(0, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventNetloginFailure(self):
+        self.kprint(0, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+    
+    def eventInvoerenStart(self):
+        self.kprint(2, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventInvoerenSuccess(self):
+        self.kprint(2, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventInvoerenFailure(self):
+        self.kprint(2, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+
+    def eventOpsturenStart(self):
+        self.kprint(3, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventOpsturenSuccess(self):
+        self.kprint(3, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventOpsturenFailure(self):
+        self.kprint(3, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            self.kprint(4, 23, "DONE", self.tekstKleurGroenOpmaakVet)
+        elif error_code != 0:
+            self.kprint(4, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
+        time.sleep(2)
+        
+        curses.nocbreak()
+        self.scherm.keypad(0)
+        curses.echo()
+        curses.endwin()
+
+## The abstract factory specifying the interface and maybe returning 
+## some defaults (or just passing)
+class SuperCommunicatorFabriek:
+   def createSummaryCommunicator():
+     pass
+
+class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
+    def createSummaryCommunicator():
+        LoginSummaryCommunicator()
+
+class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
+    def createSummaryCommunicator():
+        LogoutSummaryCommunicator()

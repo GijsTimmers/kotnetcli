@@ -5,10 +5,10 @@ few ways you can help make this project better!
 
 ## Team members
 Gijs Timmers
+
 Jo Van Bulck
 
 ## Adding new features
-
 Some coding guidelines:
 
 1. Indentation: always use 4 spaces. No tabs.
@@ -29,12 +29,10 @@ Don’t get discouraged! We estimate that the response time from the
 maintainers is around two days.
 
 ## Bug triage
-
 You can notify us about bugs here:
 https://github.com/GijsTimmers/kotnetcli/issues
 
 ## Translations
-
 Translations are needed. We would like you to use .po files to translate
 `kotnetcli` in your language. Just create a new branch, edit the default.po file
 , save as <yourlanguageabbreviation>.po and request a merge.
@@ -52,5 +50,4 @@ Sounds too hard? You can always send me your po files:
 gijs.timmers@student.kuleuven.be
 
 ## Documentation
-
 Not needed at the moment. Maybe there will be a `man` page in the future.

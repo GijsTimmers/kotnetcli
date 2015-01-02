@@ -112,3 +112,12 @@ This section lists the platform specific instructions to resolve the above depen
           colorama python2-pythondialog beautifulsoup4
 
 [Why do we need these dependencies?](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)
+
+## Contributing
+We're currently looking for 
+[translators](https://github.com/GijsTimmers/kotnetcli/issues/46)
+and graphic designers (to create an elegant iconset). If you feel like you can
+do this, feel free to fork the project and show us your work!
+
+Regular developers: please take a look at the 
+[coding guidelines](https://github.com/GijsTimmers/kotnetcli/blob/master/CONTRIBUTING.md).

@@ -2,7 +2,10 @@
 build/
 dist/
 pyinstaller/
+htmls/
 
 test-win.sh
 test2.py
 test*
+
+credentials*
