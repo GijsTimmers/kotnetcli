@@ -19,8 +19,8 @@ import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
-import platform
-import cursor
+import platform                         ## Om onderscheid Lin/Mac te maken
+import cursor                           ## Om cursor te verbergen/tonen
 
 if os.name == "nt":
     try:            
@@ -424,8 +424,8 @@ class LogoutColoramaCommunicator(SuperColoramaCommunicator):
 
 
     
-class CursesCommunicator():
-    def __init__(self, uit_te_voeren_procedure):
+class SuperCursesCommunicator(QuietCommunicator):
+    def __init__(self):
         self.scherm = curses.initscr()
         
         
@@ -446,29 +446,14 @@ class CursesCommunicator():
         self.tekstKleurGroenOpmaakVet = curses.color_pair(2) | curses.A_BOLD
         self.tekstKleurGeelOpmaakVet = curses.color_pair(3) | curses.A_BOLD
         
-        self.scherm.addstr(0, 0, "Netlogin openen.......")
-        self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
-        self.scherm.addstr(1, 0, "KU Leuven kiezen......")
-        self.scherm.addstr(1, 22, "[    ]", self.tekstOpmaakVet)
-        self.scherm.addstr(2, 0, "Gegevens invoeren.....")
-        self.scherm.addstr(2, 22, "[    ]", self.tekstOpmaakVet)
-        self.scherm.addstr(3, 0, "Gegevens opsturen.....")
-        self.scherm.addstr(3, 22, "[    ]", self.tekstOpmaakVet)
-        self.scherm.addstr(4, 0, "Download:")
-        self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
-        self.scherm.addstr(5, 0, "Upload:")
-        self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
-        
 
-        if uit_te_voeren_procedure == "login":
-            self.scherm.addstr(6, 0, "Inloggen..............")
+        """
         elif uit_te_voeren_procedure == "loguit":
             self.scherm.addstr(6, 0, "Uitloggen.............")
         elif uit_te_voeren_procedure == "forceer_login":
             self.scherm.addstr(6, 0, "Geforceerd inloggen...")
+        """
         
-        self.scherm.refresh()
-    
     def kprint(self, pos_y, pos_x, tekst, *args):
         if args:
             self.scherm.addstr(pos_y, pos_x, tekst, args[0])
@@ -486,6 +471,33 @@ class CursesCommunicator():
     def eventPingAlreadyOnline(self):
         self.kprint(6, 0, "U bent al online.", \
         self.tekstKleurGeelOpmaakVet)
+
+class LoginCursesCommunicator(SuperCursesCommunicator):
+    def __init__(self):
+        SuperCursesCommunicator.__init__(self)
+        ## We hebben hier het probleem dat we twee __init__s nodig hebben:
+        ## we kunnen namelijk niet alles in de superklasse-init zetten.
+        ## Want dan zouden we ook bijvoorbeeld Download: en Upload: daar al
+        ## moeten plaatsen.
+        ## Een elegante oplossing is het gebruiken van een extra init hier.
+        ## Gewoonlijk zou dat de __init__ van de superklasse overschrijven,
+        ## daarom roepen we deze nog eens expliciet aan.
+        
+        self.scherm.addstr(0, 0, "Netlogin openen.......")
+        self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(1, 0, "KU Leuven kiezen......")
+        self.scherm.addstr(1, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(2, 0, "Gegevens invoeren.....")
+        self.scherm.addstr(2, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(3, 0, "Gegevens opsturen.....")
+        self.scherm.addstr(3, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(4, 0, "Download:")
+        self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(5, 0, "Upload:")
+        self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(6, 0, "Inloggen..............")
+        
+        self.scherm.refresh()
         
     def eventNetloginStart(self):
         self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
@@ -567,7 +579,68 @@ class CursesCommunicator():
         self.scherm.keypad(0)
         curses.echo()
         curses.endwin()
+
+class LogoutCursesCommunicator(SuperCursesCommunicator):
+    def __init__(self):
+        SuperCursesCommunicator.__init__(self)
+        ## We hebben hier het probleem dat we twee __init__s nodig hebben:
+        ## we kunnen namelijk niet alles in de superklasse-init zetten.
+        ## Want dan zouden we ook bijvoorbeeld Download: en Upload: daar al
+        ## moeten plaatsen.
+        ## Een elegante oplossing is het gebruiken van een extra init hier.
+        ## Gewoonlijk zou dat de __init__ van de superklasse overschrijven,
+        ## daarom roepen we deze nog eens expliciet aan.
         
+        self.scherm.addstr(0, 0, "Formulier openen......")
+        self.scherm.addstr(0, 22, "[    ]", self.tekstOpmaakVet)
+        #self.scherm.addstr(1, 0, "IP-adres invoeren......")
+        #self.scherm.addstr(1, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(2, 0, "Gegevens invoeren.....")
+        self.scherm.addstr(2, 22, "[    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(3, 0, "Gegevens opsturen.....")
+        self.scherm.addstr(3, 22, "[    ]", self.tekstOpmaakVet)
+        #self.scherm.addstr(4, 0, "Download:")
+        #self.scherm.addstr(4, 10, "[          ][    ]", self.tekstOpmaakVet)
+        #self.scherm.addstr(5, 0, "Upload:")
+        #self.scherm.addstr(5, 10, "[          ][    ]", self.tekstOpmaakVet)
+        self.scherm.addstr(4, 0, "Uitloggen.............")
+        
+        self.scherm.refresh()
+        
+    def eventNetloginStart(self):
+        self.kprint(0, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventNetloginSuccess(self):
+        self.kprint(0, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventNetloginFailure(self):
+        self.kprint(0, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+    
+    def eventInvoerenStart(self):
+        self.kprint(2, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventInvoerenSuccess(self):
+        self.kprint(2, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventInvoerenFailure(self):
+        self.kprint(2, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+
+    def eventOpsturenStart(self):
+        self.kprint(3, 23, "WAIT", self.tekstKleurGeelOpmaakVet)
+    def eventOpsturenSuccess(self):
+        self.kprint(3, 23, " OK ", self.tekstKleurGroenOpmaakVet)
+    def eventOpsturenFailure(self):
+        self.kprint(3, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
+    def beeindig_sessie(self, error_code=0):
+        if error_code == 0:
+            self.kprint(4, 23, "DONE", self.tekstKleurGroenOpmaakVet)
+        elif error_code != 0:
+            self.kprint(4, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
+        
+        time.sleep(2)
+        
+        curses.nocbreak()
+        self.scherm.keypad(0)
+        curses.echo()
+        curses.endwin()
+
 ## The abstract factory specifying the interface and maybe returning 
 ## some defaults (or just passing)
 class SuperCommunicatorFabriek:
