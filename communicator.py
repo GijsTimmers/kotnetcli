@@ -274,8 +274,13 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     ## Encapsulates the printing of an error string on stderr
     ## Override this method to change the appearance of the printed string.
     def printerr(self, msg):
-        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR + msg + self.RESET_ALL)
+        sys.stderr.write(msg),
         sys.stderr.flush()
+
+    ## Encapsulates the printing of a "text" string on stdout, *without* a trailing newline
+    ## Override this method to change the appearance of the printed string.
+    def print_txt(self, msg):
+        sys.stdout.write(msg)
 
     ## Encapsulates the printing of a "wait" event on stdout
     ## Override this method to change the appearance of the printed string.
@@ -283,150 +288,148 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         print msg + "[WAIT]" + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
 
-    ## Encapsulates the printing of a "succes" event on stdout
+    ## Encapsulates the printing of a "succes" string on stdout
     ## Override this method to change the appearance of the printed string.
     def print_success(self):
         print "[ OK ]"
 
-    ## Encapsulates the printing of a "fail" event on stdout
+    ## Encapsulates the printing of a "done" string on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_done(self):
+        print "[ DONE ]"
+
+    ## Encapsulates the printing of a "fail" string on stdout
     ## Override this method to change the appearance of the printed string.
     def print_fail(self):
         print "[ FAIL ]"
 
+    ## generic print_balk method (not meant to be overriden)
+    def print_generic_balk(self, percentage, style, color, stop_color, stop_style):
+        balkgetal = int(round(float(percentage) / 10.0))
+        print style + "[" + color + \
+        "=" * balkgetal + stop_color + \
+        " " * (10-balkgetal) +\
+        "] [" + \
+        " " * (3 - len(str(percentage))) +\
+        color + str(percentage) + "%" + \
+        stop_color + "]" + stop_style
+
+    ## Encapsulates the printing of a "balk" string on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_balk(self, percentage):
+        self.print_generic_balk(percentage, "", "", "", "")
+    
     def eventPingFailure(self):
-        self.printerr "Niet verbonden met het KU Leuven-netwerk."
+        self.printerr("Niet verbonden met het KU Leuven-netwerk.")
         
     def eventPingAlreadyOnline(self):
-        self.printerr "U bent al online."
+        self.printerr("U bent al online.")
     
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
-        self.print_wait "Netlogin openen....... "
+        self.print_wait("Netlogin openen....... ")
     def eventNetloginSuccess(self):
         self.print_success()
     def eventNetloginFailure(self):
         self.print_fail()
         
     def eventKuleuvenStart(self):
-        self.print_wait "KU Leuven kiezen...... "
+        self.print_wait("KU Leuven kiezen...... ")
     def eventKuleuvenSuccess(self):
         self.print_success()
     def eventKuleuvenFailure(self):
         self.print_fail()
 
     def eventInvoerenStart(self):
-        self.print_wait "Gegevens invoeren..... "
+        self.print_wait("Gegevens invoeren..... ")
     def eventInvoerenSuccess(self):
         self.print_success()
     def eventInvoerenFailure(self):
         self.print_fail()
 
     def eventOpsturenStart(self):
-        self.
+        self.print_wait("Gegevens opsturen..... ")
     def eventOpsturenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventOpsturenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    
+        self.print_fail()
+
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        print "Download:  " + Style.BRIGHT + "[          ][    ]" + \
-        Style.RESET_ALL + "\r",
-        
-        balkgetal_download = int(round(float(downloadpercentage) / 10.0))
-        
-        if downloadpercentage <= 10:
-            voorwaardelijke_kleur_download = \
-            Fore.RED
-        elif 10 < downloadpercentage < 60:
-            voorwaardelijke_kleur_download = \
-            Fore.YELLOW
-        else:
-            voorwaardelijke_kleur_download = \
-            Fore.GREEN
-        
-        print "Download:  " + \
-        Style.BRIGHT + "[" + voorwaardelijke_kleur_download + \
-        "=" * balkgetal_download + Fore.RESET + \
-        " " * (10-balkgetal_download) + \
-        "]" + \
-        "[" + \
-        " " * (3 - len(str(downloadpercentage))) + \
-        voorwaardelijke_kleur_download + str(downloadpercentage) + \
-        "%" + Fore.RESET + \
-        "]" + Style.RESET_ALL
-        
-        print "Upload:    " + Style.BRIGHT + "[          ][    ]" + \
-        Style.RESET_ALL + "\r",
-        
-        balkgetal_upload = int(round(float(uploadpercentage) / 10.0))
-            
-        if uploadpercentage <= 10:
-            voorwaardelijke_kleur_upload = \
-            Fore.RED
-        elif 10 < uploadpercentage < 60:
-            voorwaardelijke_kleur_upload = \
-            Fore.YELLOW
-        else:
-            voorwaardelijke_kleur_upload = \
-            Fore.GREEN
-        
-        print "Upload:    " +  \
-        Style.BRIGHT + "[" + voorwaardelijke_kleur_upload + \
-        "=" * balkgetal_upload + Fore.RESET + \
-        " " * (10-balkgetal_upload) + \
-        "]" + \
-        "[" + \
-        " " * (3 - len(str(uploadpercentage))) + \
-        voorwaardelijke_kleur_upload + str(uploadpercentage) + \
-        "%" + Fore.RESET + \
-        "]" + Style.RESET_ALL
+        self.print_txt("Download:  ")
+        self.print_balk(downloadpercentage)
+        self.print_txt("Upload:    ")
+        self.print_balk(uploadpercentage)
         
     def beeindig_sessie(self, error_code=0):
-        print "Inloggen............. ",            
+        self.print_txt("Inloggen............. "),
         if error_code == 0:
-            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
-            Fore.RESET + "]" + Style.RESET_ALL
-        elif error_code != 0:
-            print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-            Fore.RESET + "]" + Style.RESET_ALL
+            self.print_done()
+        else:
+            self.print_fail()
         cursor.show()
 
 class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):     
     def beeindig_sessie(self, error_code=0):
-        print "Uitloggen............. ",
+        self.print_txt("Uitloggen............. "),
         if error_code == 0:
-            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
-            Fore.RESET + "]" + Style.RESET_ALL
-        elif error_code != 0:
-            print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-            Fore.RESET + "]" + Style.RESET_ALL
+            self.print_success()
+        else:
+            self.print_fail()
         cursor.show()
 
-
-class ColoramaCommunicator(LoginPlaintextCommunicator):
+class SuperColoramaCommunicator(LoginPlaintextCommunicator):
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
             Style,                              ## 
             init as colorama_init)              ## 
         colorama_init()
+        cursor.hide()
 
-    ## This method encapsulates the printing of an error string Any subclass
-    ## can override this method to change the appearance of the printed string.
-    def printError(msg):
-    printMsg msg
-        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR + msg + self.RESET_ALL)
+    ## Overrides the printing of an error string on stderr
+    def printerr(self, msg):
+        sys.stderr.write(Style.BRIGHT + Fore.RED + \
+        msg + Style.RESET_ALL),
+        sys.stderr.flush()
 
+    ## Overrides the printing of a "wait" event on stdout
+    def print_wait(self, msg):
+        print msg + Style.BRIGHT + "[" + Fore.YELLOW + \
+        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
+        sys.stdout.flush()
+
+    ## Overrides the printing of a "succes" string on stdout
+    def print_success(self):
+        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
+        Fore.RESET + "]" + Style.RESET_ALL
+
+    ## Overrides the printing of a "done" string on stdout
+    def print_done(self):
+        print Style.BRIGHT + "[" + Fore.GREEN + " DONE " + \
+        Fore.RESET + "]" + Style.RESET_ALL
+
+    ## Overrides the printing of a "fail" string on stdout
+    def print_fail(self):
+        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
+        Fore.RESET + "]" + Style.RESET_ALL
+
+    ## Overrides the printing of a "balk" string on stdout
+    def print_balk(self, percentage):
+        if percentage <= 10:
+            voorwaardelijke_kleur = Fore.RED
+        elif 10 < percentage < 60:
+            voorwaardelijke_kleur = Fore.YELLOW
+        else:
+            voorwaardelijke_kleur = Fore.GREEN
+        
+        self.print_generic_balk(percentage, Style.BRIGHT,
+        voorwaardelijke_kleur, Fore.RESET, Style.RESET_ALL)
 
 class LoginColoramaCommunicator(SuperColoramaCommunicator):
     pass
 
 class LogoutColoramaCommunicator(SuperColoramaCommunicator):
     pass
-
-
     
 class SuperCursesCommunicator(QuietCommunicator):
     def __init__(self):
