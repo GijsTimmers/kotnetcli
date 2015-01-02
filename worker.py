@@ -329,8 +329,8 @@ class Dummylogin():
         
         
     def tegoeden(self):
-        self.downloadpercentage = 80
-        self.uploadpercentage   = 100
+        self.downloadpercentage = 10
+        self.uploadpercentage   = 59
         
         self.co.eventLoginGeslaagd(self.downloadpercentage, \
         self.uploadpercentage)
