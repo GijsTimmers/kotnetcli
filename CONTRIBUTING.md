@@ -5,6 +5,7 @@ few ways you can help make this project better!
 
 ## Team members
 Gijs Timmers
+
 Jo Van Bulck
 
 ## Adding new features

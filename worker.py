@@ -118,7 +118,7 @@ class Kotnetlogin():
             self.uploadpercentage = int(round(float(m[0]) / float(m[1]) * 100, 0))
             
             
-            self.co.eventTegoedenBekend(self.downloadpercentage, \
+            self.co.eventLoginGeslaagd(self.downloadpercentage, \
             self.uploadpercentage)
             
             #self.co.eventSamenvattingGeven("login", True)
@@ -332,7 +332,7 @@ class Dummylogin():
         self.downloadpercentage = 80
         self.uploadpercentage   = 100
         
-        self.co.eventTegoedenBekend(self.downloadpercentage, \
+        self.co.eventLoginGeslaagd(self.downloadpercentage, \
         self.uploadpercentage)
         
         self.co.beeindig_sessie(0)

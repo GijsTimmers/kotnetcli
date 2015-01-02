@@ -114,7 +114,7 @@ class QuietCommunicator():
     def eventOpsturenFailure(self):
         pass
         
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         pass
     
     def beeindig_sessie(self, error_code=0):
@@ -129,8 +129,7 @@ class SuperSummaryCommunicator(QuietCommunicator):
         print "U bent al online."
 
 class LoginSummaryCommunicator(SuperSummaryCommunicator):
-
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         print "Download: " + str(downloadpercentage) + "%" + ",",
         print "Upload: " + str(uploadpercentage) + "%"
 
@@ -142,7 +141,6 @@ class LoginSummaryCommunicator(SuperSummaryCommunicator):
             sys.exit(error_code)
 
 class LogoutSummaryCommunicator(SuperSummaryCommunicator):
-
     def beeindig_sessie(self, error_code=0):
         if error_code == 0:
             print "logout succesvol."
@@ -155,7 +153,7 @@ class SuperBubbleCommunicator(QuietCommunicator):
         notify2.init("kotnetcli")
 
 class LoginBubbleCommunicator(SuperBubbleCommunicator):
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         n = notify2.Notification("kotnetcli", \
         "Download: %s%%, Upload: %s%%" % \
         (downloadpercentage, uploadpercentage), \
@@ -257,7 +255,7 @@ class DialogCommunicator(QuietCommunicator):
         self.overal = 100        
         self.update()
     
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         self.download = -downloadpercentage
         self.upload = -uploadpercentage
         self.overal = 100
@@ -333,7 +331,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
         Fore.RESET + "]" + Style.RESET_ALL
     
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         print "Download:  " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
         
@@ -527,7 +525,7 @@ class LoginCursesCommunicator(SuperCursesCommunicator):
     def eventOpsturenFailure(self):
         self.kprint(3, 23, "FAIL", self.tekstKleurRoodOpmaakVet)
     
-    def eventTegoedenBekend(self, downloadpercentage, uploadpercentage):
+    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         balkgetal_download = int(round(float(downloadpercentage) / 10.0))
         
         if downloadpercentage <= 10:
