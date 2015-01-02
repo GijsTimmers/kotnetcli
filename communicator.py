@@ -266,9 +266,9 @@ class DialogCommunicator(QuietCommunicator):
     def beeindig_sessie(self, uitgevoerde_procedure=None, error_code=0):
         print "" # print newline to clean prompt under dialog
 
-    
-class PlaintextCommunicator(QuietCommunicator):
-    def __init__(self, uit_te_voeren_procedure):
+
+class SuperPlaintextCommunicator(QuietCommunicator):
+    def __init__(self):
         Style.BRIGHT = ""
         Style.RESET_ALL = ""
         Fore.GREEN = ""
@@ -276,10 +276,7 @@ class PlaintextCommunicator(QuietCommunicator):
         Fore.RED = ""
         Fore.RESET = ""
         
-        self.uit_te_voeren_procedure = uit_te_voeren_procedure
-        
-        cursor.hide()        
-        
+        cursor.hide()
     
     def eventPingFailure(self):
         print Style.BRIGHT + Fore.RED + \
@@ -291,6 +288,7 @@ class PlaintextCommunicator(QuietCommunicator):
         "U bent al online." + \
         Fore.RESET + Style.RESET_ALL
     
+class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
         print "Netlogin openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
@@ -389,34 +387,43 @@ class PlaintextCommunicator(QuietCommunicator):
         "]" + Style.RESET_ALL
         
     def beeindig_sessie(self, error_code=0):
-        if uit_te_voeren_procedure == "login":
-            print "Inloggen............. ",
-        elif uit_te_voeren_procedure == "loguit":
-            print "Uitloggen............. ",
-        elif uit_te_voeren_procedure == "forceer_login":
-            print "Geforceerd inloggen... ",
-            
+        print "Inloggen............. ",            
         if error_code == 0:
             print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
             Fore.RESET + "]" + Style.RESET_ALL
         elif error_code != 0:
             print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
             Fore.RESET + "]" + Style.RESET_ALL
-    
         cursor.show()
-        
-        else:
-            time.sleep(3)      
 
-class ColoramaCommunicator(PlaintextCommunicator):
+class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):     
+    def beeindig_sessie(self, error_code=0):
+        print "Uitloggen............. ",
+        if error_code == 0:
+            print Style.BRIGHT + "[" + Fore.GREEN + "DONE" + \
+            Fore.RESET + "]" + Style.RESET_ALL
+        elif error_code != 0:
+            print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
+            Fore.RESET + "]" + Style.RESET_ALL
+        cursor.show()
+
+
+class SuperColoramaCommunicator(QuietCommunicator):
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
             Style,                              ## 
             init as colorama_init)              ## 
         colorama_init()
-        
 
+class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
+    pass
+
+class LogoutColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
+    pass
+
+
+    
 class CursesCommunicator():
     def __init__(self, uit_te_voeren_procedure):
         self.scherm = curses.initscr()
