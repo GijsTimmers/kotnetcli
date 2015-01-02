@@ -408,7 +408,7 @@ class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):
         cursor.show()
 
 
-class SuperColoramaCommunicator(QuietCommunicator):
+class SuperColoramaCommunicator(LoginPlaintextCommunicator):
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
@@ -416,10 +416,10 @@ class SuperColoramaCommunicator(QuietCommunicator):
             init as colorama_init)              ## 
         colorama_init()
 
-class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
+class LoginColoramaCommunicator(SuperColoramaCommunicator):
     pass
 
-class LogoutColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
+class LogoutColoramaCommunicator(SuperColoramaCommunicator):
     pass
 
 
