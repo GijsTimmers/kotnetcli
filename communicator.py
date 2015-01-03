@@ -78,6 +78,8 @@ if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
 class QuietCommunicator():
     ## TODO  jo: removed 'uit_te_voeren_procedure' argument, omdat procedure-specific
     ## behavior in de klasse hierarchy komt te zitten
+    ## Gijs: In orde, bedankt.
+    
     def __init__(self):
         pass
     
@@ -123,6 +125,16 @@ class QuietCommunicator():
     
     ## TODO jo: moet 'error_code=0' hier niet vervangen worden door
     ## gewoon 'error_code'? en ook in de child classes??
+    ## 
+    ## Gijs: Voordeel hier is dat als er geen error code wordt meegegeven,
+    ## de beeindig_sessie naar een error_code van 0 default. Dat betekent
+    ## dat we gewoon beeindig_sessie() kunnen aanroepen als alles goed gaat.
+    ## Vind ik duidelijker dan beeindig_sessie(0).
+    ## Alternatief: steeds beeindig_sessie samen met het argument aanroepen:
+    ## bvb beeindig_sessie(error_code=0), of beeindig_sessie(error_code=67)
+    ## Hoe dan ook gaat mijn voorkeur uit naar één van deze methodes in plaats
+    ## van het toch wat vreemde beeindig_sessie(0).
+    
     def beeindig_sessie(self, error_code=0):
         pass
 
@@ -179,7 +191,12 @@ class LoginBubbleCommunicator(SuperBubbleCommunicator):
         ## TODO: jo: communicator should never call sys.exit (!)
         ## this is the responsibility of the worker (!); comm *only* visualises
         ## see also software design page on the wiki for the idea
+        ##
+        ## Gijs: Yes, you're right. Forgot about that, thanks.
+        
         #sys.exit(error_code)
+        
+        
 
 class LogoutBubbleCommunicator(SuperBubbleCommunicator):
     def eventLogoutGeslaagd(self):
@@ -197,9 +214,6 @@ class LogoutBubbleCommunicator(SuperBubbleCommunicator):
 ## TODO jo: ik zal deze communicator nog opslitsen in een
 ## super en 2 subklassen als ik tijd heb...
 class DialogCommunicator(QuietCommunicator):
-    ## @Jo: please update this class to the factory model 
-    ## when you've got some time on your hands
-    
     def __init__(self, uit_te_voeren_procedure):
         
         # some constant definitions to avoid using magic numbers
@@ -373,9 +387,13 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
-        # TODO: jo : inloggen is al duidelijk door "netLOGIN" right?
+        ## TODO: jo : inloggen is al duidelijk door "netLOGIN" right?
+        ## Gijs: Zie noot bij LogoutPlaintextCommunicator.eventNetloginStart().
+        
         #print "           Inloggen           "
         #print "------------------------------"
+        
+        
         self.print_wait("Netlogin openen....... ")
 
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
@@ -395,15 +413,45 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
 class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):
     def eventNetloginStart(self):
         ## TODO jo : "netLOGOUT" duidelijk genoeg?
-        #print "          Uitloggen           "
-        #print "------------------------------"
-        self.print_wait("Netlogout openen....... ")
+        ##
+        ## Gijs: Mijn voorkeur gaat uit naar een header:
+        ##       - Een header is duidelijker, zeker met het oog op
+        ##         --force-login, in dat geval zal er eerst een Uitloggen-header
+        ##         zijn en daarna een Inloggen-header
+        ##       - "Formulier aanmaken" is een betere beschrijving van wat er
+        ##         gebeurt
+        ##
+        ##       Eventueel kunnen we een nieuwe methode maken, bijvoorbeeld
+        ##       headerAanmaken(). In dat geval kan de header zijn:
+        ##       "Geforceerd inloggen" of iets dergelijks. Ook leuk!
+        
+        print "          Uitloggen           "
+        print "------------------------------"
+        
+        
         #print "Formulier openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         #"WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         #sys.stdout.flush()
+        
+        self.print_wait("Netlogout openen....... ")
+
 
     ## TODO: jo wat is nog het nut van "eventLogoutGeslaagd"??
     ## dit kan ook in beendig_sessie right?
+    ## Gijs: Kan inderdaad ook in beeindig_sessie(). Mijn voorkeur gaat er naar
+    ##       uit om een aparte methode aan te maken, eventLoginGeslaagd() en 
+    ##       eventLogoutGeslaagd(). De reden hiervoor is dat een geslaagde
+    ##       logout niet noodzakelijk het einde van een sessie aangeeft. Bij-
+    ##       voorbeeld, in --force-login moet er na het uitloggen opnieuw wor-
+    ##       den ingelogd. Het is dan vreemd, om de sessie eerst af te sluiten,
+    ##       met alle gevolgen van dien (hier: cursor tonen, bij curses:
+    ##       scherm afsluiten). Dat zou betekenen dat bij --force-login na het
+    ##       uitloggen de cursor zichtbaar wordt, en dan opnieuw verdwijnt.\
+    ##  
+    ##       Daarnaast was het mijn plan om de sys.exit() in de communicator
+    ##       te zetten, maar misschien kunnen we deze beter in de worker plaat-
+    ##       sen.
+    
     def eventLogoutGeslaagd(self):
         pass
 
@@ -431,6 +479,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ##
     ## TODO: jo: veranderd naar single inheritance van plaintext in de super
     ## en multiple inheritance van de juiste subplaintext in de subs
+    ## Gijs: Merci!
     
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
@@ -443,7 +492,10 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     
     ## any communicator wanting to customize the colors can override
     ## this method to define new colors and styles
-    ## TODO: evt custom perentage style
+    ## TODO: Jo: evt custom perentage style
+    ##
+    ## Gijs: Wat bedoel je? Bvb de balk verbergen, etc?
+    
     def init_colors(self):
         self.ERR_COLOR = Fore.RED
         self.ERR_STYLE = Style.BRIGHT
