@@ -76,7 +76,9 @@ if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
         pass
 
 class QuietCommunicator():
-    def __init__(self, uit_te_voeren_procedure):
+    ## jo: removed 'uit_te_voeren_procedure' argument, omdat procedure-specific
+    ## behavior in de klasse hierarchy komt te zitten
+    def __init__(self):
         pass
     
     def eventPingSuccess(self):
@@ -119,6 +121,8 @@ class QuietCommunicator():
     def eventLogoutGeslaagd(self):
         pass
     
+    ## jo: moet 'error_code=0' hier niet vervangen worden door
+    ## gewoon 'error_code'? en ook in de child classes??
     def beeindig_sessie(self, error_code=0):
         pass
 
@@ -159,24 +163,36 @@ class SuperBubbleCommunicator(QuietCommunicator):
     def __init__(self):
         notify2.init("kotnetcli")
 
+    def createAndShowNotification(message, icon):
+        n = notify2.Notification("kotnetcli", message, icon)
+        n.show()
+
 class LoginBubbleCommunicator(SuperBubbleCommunicator):
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
+<<<<<<< HEAD
         n = notify2.Notification("Login geslaagd", \
         "Download: %s%%, Upload: %s%%" % \
+=======
+        createAndShowNotification( "Download: %s%%, Upload: %s%%" % \
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
         (downloadpercentage, uploadpercentage), \
         "notification-network-ethernet-connected")
-        n.show()
     
     def beeindig_sessie(self, error_code=0):
         if error_code == 0:
             pass
         else:
+<<<<<<< HEAD
             n = notify2.Notification("Login mislukt", \
             "Errorcode: %s" % \
             (error_code), \
             "notification-network-ethernet-disconnected")
             n.show()
         sys.exit(error_code)
+=======
+            createAndShowNotification( "Login mislukt. Errorcode: %s" % \
+            (error_code), "notification-network-ethernet-disconnected")
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
 
 class LogoutBubbleCommunicator(SuperBubbleCommunicator):
     def eventLogoutGeslaagd(self):
@@ -188,12 +204,19 @@ class LogoutBubbleCommunicator(SuperBubbleCommunicator):
         if error_code == 0:
             pass
         else:
+<<<<<<< HEAD
             n = notify2.Notification("Logout mislukt", \
             "Errorcode: %s" % (error_code), \
             "notification-network-ethernet-disconnected")
             n.show()
         sys.exit(error_code)
+=======
+            createAndShowNotification( "Logout mislukt. Errorcode: %s" % \
+            (error_code), "notification-network-ethernet-connected")
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
 
+## jo: ik zal deze communicator nog opslitsen in een
+## super en 2 subklassen als ik tijd heb...
 class DialogCommunicator(QuietCommunicator):
     ## @Jo: please update this class to the factory model 
     ## when you've got some time on your hands
@@ -283,73 +306,119 @@ class DialogCommunicator(QuietCommunicator):
 
 class SuperPlaintextCommunicator(QuietCommunicator):
     def __init__(self):
-        Style.BRIGHT = ""
-        Style.RESET_ALL = ""
-        Fore.GREEN = ""
-        Fore.YELLOW = ""
-        Fore.RED = ""
-        Fore.RESET = ""
-        
         cursor.hide()
+
+    ## Encapsulates the printing of an error string on stderr
+    ## Override this method to change the appearance of the printed string.
+    def printerr(self, msg):
+        sys.stderr.write(msg),
+        sys.stderr.flush()
+
+    ## Encapsulates the printing of a "text" string on stdout, *without* a trailing newline
+    ## Override this method to change the appearance of the printed string.
+    def print_txt(self, msg):
+        sys.stdout.write(msg)
+
+    ## Encapsulates the printing of a "wait" event on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_wait(self, msg):
+        print msg + "[WAIT]" + "\b\b\b\b\b\b\b",
+        sys.stdout.flush()
+
+    ## Encapsulates the printing of a "succes" string on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_success(self):
+        print "[ OK ]"
+
+    ## Encapsulates the printing of a "done" string on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_done(self):
+        print "[ DONE ]"
+
+    ## Encapsulates the printing of a "fail" string on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_fail(self):
+        print "[ FAIL ]"
+
+    ## generic print_balk method (not meant to be overriden)
+    def print_generic_balk(self, percentage, style, color, stop_color, stop_style):
+        balkgetal = int(round(float(percentage) / 10.0))
+        print style + "[" + color + \
+        "=" * balkgetal + stop_color + \
+        " " * (10-balkgetal) +\
+        "] [" + \
+        " " * (3 - len(str(percentage))) +\
+        color + str(percentage) + "%" + \
+        stop_color + "]" + stop_style
+
+    ## Encapsulates the printing of a "balk" string on stdout
+    ## Override this method to change the appearance of the printed string.
+    def print_balk(self, percentage):
+        self.print_generic_balk(percentage, "", "", "", "")
     
     def eventPingFailure(self):
-        print Style.BRIGHT + Fore.RED + \
-        "Niet verbonden met het KU Leuven-netwerk." + \
-        Style.RESET_ALL + Fore.RESET
+        self.printerr("Niet verbonden met het KU Leuven-netwerk.")
         
     def eventPingAlreadyOnline(self):
-        print Style.BRIGHT + Fore.YELLOW + \
-        "U bent al online." + \
-        Fore.RESET + Style.RESET_ALL
+        self.printerr("U bent al online.")
     
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
+<<<<<<< HEAD
         print "           Inloggen           "
         print "------------------------------"
         print "Netlogin openen........ " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
+=======
+        self.print_wait("Netlogin openen....... ")
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
     def eventNetloginSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventNetloginFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_fail()
         
     def eventKuleuvenStart(self):
+<<<<<<< HEAD
         print "KU Leuven kiezen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
+=======
+        self.print_wait("KU Leuven kiezen...... ")
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
     def eventKuleuvenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventKuleuvenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_fail()
 
     def eventInvoerenStart(self):
+<<<<<<< HEAD
         print "Gegevens invoeren...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
+=======
+        self.print_wait("Gegevens invoeren..... ")
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
     def eventInvoerenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventInvoerenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_fail()
 
     def eventOpsturenStart(self):
+<<<<<<< HEAD
         print "Gegevens opsturen...... " + Style.BRIGHT + "[" + Fore.YELLOW + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
+=======
+        self.print_wait("Gegevens opsturen..... ")
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
     def eventOpsturenSuccess(self):
-        print Style.BRIGHT + "[" + Fore.GREEN + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        self.print_success()
     def eventOpsturenFailure(self):
-        print Style.BRIGHT + "[" + Fore.RED + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
-    
+        self.print_fail()
+
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
+<<<<<<< HEAD
         print "Download:   " + Style.BRIGHT + "[          ][    ]" + \
         Style.RESET_ALL + "\r",
         
@@ -401,16 +470,30 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         voorwaardelijke_kleur_upload + str(uploadpercentage) + \
         "%" + Fore.RESET + \
         "]" + Style.RESET_ALL
+=======
+        self.print_txt("Download:  ")
+        self.print_balk(downloadpercentage)
+        self.print_txt("Upload:    ")
+        self.print_balk(uploadpercentage)
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
         
         print "Inloggen............... " + Style.BRIGHT + "[" + Fore.GREEN + \
         "DONE" + Fore.RESET + "]" + Style.RESET_ALL
         
     def beeindig_sessie(self, error_code=0):
+<<<<<<< HEAD
         if error_code == 0:
             print 
         elif error_code != 0:
             print "Inloggen............... " + Style.BRIGHT + "[" + Fore.RED + \
             "FAIL" + Fore.RESET + "]" + Style.RESET_ALL
+=======
+        self.print_txt("Inloggen............. "),
+        if error_code == 0:
+            self.print_done()
+        else:
+            self.print_fail()
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
         cursor.show()
 
 class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):
@@ -432,6 +515,7 @@ class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):
         "DONE" + Fore.RESET + "]" + Style.RESET_ALL
     
     def beeindig_sessie(self, error_code=0):
+<<<<<<< HEAD
         print "Uitloggen.............. ",
         if error_code == 0:
             pass
@@ -454,20 +538,92 @@ class SuperColoramaCommunicator(LoginPlaintextCommunicator, LogoutPlaintextCommu
     ## Make sure that LoginColoramaCommunicator inherits LoginPlaintextCommunicator
     ## and LogoutColoramaCommunicator inherits LogoutPlaintextCommunicator
     
+=======
+        self.print_txt("Uitloggen............. "),
+        if error_code == 0:
+            self.print_success()
+        else:
+            self.print_fail()
+        cursor.show()
+
+class SuperColoramaCommunicator(LoginPlaintextCommunicator):
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
     def __init__(self):
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
             Style,                              ## 
             init as colorama_init)              ## 
         colorama_init()
+        cursor.hide()
+        self.init_colors()
+    
+    ## any communicator wanting to customize the colors can override
+    ## this method to define new colors and styles
+    ## TODO: evt custom perentage style
+    def init_colors(self):
+        self.ERR_COLOR = Fore.RED
+        self.ERR_STYLE = Style.BRIGHT
+        self.WAIT_STYLE = Style.BRIGHT
+        self.WAIT_COLOR = Fore.YELLOW
+        self.SUCCESS_STYLE = Style.BRIGHT
+        self.SUCCESS_COLOR = Fore.GREEN
+        self.FAIL_STYLE = Style.BRIGHT
+        self.FAIL_COLOR = Fore.RED
+        self.PERC_STYLE = Style.BRIGHT
+        self.CRITICAL_PERC_COLOR = Fore.RED
+        self.LOW_PERC_COLOR = Fore.YELLOW
+        self.OK_PERC_COLOR = Fore.GREEN
+
+    ## Overrides the printing of an error string on stderr
+    def printerr(self, msg):
+        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR + \
+        msg + Style.RESET_ALL),
+        sys.stderr.flush()
+
+    ## Overrides the printing of a "wait" event on stdout
+    def print_wait(self, msg):
+        print msg + self.WAIT_STYLE + "[" + self.WAIT_COLOR + \
+        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
+        sys.stdout.flush()
+
+    ## Overrides the printing of a "succes" string on stdout
+    def print_success(self):
+        print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + " OK " + \
+        Fore.RESET + "]" + Style.RESET_ALL
+
+    ## Overrides the printing of a "done" string on stdout
+    def print_done(self):
+        print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + " DONE " + \
+        Fore.RESET + "]" + Style.RESET_ALL
+
+    ## Overrides the printing of a "fail" string on stdout
+    def print_fail(self):
+        print self.FAIL_STYLE + "[" + self.FAIL_COLOR + "FAIL" + \
+        Fore.RESET + "]" + Style.RESET_ALL
+
+    ## Overrides the printing of a "balk" string on stdout
+    def print_balk(self, percentage):
+        if percentage <= 10:
+            voorwaardelijke_kleur = self.CRITICAL_PERC_COLOR
+        elif 10 < percentage < 60:
+            voorwaardelijke_kleur = self.LOW_PERC_COLOR
+        else:
+            voorwaardelijke_kleur = self.OK_PERC_COLOR
+        
+        self.print_generic_balk(percentage, self.PERC_STYLE,
+        voorwaardelijke_kleur, Fore.RESET, Style.RESET_ALL)
 
 class LoginColoramaCommunicator(SuperColoramaCommunicator):
     pass
 
 class LogoutColoramaCommunicator(SuperColoramaCommunicator):
     pass
+<<<<<<< HEAD
 
 
+=======
+    
+>>>>>>> a3ce3cc3956aa93348d3de26f20718285ef7d41b
 class SuperCursesCommunicator(QuietCommunicator):
     def __init__(self):
         self.scherm = curses.initscr()
