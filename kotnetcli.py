@@ -24,7 +24,7 @@ import os                               ## Basislib
 import communicator                     ## Voor output op maat
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
 import worker                           ## Eigenlijke loginmodule
-from pinger import ping                 ## Checken of we op KUL-net zitten
+from tools import pinger                ## Checken of we op KUL-net zitten
 
 version = "1.3.0-dev"
 

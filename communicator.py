@@ -20,7 +20,7 @@ import time                             ## Voor timeout om venster te sluiten
 import sys                              ## Basislib
 import os                               ## Basislib
 import platform                         ## Om onderscheid Lin/Mac te maken
-import cursor                           ## Om cursor te verbergen/tonen
+from tools import cursor                ## Om cursor te verbergen/tonen
 
 if os.name == "nt":
     try:            

@@ -24,6 +24,7 @@ import socket                           ## Voor ophalen IP
 import sys                              ## Basislib
 import os                               ## Basislib
 
+from tools import pinger
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 class Kotnetlogin():
