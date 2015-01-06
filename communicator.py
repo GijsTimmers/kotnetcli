@@ -337,13 +337,19 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     ## generic print_balk method (not meant to be overriden)
     def print_generic_balk(self, percentage, style, color, stop_color, stop_style):
-        balkgetal = int(round(float(percentage) / 10.0))
+        
+        percentagefloat = float(percentage)
+        percentagestring = str(percentage)
+        
+        lengteVanBalk = 10.0
+        
+        aantalStreepjesObvPercentage = int(round(percentagefloat/lengteVanBalk))
         print style + "[" + color + \
-        "=" * balkgetal + stop_color + \
-        " " * (10-balkgetal) +\
+        "=" * aantalStreepjesObvPercentage + stop_color + \
+        " " * (10-aantalStreepjesObvPercentage) + \
         "] [" + \
-        " " * (3 - len(str(percentage))) +\
-        color + str(percentage) + "%" + \
+        " " * (3 - len(percentagestring)) + \
+        color + percentagestring + "%" + \
         stop_color + "]" + stop_style
 
     ## Encapsulates the printing of a "balk" string on stdout
