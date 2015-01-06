@@ -35,58 +35,17 @@ from tools import cursor                ## Om cursor te verbergen/tonen
 ## ten opzichte van deze specifieke communicator (denk ik)
 
 
-if os.name == "nt":
-    try:            
-        from colorama import (              ## Voor gekleurde tekst.
-            Fore,
-            Style,
-            init
-            )
-    except ImportError:
-        print "Couldn't import the colorama library."
-        pass
-
-
-if os.name == "posix" and platform.system() == "Darwin": ## Is een Mac
-    try:            
-        from colorama import (              ## Voor gekleurde tekst.
-            Fore,
-            Style,
-            init
-            )
-    except ImportError:
-        print "Couldn't import the colorama library."
-        pass
-
-
-if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
-    print "Import Linux stuff"
-
-    try:            
-        import curses                       ## Voor tekenen op scherm.
-    except ImportError:
-        print "Couldn't import the curses library."
-        pass
-    try:            
-        import notify2                      ## OS-specifieke notificaties
-    except ImportError:
-        print "Couldn't import the notify2 library."
-        pass
-    try:            
-        from dialog import Dialog           ## Voor tekenen op scherm.
-    except ImportError:
-        print "Couldn't import the dialog library."
-        pass
-    
-    try:            
-        from colorama import (              ## Voor gekleurde tekst.
-            Fore,
-            Style,
-            init
-            )
-    except ImportError:
-        print "Couldn't import the colorama library."
-        pass
+try:            
+    print "Probeert Colorama te importeren...",
+    from colorama import (              ## Voor gekleurde tekst.
+                          Fore,
+                          Style,
+                          init as colorama_init
+                          )
+    print "OK"
+except ImportError:
+    print "Couldn't import the colorama library."
+    pass
 
 class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ## I changed the structure: it used to be:
@@ -107,10 +66,12 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ## Gijs: Merci!
     
     def __init__(self):
+        """
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
             Style,                              ## 
             init as colorama_init)              ## 
+        """
         colorama_init()
         cursor.hide()
         self.init_colors()

@@ -28,9 +28,6 @@ from dialogc    import DialogCommunicator
 ##          LogoutDialogCommunicator af is.
 
 
-
-
-
 ## The abstract factory specifying the interface and maybe returning 
 ## some defaults (or just passing)
 class SuperCommunicatorFabriek:

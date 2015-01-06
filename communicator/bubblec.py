@@ -21,7 +21,7 @@ import sys                              ## Basislib
 import os                               ## Basislib
 import platform                         ## Om onderscheid Lin/Mac te maken
 from quietc import QuietCommunicator
-from tools import cursor              ## Om cursor te verbergen/tonen
+from tools import cursor                ## Om cursor te verbergen/tonen
 #from ..tools import cursor              ## Om cursor te verbergen/tonen
 
 ## Gijs:
@@ -30,58 +30,16 @@ from tools import cursor              ## Om cursor te verbergen/tonen
 ## bevindt zich daar ook; daarom hoeven we niet te verwijzen naar de lokatie
 ## ten opzichte van deze specifieke communicator (denk ik)
 
-if os.name == "nt":
-    try:            
-        from colorama import (              ## Voor gekleurde tekst.
-                              Fore,
-                              Style,
-                              init
-                             ) 
-    except ImportError:
-        print "Couldn't import the colorama library."
-        pass
 
 
-if os.name == "posix" and platform.system() == "Darwin": ## Is een Mac
-    try:            
-        from colorama import (              ## Voor gekleurde tekst.
-                              Fore,
-                              Style,
-                              init
-                             ) 
-    except ImportError:
-        print "Couldn't import the colorama library."
-        pass
+try:            
+    print "Probeert Notify2 te importeren...",
+    import notify2
+    print "OK"
+except ImportError:
+    print "Couldn't import the notify2 library."
+    pass
 
-
-if os.name == "posix" and platform.system() != "Darwin": ## Is een Linux
-    print "Import Linux stuff"
-
-    try:            
-        import curses                       ## Voor tekenen op scherm.
-    except ImportError:
-        print "Couldn't import the curses library."
-        pass
-    try:            
-        import notify2                      ## OS-specifieke notificaties
-    except ImportError:
-        print "Couldn't import the notify2 library."
-        pass
-    try:            
-        from dialog import Dialog           ## Voor tekenen op scherm.
-    except ImportError:
-        print "Couldn't import the dialog library."
-        pass
-    
-    try:            
-        from colorama import (              ## Voor gekleurde tekst.
-                              Fore,
-                              Style,
-                              init
-                             ) 
-    except ImportError:
-        print "Couldn't import the colorama library."
-        pass
 
 class SuperBubbleCommunicator(QuietCommunicator):
     def __init__(self):
