@@ -24,8 +24,11 @@ import socket                           ## Voor ophalen IP
 import sys                              ## Basislib
 import os                               ## Basislib
 
-from tools import pinger
+from tools import pinger                ## Om te checken of we op Kotnet zitten
+from tools import errorcodes as error   ## Om magic number errors te voorkomen
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
+
+
 
 class Kotnetlogin():
     def __init__(self, co, gebruikersnaam, wachtwoord, afsluiten=True):
@@ -48,7 +51,9 @@ class Kotnetlogin():
             self.co.eventNetloginSuccess()
         except:
             self.co.eventNetloginFailure()
-            sys.exit(1)
+            #sys.exit(1)
+            sys.exit(error.NOHOST)
+            ## voorbeeld van hoe het er uit moet komen zien
         
     def kuleuven(self):
         self.co.eventKuleuvenStart()
