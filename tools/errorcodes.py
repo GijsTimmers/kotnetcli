@@ -16,6 +16,10 @@
 ## CA 94042, USA.
 
 
+
+## Derived from /usr/include/sysexits.h
+
+
 ## Error numbers begin at BASE to reduce the possibility of
 ## clashing with other exit statuses that random programs may
 ## already return.  The meaning of the codes is approximately

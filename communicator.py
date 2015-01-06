@@ -341,14 +341,16 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         percentagefloat = float(percentage)
         percentagestring = str(percentage)
         
-        lengteVanBalk = 10.0
+        lengteVanBalkfloat = 10.0
+        lengteVanBalkint = 10
+        lengteVanRuimteVoorPercentages = 3
         
-        aantalStreepjesObvPercentage = int(round(percentagefloat/lengteVanBalk))
+        aantalStreepjesObvPercentage = int(round(percentagefloat/lengteVanBalkfloat))
         print style + "[" + color + \
         "=" * aantalStreepjesObvPercentage + stop_color + \
-        " " * (10-aantalStreepjesObvPercentage) + \
+        " " * (lengteVanBalkint-aantalStreepjesObvPercentage) + \
         "] [" + \
-        " " * (3 - len(percentagestring)) + \
+        " " * (lengteVanRuimteVoorPercentages - len(percentagestring)) + \
         color + percentagestring + "%" + \
         stop_color + "]" + stop_style
 
