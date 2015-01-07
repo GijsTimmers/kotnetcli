@@ -45,42 +45,47 @@ class SuperCommunicatorFabriek:
     def createSummaryCommunicator():
         pass
 
+## LoginCommunicatorFabriek: functies als volgt aanroepen:
+## co = LoginCommunicatorFabriek()       
+## co = co.createColoramaCommunicator() 
+## co.eventNetloginStart()               ## geeft de juiste output
+
 class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
-    def createSummaryCommunicator():
-        LoginSummaryCommunicator()
+    def createSummaryCommunicator(self):
+        return LoginSummaryCommunicator()
     
-    def createBubbleCommunicator():
-        LoginBubbleCommunicator()
+    def createBubbleCommunicator(self):
+        return LoginBubbleCommunicator()
     
-    def createPlaintextCommunicator():
-        LoginPlaintextCommunicator()
+    def createPlaintextCommunicator(self):
+        return LoginPlaintextCommunicator()
     
-    def createColoramaCommunicator():
-        LoginColoramaCommunicator()
+    def createColoramaCommunicator(self):
+        return LoginColoramaCommunicator()
     
-    def createCursesCommunicator():
-        LoginCursesCommunicator()
+    def createCursesCommunicator(self):
+        return LoginCursesCommunicator()
     
-    def createDialogCommunicator():
-        DialogCommunicator()
+    def createDialogCommunicator(self):
+        return DialogCommunicator()
         ## Gijs@Jo: Ook hier graag aanpassen
 
 class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
-    def createSummaryCommunicator():
-        LogoutSummaryCommunicator()
+    def createSummaryCommunicator(self):
+        return LogoutSummaryCommunicator()
      
-    def createBubbleCommunicator():
-        LogoutBubbleCommunicator()
+    def createBubbleCommunicator(self):
+        return LogoutBubbleCommunicator()
     
-    def createPlaintextCommunicator():
-        LogoutPlaintextCommunicator()
+    def createPlaintextCommunicator(self):
+        return LogoutPlaintextCommunicator()
     
-    def createColoramaCommunicator():
-        LogoutColoramaCommunicator()
+    def createColoramaCommunicator(self):
+        return LogoutColoramaCommunicator()
     
-    def createCursesCommunicator():
-        LogoutCursesCommunicator()
+    def createCursesCommunicator(self):
+        return LogoutCursesCommunicator()
     
-    def createDialogCommunicator():
-        DialogCommunicator()
+    def createDialogCommunicator(self):
+        return DialogCommunicator()
         ## Gijs@Jo: Ook hier graag aanpassen
