@@ -28,7 +28,9 @@ import platform                         ## Om te kunnen compileren op Windows
 import sys                              ## Basislib
 import os                               ## Basislib
 
-from communicator import coloramac      ## Voor output op maat
+#from communicator import coloramac      ## Voor output op maat
+from communicator import fabriek
+
 ## Gijs: In de toekomst graag vervangen door fabriek
 
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
@@ -253,9 +255,11 @@ def aanstuurderObvArgumenten(argumenten):
     elif argumenten.communicator == "colortext":
         print "ik wil vrolijke kleuren"
         ## jo: TODO changed next line in order to be able to test; should use fac here
-        #co = communicator.coloramac.LoginColoramaCommunicator()
-        co = coloramac.LoginColoramaCommunicator()
-        #help(co)
+        
+        fab = fabriek.LoginCommunicatorFabriek()
+        co = fab.createColoramaCommunicator()
+        ## Moet worden vervangen in de toekomst: fab moet al aangemaakt zijn
+        ## door de login/logout-switch.
 
     elif argumenten.communicator == "plaintext":
         print "ik wil terug naar de basis"
