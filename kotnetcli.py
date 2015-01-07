@@ -15,6 +15,13 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View,
 ## CA 94042, USA.
 
+## kotnetcli.py: parst de argumenten:
+## - zorgt ervoor dat de juiste communicator wordt geïnstantieerd, waar 
+##   worker.py berichten naar kan sturen;
+## - zorgt ervoor dat de juiste credentials wordt geïnstantieerd, waar worker.py
+##   de logingegevens uit kan trekken;
+
+
 import subprocess                       ## Om systeemcommando's uit te voeren
 import argparse                         ## Parst argumenten
 import platform                         ## Om te kunnen compileren op Windows

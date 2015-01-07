@@ -15,6 +15,14 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
+## worker.py: zorgt voor het goed verlopen van de login of logout:
+## - stuurt een credentials-ophaalcommando door naar het credentialsobject cr,
+##   zonder te weten wat voor een type credentialsklasse dat precies is;
+## - stuurt de statusberichten door naar de communicator co, zonder te weten
+##   wat er precies wordt afgebeeld, en hoe;
+## - stuurt de login- en logoutcommando's door naar het browserobject br.
+
+
 import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import urllib                           ## Diverse URL-manipulaties

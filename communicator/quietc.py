@@ -30,11 +30,7 @@ from tools import cursor                ## Om cursor te verbergen/tonen
 ## ten opzichte van deze specifieke communicator (denk ik)
 
 
-class QuietCommunicator():
-    ## TODO  jo: removed 'uit_te_voeren_procedure' argument, omdat procedure-specific
-    ## behavior in de klasse hierarchy komt te zitten
-    ## Gijs: In orde, bedankt.
-    
+class QuietCommunicator():   
     def __init__(self):
         pass
     

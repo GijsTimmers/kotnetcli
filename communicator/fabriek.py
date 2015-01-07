@@ -15,6 +15,17 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
+## fabriek.py: zorgt op aanvraag van kotnetcli.py voor het aanmaken van de
+## correcte communicator: bijvoorbeeld: kotnetcli.py vraagt om een login met
+## curses als communicator; dan zal een instantie van 
+## LoginCommunicatorFabriek.createCursesCommunicator() worden aangemaakt,
+## genaamd co. Gezien LoginSummaryCommunicator() methodes bevat als 
+## eventNetloginStart(), worden deze nu onderdeel van co. Dat wil zeggen dat
+## de worker de juiste event kan aanroepen: bvb co.eventNetloginStart(), zonder
+## te weten welke communicator dat nu precies is.
+
+## Gijs@Jo: Dit was mijn interpretatie, is deze correct?
+
 from quietc     import QuietCommunicator
 from summaryc   import LoginSummaryCommunicator,   LogoutSummaryCommunicator
 from bubblec    import LoginBubbleCommunicator,    LogoutBubbleCommunicator
