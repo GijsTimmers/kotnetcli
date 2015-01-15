@@ -7,11 +7,11 @@
 ##                  Jo Van Bulck: https://github.com/jovanbulck
 
 ## Licence:         CC-BY-SA-4.0
-##                  http://creativecommons.org/licenses/by-sa/4.0/
+##                  https://creativecommons.org/licenses/by-sa/4.0/
 
 ## This work is licensed under the Creative Commons
 ## Attribution-ShareAlike 4.0 International License. To  view a copy of
-## this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or
+## this license, visit https://creativecommons.org/licenses/by-sa/4.0/ or
 ## send a letter to Creative Commons, PO Box 1866, Mountain View,
 ## CA 94042, USA.
 
@@ -27,75 +27,6 @@ import worker                           ## Eigenlijke loginmodule
 from pinger import ping                 ## Checken of we op KUL-net zitten
 
 version = "1.3.0-dev"
-
-def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
-    if actie == "inloggen":
-        #ping(co)
-        kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-    elif actie == "uitloggen":
-        #ping(co)
-        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
-    elif actie == "dummyinloggen":
-        kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)
-    elif actie == "dummyuitloggen":
-        kl = worker.Dummyloguit(co, gebruikersnaam, wachtwoord)
-
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-
-def mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-    if dummy == True:
-        kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)
-        ## kl remains Kotnetlogin if dummy mode is not activated.
-
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-
-def mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
-    if dummy == True:
-        kl = worker.Dummyloguit(co, gebruikersnaam, wachtwoord)
-
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-
-def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord, afsluiten=False)
-
-    ## IP van uit te loggen apparaat opzoeken
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    if kl.tegoeden() == False:
-        uitteloggenip = kl.uitteloggenipophalen()
-        print uitteloggenip
-
-        ## Ander apparaat uitloggen
-        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
-        kl.netlogin()
-        kl.kuleuven()
-        kl.gegevensinvoeren()
-        kl.gegevensopsturen()
-        kl.tegoeden()
-
-        ## Conventionele login
-        kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-        kl.netlogin()
-        kl.kuleuven()
-        kl.gegevensinvoeren()
-        kl.gegevensopsturen()
-        kl.tegoeden()
 
 ## An argument parse action that prints license information
 ##  on stdout and exits
@@ -271,22 +202,24 @@ def aanstuurderObvArgumenten(argumenten):
     ############## 3. switch on login-type flags ##############
     if argumenten.worker == "login":
         print "ik wil inloggen"
-        mainLoginprocedure(co, gebruikersnaam, wachtwoord)
+        worker.Kotnetlogin(co, gebruikersnaam, wachtwoord).go()
 
     elif argumenten.worker == "force_login":
         print "ik moet en zal inloggen"
-        mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
+        #mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
+        worker.KotnetForceer(co, gebruikernaam, wachtwoord)
 
     elif argumenten.worker == "logout":
         print "ik wil uitloggen"
-        mainLoguitprocedure(co, gebruikersnaam, wachtwoord)
+        worker.Kotnetloguit(co, gebruikersnaam, wachtwoord).go()
 
     elif argumenten.worker == "dummy_login":
         print "ik wil inloggen voor spek en bonen"
-        mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
+        worker.Dummylogin(co, gebruikersnaam, wachtwoord).go()
 
     elif argumenten.worker == "dummy_logout":
         print "ik wil uitloggen voor spek en bonen"
-        mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
+        worker.Dummylogout(co, gebruikersnaam, wachtwoord).go()
 
+## parse cmd line arguments and act accordingly
 aanstuurderObvArgumenten(argumentenParser())
