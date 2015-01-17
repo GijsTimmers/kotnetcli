@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="kotnetcli" version="3">
+  <DEPS>
+    <ID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <COMPID name="Interaction" mc="Interaction" uid="32889ff2-d595-4608-8346-c65fec41153e"/>
+    <COMPID name="LoginQuietCommunicator" mc="Class" uid="8dfb99bb-359e-428a-a609-99505799bd05"/>
+    <COMPID name="LogoutQuietCommunicator" mc="Class" uid="3bb87250-4602-4875-b2fc-328984f03000"/>
+    <COMPID name="QuietCommunicator" mc="Class" uid="476f9a48-e8d1-46aa-bd12-efe12e659783"/>
+    <COMPID name="cd_communicator" mc="ClassDiagram" uid="b8ca56b6-379d-47ad-9b93-de9c2f839359"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <PID name="kotnetcli" mc="Project" uid="ae020a43-6089-4520-ae60-e57702f7fea3"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[kotnetcli]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedBehavior">
+        <COMPID name="Interaction" mc="Interaction" uid="32889ff2-d595-4608-8346-c65fec41153e"/>
+      </COMP>
+      <COMP relation="OwnedElement">
+        <COMPID name="QuietCommunicator" mc="Class" uid="476f9a48-e8d1-46aa-bd12-efe12e659783"/>
+        <COMPID name="LoginQuietCommunicator" mc="Class" uid="8dfb99bb-359e-428a-a609-99505799bd05"/>
+        <COMPID name="LogoutQuietCommunicator" mc="Class" uid="3bb87250-4602-4875-b2fc-328984f03000"/>
+      </COMP>
+      <COMP relation="Product">
+        <COMPID name="cd_communicator" mc="ClassDiagram" uid="b8ca56b6-379d-47ad-9b93-de9c2f839359"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

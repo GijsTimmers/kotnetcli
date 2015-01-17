@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="kotnetcli" version="3">
+  <DEPS>
+    <ID name="kotnetcli" mc="AnalystProject" uid="68bcc96f-c28e-4648-9fb7-628981d9f998"/>
+    <COMPID name="kotnetcli" mc="PropertyContainer" uid="3be4206b-900c-47fe-8ad4-b226b6306b94"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="kotnetcli" mc="AnalystProject" uid="68bcc96f-c28e-4648-9fb7-628981d9f998"/>
+    <ATTRIBUTES>
+      <ATT name="Name"><![CDATA[kotnetcli]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="PropertyRoot">
+        <COMPID name="kotnetcli" mc="PropertyContainer" uid="3be4206b-900c-47fe-8ad4-b226b6306b94"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>
