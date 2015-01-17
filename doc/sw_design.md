@@ -1,4 +1,4 @@
-#An introduction to`kotnetcli`'s software design
+#Introducing`kotnetcli`'s software design
 
 *work in progress: feel free to open an issue to discuss ideas / irregularities / enhancements*
 
