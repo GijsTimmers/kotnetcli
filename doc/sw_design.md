@@ -4,7 +4,6 @@
 
 This page gives an overview of `kotnetcli`'s software design. It focuses on extensibility and elegance to help developers understand, extend and maintain the code.
 
-`kotnetcli`'s software design process follows a bottom-up open source spirit. Developers are encouraged to participate in the design process, to propose enhancements, discuss caveats, enhance the documentation, etc. All diagrams presented here are created with the free  software tool `Modelio`. The project is included in the `kotnetcli_modelio_project` directory.
 
 ## Overview
 
