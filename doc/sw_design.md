@@ -11,7 +11,7 @@ This page gives an overview of `kotnetcli`'s software design. It focuses on exte
 
 The general interaction between these classes is depicted in the sequence diagram below:
 
-![sd_overview](sd_overview.png)
+![sd_overview](diagrams/sd_overview.png)
 
 This section gives an overview of all these classes, grouped into the following set of files:
 
