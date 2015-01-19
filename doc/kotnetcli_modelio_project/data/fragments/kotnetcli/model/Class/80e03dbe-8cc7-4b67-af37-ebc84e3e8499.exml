@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="LogoutColormaCommunicator" version="3">
+  <DEPS>
+    <ID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+    <EXTID name="ColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
+    <EXTID name="LogoutPlainTextCommunicator" mc="Class" uid="26b3db0a-8ee2-4998-bd0b-ea01d0fa1512"/>
+    <FOREIGNID name="description" mc="NoteType" uid="00000000-0000-3e81-0000-000000000000"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+    <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[LogoutColormaCommunicator]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="Parent">
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="5588b9ee-ede2-42a7-a342-7c20cc862abc"/>
+          <PID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="ColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="f429f098-b042-46e7-a9d3-662354e55d66"/>
+          <PID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="LogoutPlainTextCommunicator" mc="Class" uid="26b3db0a-8ee2-4998-bd0b-ea01d0fa1512"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+      <COMP relation="Descriptor">
+        <OBJECT>
+          <ID name="Note" mc="Note" uid="d3f89250-0905-4658-bd2e-d786b9d82664"/>
+          <PID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+          <ATTRIBUTES>
+            <ATT name="Content"><![CDATA[- inherits commonMethod() from ColoramaCommunicator
+- inherits logoutOperation() from LogoutPlainTextCommunicator
+- no access to loginOperation()]]></ATT>
+            <ATT name="Name"><![CDATA[Note]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="Model">
+              <FOREIGNID name="description" mc="NoteType" uid="00000000-0000-3e81-0000-000000000000"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

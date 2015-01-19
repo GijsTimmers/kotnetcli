@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="LoginQuietCommunicator" version="3">
+  <DEPS>
+    <ID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+    <EXTID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+    <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[LoginQuietCommunicator]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedOperation">
+        <OBJECT>
+          <ID name="loginOperation" mc="Operation" uid="bef4a170-c6af-4cef-9820-6141375b637e"/>
+          <PID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+          <ATTRIBUTES>
+            <ATT name="Concurrency">false</ATT>
+            <ATT name="Final">false</ATT>
+            <ATT name="Passing">MethodOut</ATT>
+            <ATT name="Visibility">Public</ATT>
+            <ATT name="IsClass">false</ATT>
+            <ATT name="IsAbstract">false</ATT>
+            <ATT name="Name"><![CDATA[loginOperation]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES></DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+      <COMP relation="Parent">
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="abfa0809-3f8b-41e7-b709-2d541da46761"/>
+          <PID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>
