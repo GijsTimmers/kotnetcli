@@ -1,11 +1,11 @@
 <?xml version="1.0" ?>
-<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="PlainTextCommunicator" version="3">
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="AbstractPlainTextCommunicator" version="3">
   <DEPS>
-    <ID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+    <ID name="AbstractPlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
     <EXTID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
   </DEPS>
   <OBJECT>
-    <ID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+    <ID name="AbstractPlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
     <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
     <ATTRIBUTES>
       <ATT name="IsActive">false</ATT>
@@ -15,14 +15,14 @@
       <ATT name="IsLeaf">false</ATT>
       <ATT name="IsRoot">false</ATT>
       <ATT name="Visibility">Public</ATT>
-      <ATT name="Name"><![CDATA[PlainTextCommunicator]]></ATT>
+      <ATT name="Name"><![CDATA[AbstractPlainTextCommunicator]]></ATT>
       <ATT name="status">1970354901745664</ATT>
     </ATTRIBUTES>
     <DEPENDENCIES>
       <COMP relation="Parent">
         <OBJECT>
           <ID name="Generalization" mc="Generalization" uid="ab229025-2ade-484d-be65-16e7d22b5498"/>
-          <PID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+          <PID name="AbstractPlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
           <ATTRIBUTES>
             <ATT name="Discriminator"></ATT>
             <ATT name="Name"><![CDATA[Generalization]]></ATT>
