@@ -121,3 +121,5 @@ do this, feel free to fork the project and show us your work!
 
 Regular developers: please take a look at the 
 [coding guidelines](https://github.com/GijsTimmers/kotnetcli/blob/master/CONTRIBUTING.md).
+
+<sub><sup>Tags: kotnetcli, kotnet, login, autologin, automatisch, automatic.</sup></sub>

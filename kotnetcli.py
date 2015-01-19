@@ -239,6 +239,28 @@ def aanstuurderObvArgumenten(argumenten):
         elif argumenten.credentials == "guest_mode":
             print "ik wil me anders voordoen dan ik ben"
             gebruikersnaam, wachtwoord = cr.guest()
+            
+    ############## 3. switch on login-type flags ##############
+    if argumenten.worker == "login":
+        print "ik wil inloggen"
+        fab = LoginCommunicatorFabriek()
+        #mainLoginprocedure(co, gebruikersnaam, wachtwoord)
+
+    elif argumenten.worker == "force_login":
+        print "ik moet en zal inloggen"
+        mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
+
+    elif argumenten.worker == "logout":
+        print "ik wil uitloggen"
+        mainLoguitprocedure(co, gebruikersnaam, wachtwoord)
+
+    elif argumenten.worker == "dummy_login":
+        print "ik wil inloggen voor spek en bonen"
+        mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
+
+    elif argumenten.worker == "dummy_logout":
+        print "ik wil uitloggen voor spek en bonen"
+        mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
 
     ############## 2. switch on communicator-related flags ##############
     if argumenten.communicator == "curses":
@@ -287,26 +309,7 @@ def aanstuurderObvArgumenten(argumenten):
         print "ik wil zwijgen"
         co = communicator.QuietCommunicator()
 
-    ############## 3. switch on login-type flags ##############
-    if argumenten.worker == "login":
-        print "ik wil inloggen"
-        mainLoginprocedure(co, gebruikersnaam, wachtwoord)
-
-    elif argumenten.worker == "force_login":
-        print "ik moet en zal inloggen"
-        mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
-
-    elif argumenten.worker == "logout":
-        print "ik wil uitloggen"
-        mainLoguitprocedure(co, gebruikersnaam, wachtwoord)
-
-    elif argumenten.worker == "dummy_login":
-        print "ik wil inloggen voor spek en bonen"
-        mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
-
-    elif argumenten.worker == "dummy_logout":
-        print "ik wil uitloggen voor spek en bonen"
-        mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=True)
+    
 
 
 
