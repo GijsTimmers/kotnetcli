@@ -39,6 +39,7 @@ from tools import pinger                ## Checken of we op KUL-net zitten
 
 version = "1.3.0-dev"
 
+
 def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
     if actie == "inloggen":
         #ping(co)

@@ -18,7 +18,28 @@
 import os
 import sys
 import subprocess
+import netifaces
 
+
+def bevestig_kotnetverbinding():
+    ## We kijken of we op Kotnet zitten door de standaardgateway op te vragen.
+    ## Op een verbinding op kot zal deze de waarde STANDAARDGATEWAY_KOTNET
+    ## aannemen, want hoewel we nog niet online zijn, is de verbinding met
+    ## de Kotnetserver al gemaakt.
+    ##
+    ## Op een verbinding thuis zal deze een andere waarde aannemen, gewoonlijk
+    ## 192.168.1.1 of iets dergelijks, tenzij in die uitzonderlijke situtatie
+    ## waarin de standaardgateway thuis ook is ingesteld op STANDAARDGATEWAY_
+    ## KOTNET.
+    
+    STANDAARDGATEWAY_KOTNET = "xx.xx.xx.xx" ## Aanpassen
+    standaardgateway = netifaces.gateways()["default"][netifaces.AF_INET][0]
+    if standaardgateway == STANDAARDGATEWAY_KOTNET:
+        return True
+    else:
+        return False
+
+"""
 def ping(co):    
     if os.name == "posix":
         with open(os.devnull, 'w') as dev_null:
@@ -59,3 +80,4 @@ def ping(co):
                 co.eventPingFailure()
                 co.beeindig_sessie()
                 sys.exit(1)
+"""
