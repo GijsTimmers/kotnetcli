@@ -13,4 +13,4 @@ This directory contains information on `kotnetcli`'s' internals. It's intended f
 
 `kotnetcli`'s software design process follows a bottom-up open source spirit. Developers are encouraged to participate in the design process, to propose enhancements, discuss caveats, enhance the documentation, etc.
 
-All diagrams presented here are created with the open source cross-platform software tool [`modelio`](https://www.modelio.org/). The project is included in the `kotnetcli_modelio_project` directory.
+All diagrams presented here are created with the cross-platform tool [`modelio 3.2.1`](https://www.modelio.org/), which is free software. The project is included in the `kotnetcli_modelio_project` directory.

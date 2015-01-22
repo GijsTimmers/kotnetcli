@@ -2,10 +2,16 @@
 <!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="kotnetcli" version="3">
   <DEPS>
     <ID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <COMPID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
+    <COMPID name="ColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
     <COMPID name="Interaction" mc="Interaction" uid="32889ff2-d595-4608-8346-c65fec41153e"/>
-    <COMPID name="LoginQuietCommunicator" mc="Class" uid="8dfb99bb-359e-428a-a609-99505799bd05"/>
-    <COMPID name="LogoutQuietCommunicator" mc="Class" uid="3bb87250-4602-4875-b2fc-328984f03000"/>
-    <COMPID name="QuietCommunicator" mc="Class" uid="476f9a48-e8d1-46aa-bd12-efe12e659783"/>
+    <COMPID name="LoginColoramaCommunicator" mc="Class" uid="94611351-3175-45b7-9c07-0e5119c299f2"/>
+    <COMPID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
+    <COMPID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+    <COMPID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+    <COMPID name="LogoutPlainTextCommunicator" mc="Class" uid="26b3db0a-8ee2-4998-bd0b-ea01d0fa1512"/>
+    <COMPID name="LogoutQuietCommunicator" mc="Class" uid="152dd48f-2e42-4f25-a764-36d69e97ba0d"/>
+    <COMPID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
     <COMPID name="cd_communicator" mc="ClassDiagram" uid="b8ca56b6-379d-47ad-9b93-de9c2f839359"/>
   </DEPS>
   <OBJECT>
@@ -25,9 +31,15 @@
         <COMPID name="Interaction" mc="Interaction" uid="32889ff2-d595-4608-8346-c65fec41153e"/>
       </COMP>
       <COMP relation="OwnedElement">
-        <COMPID name="QuietCommunicator" mc="Class" uid="476f9a48-e8d1-46aa-bd12-efe12e659783"/>
-        <COMPID name="LoginQuietCommunicator" mc="Class" uid="8dfb99bb-359e-428a-a609-99505799bd05"/>
-        <COMPID name="LogoutQuietCommunicator" mc="Class" uid="3bb87250-4602-4875-b2fc-328984f03000"/>
+        <COMPID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
+        <COMPID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+        <COMPID name="LogoutQuietCommunicator" mc="Class" uid="152dd48f-2e42-4f25-a764-36d69e97ba0d"/>
+        <COMPID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+        <COMPID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
+        <COMPID name="LogoutPlainTextCommunicator" mc="Class" uid="26b3db0a-8ee2-4998-bd0b-ea01d0fa1512"/>
+        <COMPID name="ColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
+        <COMPID name="LoginColoramaCommunicator" mc="Class" uid="94611351-3175-45b7-9c07-0e5119c299f2"/>
+        <COMPID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
       </COMP>
       <COMP relation="Product">
         <COMPID name="cd_communicator" mc="ClassDiagram" uid="b8ca56b6-379d-47ad-9b93-de9c2f839359"/>

@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="LoginPlainTextCommunicator" version="3">
+  <DEPS>
+    <ID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
+    <EXTID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+    <EXTID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
+    <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[LoginPlainTextCommunicator]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="Parent">
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="37db2a06-4a92-4bad-98ba-cb39bb75a879"/>
+          <PID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="f5458c4b-9fc6-45cc-a8bd-c0f005a34724"/>
+          <PID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>
