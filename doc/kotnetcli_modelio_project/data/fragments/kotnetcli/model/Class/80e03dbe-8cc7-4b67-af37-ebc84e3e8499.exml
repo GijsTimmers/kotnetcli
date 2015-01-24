@@ -56,8 +56,8 @@
           <ID name="Note" mc="Note" uid="d3f89250-0905-4658-bd2e-d786b9d82664"/>
           <PID name="LogoutColoramaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
           <ATTRIBUTES>
-            <ATT name="Content"><![CDATA[- inherits commonMethod() from ColoramaCommunicator
-- inherits logoutOperation() from LogoutPlainTextCommunicator
+            <ATT name="Content"><![CDATA[- inherits commonMethod() from AbstractColoramaCommunicator
+- overrides logoutOperation() from LogoutPlainTextCommunicator
 - no access to loginOperation()]]></ATT>
             <ATT name="Name"><![CDATA[Note]]></ATT>
             <ATT name="status">1970354901745664</ATT>
