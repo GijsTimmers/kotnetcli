@@ -183,7 +183,6 @@ class Dummylogout(Kotnetlogout):
         self.browser = browser.DummyBrowser(gebruikersnaam, wachtwoord);
 
 class KotnetForceer(Kotnetlogin):
-
     def __init__(self, co, gebruikersnaam, wachtwoord):
         self.my_super_kl = Kotnetlogin.__init__(self, co, gebruikersnaam, wachtwoord)
 
@@ -193,13 +192,13 @@ class KotnetForceer(Kotnetlogin):
         self.kuleuven()
         self.gegevensinvoeren()
         self.gegevensopsturen()
-        self.browser.parse_percentages()
-        uitteloggenip = self.browser.uitteloggenipophalen()
-        print uitteloggenip    #TODO communicator
-
-        ## Ander apparaat uitloggen
-        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
-        kl.go()
-
-        ## Conventionele login
-        self.my_super_kl.go()
+        self.oudipophalen() ## te implementeren
+        ## Uitloggen
+        self.formulieropsturen()
+        self.logoutresultaten() ## te implementeren
+        self.netlogin()
+        self.kuleuven()
+        self.gegevensinvoeren()
+        self.gegevensopsturen()
+        self.loginresultaten()
+    
