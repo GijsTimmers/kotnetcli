@@ -20,6 +20,7 @@
 
 from kotnetcli import KotnetCLI
 
+## An extended KotnetCLI to allow dummy behavior for testing purposes
 class KotnetCLIDev(KotnetCLI):
 
     def voegArgumentenToe(self):
@@ -33,30 +34,26 @@ class KotnetCLIDev(KotnetCLI):
         help="Performs a dry-run logging out",\
         action="store_const", dest="worker", const="dummy_logout")
     
-    def parseArgumenten(self):
-        argumenten = self.parser.parse_args()
-        cr = Credentials()
-        
+    def parseActionFlags(self):
         if argumenten.worker == "dummy_login":
             print "ik wil inloggen voor spek en bonen"
-            print "ik wil credentials ophalen voor spek en bonen"
-            #creds = 
-            #worker fabriek
-            #co = self.parseCommunicatorFlags(fabriek)
-            #worker.go(co, creds)
-
+            worker = DummyLoginWorker()
+            fabriek = LoginCommunicatorFabriek()
         
         elif argumenten.worker == "dummy_logout":
             print "ik wil uitloggen voor spek en bonen"
+            worker = DummyLogoutWorker()
+            fabriek = LogoutCommunicatorFabriek()
+        
+        else:
+            return super(KotnetCLIDev, self).parseActionFlags()
+    
+    def parseCredentialFlags(self):
+        if argumenten.worker == "dummy_login" or argumenten.worker == "dummy_logout":
             print "ik wil credentials ophalen voor spek en bonen"
-            #creds = 
-            #worker fabriek
-            #co = self.parseCommunicatorFlags(fabriek)            
-            #worker.go(co, creds)
-
-        else
-            super(KotnetCLIDev, self).parseArgumenten()
-
+            return #dummycreds
+        else:
+            return super(KotnetCLIDev, self).parseCredentialFlags()
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)

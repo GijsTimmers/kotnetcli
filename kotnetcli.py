@@ -34,7 +34,6 @@ from communicator import fabriek        ## Voor output op maat
 
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
 import worker                           ## Eigenlijke loginmodule
-from tools import pinger                ## Checken of we op KUL-net zitten
 
 version = "1.3.0-dev"
 
@@ -56,28 +55,29 @@ class PrintLicenceAction(argparse.Action):
 class KotnetCLI(object):
     
     ## Note: create the parser and groups as instance fiels so subclasses can access them
+    ##
+    ## We create three different groups, whose arguments can't be mixed (using
+    ## the add_mutually_exclusive_group() option. If you enter non-combinable
+    ## options, you'll get an error.
+    ## Then, we create three dests: worker, credentials and communicator.
+    ## The value to each of these dests depends on the flags the user applies.
+    ## If he applies none, each dest will use a default value, set with the
+    ## default parameter in add_argument().
+    ## These two things void the need for complex decision trees.
     def __init__(self):
         self.parser = argparse.ArgumentParser(description="Script om in- of uit \
         te loggen op KotNet")
-        
-        ## We create three different groups, whose arguments can't be mixed (using
-        ## the add_mutually_exclusive_group() option. If you enter non-combinable
-        ## options, you'll get an error.
-        ## Then, we create three dests: worker, credentials and communicator.
-        ## The value to each of these dests depends on the flags the user applies.
-        ## If he applies none, each dest will use a default value, set with the
-        ## default parameter in add_argument().
-        ## These two things void the need for complex decision trees.
         self.workergroep = self.parser.add_mutually_exclusive_group()
         self.credentialsgroep = self.parser.add_mutually_exclusive_group()
         self.communicatorgroep = self.parser.add_mutually_exclusive_group()
         self.voegArgumentenToe()
-   
-    ## Returns a newly created argument parser
+    
     def voegArgumentenToe(self):
+        ## general flags
         self.parser.add_argument("-v", "--version", action="version", version=version)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, nargs=0)
         
+        ## login type flags
         self.workergroep.add_argument("-i", "--login",\
         help="Logs you in on KotNet (default)",\
         action="store_const", dest="worker", const="login", default="login")
@@ -90,6 +90,7 @@ class KotnetCLI(object):
         help="Logs you out off KotNet",\
         action="store_const", dest="worker", const="logout")
         
+        ## credentials type flags
         self.credentialsgroep.add_argument("-k", "--keyring",\
         help="Makes kotnetcli pick up your credentials from the keyring (default)",\
         action="store_const", dest="credentials", const="keyring", \
@@ -104,6 +105,7 @@ class KotnetCLI(object):
         default credentials",\
         action="store_const", dest="credentials", const="guest_mode")
         
+        ## communicator flags
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using colored text output (default)",\
         action="store_const", dest="communicator", const="colortext", \
@@ -141,9 +143,23 @@ class KotnetCLI(object):
         
         return(self.parser)
 
-    # returns credentials obj
+    ## Parses the arguments corresponding to self.parser
+    def parseArgumenten(self):
+        ## 1. credential-related flags
+        creds = self.parseCredentialFlags()
+                    
+        ## 2. login-type flags
+        (worker, fabriek) = self.parseActionFlags()
+        
+        ## 3. communicator-related flags
+        co = self.parseCommunicatorFlags(fabriek)
+        
+        ## 4. start the process
+        worker.go(co, creds)
+
+    ## returns newly created credentials obj
     def parseCredentialFlags(self):
-        cr = Credentials()
+        '''cr = Credentials()
         if argumenten.credentials == "keyring":
             print "ik haal de credentials uit de keyring"
             gebruikersnaam, wachtwoord = cr.getset()
@@ -155,25 +171,48 @@ class KotnetCLI(object):
        
         elif argumenten.credentials == "guest_mode":
             print "ik wil me anders voordoen dan ik ben"
-            gebruikersnaam, wachtwoord = cr.guest()
+            gebruikersnaam, wachtwoord = cr.guest()'''
 
-    # returns fabriek en worker tuple
+    ## returns tuple (worker, fabriek)
     def parseActionFlags(self):
         if argumenten.worker == "login":
             print "ik wil inloggen"
-            fab = LoginCommunicatorFabriek()
-            #mainLoginprocedure(co, gebruikersnaam, wachtwoord)
+            worker = LoginWorker()
+            fabriek = LoginCommunicatorFabriek()
         
         elif argumenten.worker == "force_login":
             print "ik moet en zal inloggen"
-            mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord)
+            worker = ForceLoginWorker()
+            fabriek = LoginCommunicatorFabriek()
         
         elif argumenten.worker == "logout":
             print "ik wil uitloggen"
-            mainLoguitprocedure(co, gebruikersnaam, wachtwoord)
-
-    # returns communicator
+            worker = LogoutWorker()
+            fabriek = LogoutCommunicatorFabriek()
+        
+        return worker, fabriek
+    
+    ## returns communicator
     def parseCommunicatorFlags(self, fabriek):
+        if argumenten.communicator == "colortext":
+            print "ik wil vrolijke kleuren"
+            return fabriek.createColoramaCommunicator()
+        
+        elif argumenten.communicator == "plaintext":
+            print "ik wil terug naar de basis"
+            return fabriek.createPlaintextCommunicator()
+            
+        elif argumenten.communicator == "summary":
+            print "ik wil het mooie in de kleine dingen zien"
+            return fabriek.createSummaryCommunicator()
+        
+        elif argumenten.communicator == "quiet":
+            print "ik wil zwijgen"
+            return fabriek.createQuietCommunicator()
+        else:
+            print "we still have to fix the others...."
+        
+        '''
         if argumenten.communicator == "curses":
             print "ik wil vloeken"
             if os.name == "posix":
@@ -219,21 +258,8 @@ class KotnetCLI(object):
         elif argumenten.communicator == "quiet":
             print "ik wil zwijgen"
             co = communicator.QuietCommunicator()
-
-    ## Parses the arguments corresponding to self.parser
-    def parseArgumenten(self):
-        ## 1. parse credential-related flags
-        creds = self.parseCredentialFlags()
-                    
-        ## 2. switch on login-type flags
-        (worker, fabriek) = self.parseActionFlags()
-        
-        ## 3. switch on communicator-related flags
-        co = self.parseCommunicatorFlags(fabriek)
-        
-        ## 4. start the process
-        worker.go(co, creds)
-        
+        '''
+## end class KotnetCLI
 
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
@@ -243,80 +269,3 @@ if  __name__ =='__main__':
     k = KotnetCLI()
     k.parseArgumenten()
     print "== kotnetcli done =="
-
-
-
-#jo todo: alles hieronder moet in de workers
-'''
-def main(co, gebruikersnaam, wachtwoord, actie="inloggen"):
-    if actie == "inloggen":
-        #ping(co)
-        kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-    elif actie == "uitloggen":
-        #ping(co)
-        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
-    elif actie == "dummyinloggen":
-        kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)
-    elif actie == "dummyuitloggen":
-        kl = worker.Dummyloguit(co, gebruikersnaam, wachtwoord)
-
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-
-def mainLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-    if dummy == True:
-        kl = worker.Dummylogin(co, gebruikersnaam, wachtwoord)
-        ## kl remains Kotnetlogin if dummy mode is not activated.
-
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-
-def mainLoguitprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord)
-    if dummy == True:
-        kl = worker.Dummyloguit(co, gebruikersnaam, wachtwoord)
-
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    kl.tegoeden()
-
-def mainForceerLoginprocedure(co, gebruikersnaam, wachtwoord, dummy=False):
-    kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord, afsluiten=False)
-
-    ## IP van uit te loggen apparaat opzoeken
-    kl.netlogin()
-    kl.kuleuven()
-    kl.gegevensinvoeren()
-    kl.gegevensopsturen()
-    if kl.tegoeden() == False:
-        ## --force-login gaat alleen verder als de gebruiker nog niet is in-
-        ## gelogd op dit IP-adres; dan neemt kl.tegoeden namelijk de waarde
-        ## False aan.
-        uitteloggenip = kl.uitteloggenipophalen()
-        print uitteloggenip
-
-        ## Ander apparaat uitloggen
-        kl = worker.Kotnetloguit(co, gebruikersnaam, wachtwoord, uitteloggenip=uitteloggenip)
-        kl.netlogin()
-        kl.kuleuven()
-        kl.gegevensinvoeren()
-        kl.gegevensopsturen()
-        kl.tegoeden()
-
-        ## Conventionele login
-        kl = worker.Kotnetlogin(co, gebruikersnaam, wachtwoord)
-        kl.netlogin()
-        kl.kuleuven()
-        kl.gegevensinvoeren()
-        kl.gegevensopsturen()
-        kl.tegoeden()
-'''

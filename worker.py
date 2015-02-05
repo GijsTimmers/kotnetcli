@@ -85,7 +85,7 @@ class SuperWorker():
 
 ## A worker class that either succesfull logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
-class Kotnetlogin(SuperWorker):
+class LoginWorker(SuperWorker):
     def go(self):
         self.netlogin()
         self.kuleuven()
