@@ -21,6 +21,8 @@
 from kotnetcli import KotnetCLI
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
+## TODO eventueel de dummy opties laten vallen en default naar dummy behavior
+## overschakelen in deze klasse
 class KotnetCLIDev(KotnetCLI):
 
     def voegArgumentenToe(self):

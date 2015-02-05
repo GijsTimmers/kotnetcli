@@ -15,190 +15,152 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-## worker.py: zorgt voor het goed verlopen van de login of logout:
-## - stuurt een credentials-ophaalcommando door naar het credentialsobject cr,
-##   zonder te weten wat voor een type credentialsklasse dat precies is;
-## - stuurt de statusberichten door naar de communicator co, zonder te weten
-##   wat er precies wordt afgebeeld, en hoe;
-## - stuurt de login- en logoutcommando's door naar het browserobject br.
+## worker.py: directs the login/logout process:
+##  - receives a 'black box' credentials and communicator instance
+##  - uses the KotnetBrowser interface to do the actual actions one
+##    after the other, in the correct order
+##  - sends status updates to the communicator
+##  - exits with the corresponding exit code
 
-
-import re                               ## Basislib voor reguliere expressies
-import time                             ## Voor timeout om venster te sluiten
-import urllib                           ## Diverse URL-manipulaties
 import browser                          ## Doet het eigenlijke browserwerk
-import urlparse                         ## Diverse URL-manipulaties
-import mechanize                        ## Emuleert een browser
-import socket                           ## Voor ophalen IP
 import sys                              ## Basislib
-import os                               ## Basislib
 
-from tools import pinger                ## Om te checken of we op Kotnet zitten
-from tools import errorcodes as error   ## Om magic number errors te voorkomen
-from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
+#from tools import pinger                ## Om te checken of we op Kotnet zitten
+#from tools import errorcodes as error   ## Om magic number errors te voorkomen
 
 EXIT_FAILURE = 1 ## Tijdelijke exitcode, moet nog worden geïmplementeerd.
+EXIT_SUCCESS = 0
 
 class SuperWorker():
-    def __init__(self, co, gebruikersnaam, wachtwoord):
-        self.co = co
-        self.browser = browser.KotnetBrowser(gebruikersnaam, wachtwoord)
-    
-    """ Reden voor uitcommenten: Browser() gebruikt geen abstracte klasses. 
-    Daardoor is login_input_credentials() heel anders dan logout_input_creden-
-    tials en kunnen we niet input_credentials() aanroepen.
-    
-    def go(self):
-        self.netlogin()
-        self.kuleuven()
-        self.gegevensinvoeren()
-        self.gegevensopsturen()
-        self.tegoeden()
+    def __init__(self):
+        self.browser = browser.KotnetBrowser()
 
-    def netlogin(self):
-            pass
+## TODO eerst checken of server online / bereikbaar...
 
-    def kuleuven(self):
-            pass
-
-    def gegevensinvoeren(self):
-        self.co.eventInvoerenStart()
-        try:
-            self.browser.input_credentials()
-            self.co.eventInvoerenSuccess()
-        except:
-            self.co.eventInvoerenFailure()
-            sys.exit(EXIT_FAILURE)
-
-    def gegevensopsturen(self):
-        self.co.eventOpsturenStart()
-        try:
-            self.browser.send_credentials()
-            self.co.eventOpsturenSuccess()
-        except:
-            self.co.eventOpsturenFailure()
-            sys.exit(EXIT_FAILURE)
-
-    def tegoeden(self):
-            pass
-    """
-
-## A worker class that either succesfull logs you in to kotnet
+## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
 class LoginWorker(SuperWorker):
-    def go(self):
-        self.netlogin()
-        self.kuleuven()
-        self.gegevensinvoeren()
-        self.gegevensopsturen()
-        self.resultaten()
+    def go(self, co, creds):
+        self.netlogin(co)
+        self.kies_kuleuven(co)
+        self.login_gegevensinvoeren(co, creds)
+        self.login_gegevensopsturen(co)
+        self.login_resultaten(co)
         
-    def netlogin(self):
-        self.co.eventNetloginStart()
+    def netlogin(self, co):
+        co.eventNetloginStart()
         try:
             self.browser.login_open_netlogin()
-            self.co.eventNetloginSuccess()
+            co.eventNetloginSuccess()
         except:
-            self.co.eventNetloginFailure()
+            co.eventNetloginFailure()
             sys.exit(EXIT_FAILURE)
 
-    def kuleuven(self):
-        self.co.eventKuleuvenStart()
+    def kies_kuleuven(self, co):
+        co.eventKuleuvenStart()
         try:
             self.browser.login_kies_kuleuven()
-            self.co.eventKuleuvenSuccess()
+            co.eventKuleuvenSuccess()
         except:
-            self.co.eventKuleuvenFailure()
+            co.eventKuleuvenFailure()
             sys.exit(EXIT_FAILURE)
     
-    def gegevensinvoeren(self):
-        self.co.eventInvoerenStart()
+    def login_gegevensinvoeren(self, co, creds):
+        co.eventInvoerenStart()
         try:
-            self.browser.login_input_credentials()
-            self.co.eventInvoerenSuccess()
+            self.browser.login_input_credentials(creds)
+            co.eventInvoerenSuccess()
         except:
-            self.co.eventInvoerenFailure()
+            co.eventInvoerenFailure()
             sys.exit(EXIT_FAILURE)
 
-    def gegevensopsturen(self):
-        self.co.eventOpsturenStart()
+    def login_gegevensopsturen(self, co):
+        co.eventOpsturenStart()
         try:
             self.browser.login_send_credentials()
-            self.co.eventOpsturenSuccess()
+            co.eventOpsturenSuccess()
         except:
-            self.co.eventOpsturenFailure()
+            co.eventOpsturenFailure()
             sys.exit(EXIT_FAILURE)
 
-    def resultaten(self):
+    def login_resultaten(self, co):
         tup = self.browser.login_parse_results()
         ## check whether it worked out
-        if len(tup) == 1:
-            print tup[0]
+        if len(tup) != 2:
+            print "resultaten tuplen != 2"
+            co.beendig_sessie()
+            sys.exit(EXIT_FAILURE)
         else:
-            self.co.eventResultatenBekend(tup[0], tup[1])
-        self.co.beeindig_sessie()
+            co.eventResultatenBekend(tup[0], tup[1])
+            co.beeindig_sessie()
+            sys.exit(EXIT_SUCCESS)
 
 class Dummylogin(Kotnetlogin):
-    def __init__(self, co, gebruikersnaam, wachtwoord):
-        self.co = co
-        self.browser = browser.DummyBrowser(gebruikersnaam, wachtwoord);
+    def __init__(self):
+        self.browser = browser.DummyBrowser()
 
 ## A worker class that either succesfull logs you off from kotnet
 ## or exits with failure, reporting events to the given communicator
 ## Do not use Kotnetlogout for integration in a forced-login method. We have
 ## KotnetForceLogin() for this purpose.
 class Kotnetlogout(SuperWorker):
-    def go(self):
-        self.formulieropsturen()
-        self.resultaten()
+    def go(self, co, creds):
+        self.logout_formulieraanmaken(co, creds):
+        self.logout_formulieropsturen(co)
+        self.logout_resultaten(co)
     
-    def formulieraanmaken(self):
-        self.co.eventFormulierAanmakenStart()
+    def logout_formulieraanmaken(self, co, creds):
+        co.eventFormulierAanmakenStart()
         try:
-            self.browser.logout_input_credentials()
-            self.co.eventFormulierAanmakenSuccess()
+            self.browser.logout_input_credentials(creds)
+            co.eventFormulierAanmakenSuccess()
         except:
-            self.co.eventFormulierAanmakenFailure()
+            co.eventFormulierAanmakenFailure()
             sys.exit(EXIT_FAILURE)
     
-    def formulieropsturen(self):
-        self.co.eventFormulierOpsturenStart()
+    def logout_formulieropsturen(self, co):
+        co.eventFormulierOpsturenStart()
         try:
             self.browser.logout_send_credentials()
-            self.co.eventFormulierOpsturenSuccess()
+            co.eventFormulierOpsturenSuccess()
         except:
-            self.co.eventFormulierOpsturenFailure()
+            co.eventFormulierOpsturenFailure()
             sys.exit(EXIT_FAILURE)
 
-    def resultaten(self):
+    def logout_resultaten(self, co):
         if logout_parse_results():
             print "success!"
         else:
             print "outch!"
-        self.co.beeindig_sessie()
+        co.beeindig_sessie()
 
 class Dummylogout(Kotnetlogout):
-    def __init__(self, co, gebruikersnaam, wachtwoord):
-        Kotnetlogout.__init__(self, co, gebruikersnaam, wachtwoord)
-        self.browser = browser.DummyBrowser(gebruikersnaam, wachtwoord);
+    def __init__(self):
+        self.browser = browser.DummyBrowser()
 
-class KotnetForceer(Kotnetlogin):
-    def __init__(self, co, gebruikersnaam, wachtwoord):
-        self.my_super_kl = Kotnetlogin.__init__(self, co, gebruikersnaam, wachtwoord)
-
-    def go(self):
+class KotnetForceer(Kotnetlogin, Kotnetlogout):
+    def go(self, co, creds):
         ## IP van uit te loggen apparaat opzoeken
-        self.netlogin()
-        self.kuleuven()
-        self.gegevensinvoeren()
-        self.gegevensopsturen()
-        self.oudipophalen() ## te implementeren
+        self.netlogin(co)
+        self.kies_kuleuven(co)
+        self.login_gegevensinvoeren(co, creds)
+        self.login_gegevensopsturen(co)
+        self.oudipophalen(co)
         ## Uitloggen
-        self.formulieropsturen()
-        self.logoutresultaten() ## te implementeren
-        self.netlogin()
-        self.kuleuven()
-        self.gegevensinvoeren()
-        self.gegevensopsturen()
-        self.loginresultaten()
+        self.logout_formulieraanmaken(co, creds)
+        self.logout_formulieropsturen(co)
+        self.logout_resultaten(co)
+        ## re-login
+        self.netlogin(co)
+        self.kies_kuleuven(co)
+        self.login_gegevensinvoeren(co, creds)
+        self.login_gegevensopsturen(co)
+        self.login_resultaten(co)
     
+    def oudipophalen(self, co):
+        try:
+            self.browser.uitteloggenipophalen()
+            co.ipophalenSucces() ## te implementeren
+        except:
+            co.ipophalenFailure()
+            sys.exit(EXIT_FAILURE)
