@@ -33,7 +33,7 @@ from communicator import fabriek        ## Voor output op maat
 ## Gijs: In de toekomst graag vervangen door fabriek
 
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
-import worker                           ## Eigenlijke loginmodule
+from worker import LoginWorker, LogoutWorker, ForceerLoginWorker
 
 version = "1.3.0-dev"
 
@@ -140,25 +140,21 @@ class KotnetCLI(object):
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
         action="store_const", dest="communicator", const="quiet")
-        
-        return(self.parser)
 
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
+        argumenten = self.parser.parse_args()
         ## 1. credential-related flags
-        creds = self.parseCredentialFlags()
-                    
+        creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags
-        (worker, fabriek) = self.parseActionFlags()
-        
+        (worker, fabriek) = self.parseActionFlags(argumenten)
         ## 3. communicator-related flags
-        co = self.parseCommunicatorFlags(fabriek)
-        
+        co = self.parseCommunicatorFlags(fabriek, argumenten)
         ## 4. start the process
         worker.go(co, creds)
 
     ## returns newly created credentials obj
-    def parseCredentialFlags(self):
+    def parseCredentialFlags(self, argumenten):
         '''cr = Credentials()
         if argumenten.credentials == "keyring":
             print "ik haal de credentials uit de keyring"
@@ -174,7 +170,7 @@ class KotnetCLI(object):
             gebruikersnaam, wachtwoord = cr.guest()'''
 
     ## returns tuple (worker, fabriek)
-    def parseActionFlags(self):
+    def parseActionFlags(self, argumenten):
         if argumenten.worker == "login":
             print "ik wil inloggen"
             worker = LoginWorker()
@@ -193,7 +189,7 @@ class KotnetCLI(object):
         return worker, fabriek
     
     ## returns communicator
-    def parseCommunicatorFlags(self, fabriek):
+    def parseCommunicatorFlags(self, fabriek, argumenten):
         if argumenten.communicator == "colortext":
             print "ik wil vrolijke kleuren"
             return fabriek.createColoramaCommunicator()

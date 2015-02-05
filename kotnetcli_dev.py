@@ -19,6 +19,7 @@
 ## extra developer/debug related command line options
 
 from kotnetcli import KotnetCLI
+from worker import DummyLoginWorker, DummyLogoutWorker
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 ## TODO eventueel de dummy opties laten vallen en default naar dummy behavior

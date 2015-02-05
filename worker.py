@@ -87,7 +87,7 @@ class LoginWorker(SuperWorker):
         tup = self.browser.login_parse_results()
         ## check whether it worked out
         if len(tup) != 2:
-            print "resultaten tuplen != 2"
+            print "resultaten tuple len != 2"
             co.beendig_sessie()
             sys.exit(EXIT_FAILURE)
         else:
@@ -95,7 +95,7 @@ class LoginWorker(SuperWorker):
             co.beeindig_sessie()
             sys.exit(EXIT_SUCCESS)
 
-class Dummylogin(Kotnetlogin):
+class DummyLoginWorker(LoginWorker):
     def __init__(self):
         self.browser = browser.DummyBrowser()
 
@@ -103,9 +103,9 @@ class Dummylogin(Kotnetlogin):
 ## or exits with failure, reporting events to the given communicator
 ## Do not use Kotnetlogout for integration in a forced-login method. We have
 ## KotnetForceLogin() for this purpose.
-class Kotnetlogout(SuperWorker):
+class LogoutWorker(SuperWorker):
     def go(self, co, creds):
-        self.logout_formulieraanmaken(co, creds):
+        self.logout_formulieraanmaken(co, creds)
         self.logout_formulieropsturen(co)
         self.logout_resultaten(co)
     
@@ -134,11 +134,11 @@ class Kotnetlogout(SuperWorker):
             print "outch!"
         co.beeindig_sessie()
 
-class Dummylogout(Kotnetlogout):
+class DummyLogoutWorker(LogoutWorker):
     def __init__(self):
         self.browser = browser.DummyBrowser()
 
-class KotnetForceer(Kotnetlogin, Kotnetlogout):
+class ForceerLoginWorker(LoginWorker, LogoutWorker):
     def go(self, co, creds):
         ## IP van uit te loggen apparaat opzoeken
         self.netlogin(co)
