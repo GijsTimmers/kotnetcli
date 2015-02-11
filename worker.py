@@ -55,6 +55,7 @@ class LoginWorker(SuperWorker):
             co.eventNetloginSuccess()
         except:
             co.eventNetloginFailure()
+            co.beeindig_sessie(1)
             sys.exit(EXIT_FAILURE)
 
     def kies_kuleuven(self, co):
@@ -64,6 +65,7 @@ class LoginWorker(SuperWorker):
             co.eventKuleuvenSuccess()
         except:
             co.eventKuleuvenFailure()
+            co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
     
     def login_gegevensinvoeren(self, co, creds):
@@ -73,6 +75,7 @@ class LoginWorker(SuperWorker):
             co.eventInvoerenSuccess()
         except:
             co.eventInvoerenFailure()
+            co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
 
     def login_gegevensopsturen(self, co):
@@ -82,6 +85,7 @@ class LoginWorker(SuperWorker):
             co.eventOpsturenSuccess()
         except:
             co.eventOpsturenFailure()
+            co.beeindig_sessie()
             sys.exit(EXIT_FAILURE)
 
     def login_resultaten(self, co):
@@ -89,10 +93,10 @@ class LoginWorker(SuperWorker):
         ## check whether it worked out
         if len(tup) != 2:
             print "resultaten tuple len != 2"
-            co.beendig_sessie()
+            co.beendig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
         else:
-            co.eventResultatenBekend(tup[0], tup[1])
+            co.eventLoginGeslaagd(tup[0], tup[1])
             co.beeindig_sessie()
             sys.exit(EXIT_SUCCESS)
 

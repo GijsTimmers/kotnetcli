@@ -63,6 +63,7 @@ class KotnetBrowser():
     ## This method parses the server's response. On success, it returns a tuple of
     ## length 2: (downloadpercentage, uploadpercentage); else this method
     ## returns a tuple of length 1, containing a descriptive errmsg
+    ## TODO vervang magic tuple len 1 met errmsg door gerichte exception of gewoon errcode?
     def login_parse_results(self):
         html = self.browser.response().read()
 
@@ -172,7 +173,31 @@ class KotnetBrowser():
             return False
         else:
             print html
+
+class DummyBrowser():
+    def __init__(self):
+        pass
+
+    def login_open_netlogin(self):
+        time.sleep(0.1)
+
+    def login_kies_kuleuven(self):
+        time.sleep(0.1)
     
+    def login_input_credentials(self, creds):
+        time.sleep(0.1)
+
+    def login_send_credentials(self):
+        time.sleep(0.1)
+
+    ## This method parses the server's response. On success, it returns a tuple of
+    ## length 2: (downloadpercentage, uploadpercentage); else this method
+    ## returns a tuple of length 1, containing a descriptive errmsg
+    def login_parse_results(self):
+        return (80, 100)
+
+
+'''    
 ## Deze klasse bevat functies voor de forceer-loginmethode. Gaan we nu nog
 ## niet gebruiken. Deze klasse wordt later waarschijnlijk samengevoegd met
 ## KotnetBrowser().
@@ -189,35 +214,4 @@ class KotnetForceerBrowser(KotnetBrowser):
         uitteloggenip = form.contents[3]["value"]
 
         return uitteloggenip    
-
-class DummyBrowser():
-    def __init__(self):
-        pass
-
-    def open_netlogin(self):
-        time.sleep(0.1)
-
-    def netlogout(self, lokatie_formulier):
-        time.sleep(0.1)
-
-    def kies_kuleuven(self):
-        time.sleep(0.1)
-
-    def input_credentials(self):
-        time.sleep(0.1)
-
-    def send_credentials(self):
-        time.sleep(0.1)
-
-    ## This method parses the server's response. On success, it returns a tuple of
-    ##  length 2: (downloadpercentage, uploadpercentage); else this method
-    ##  returns a tuple of length 1, containing a descriptive errmsg
-    def parse_percentages(self):
-        return (80, 100)
-
-    def uitteloggenipophalen(self):
-        return "192.168.10.10"
-
-    ## returns true iff succes; else false
-    def parse_logout(self):
-        return True
+'''

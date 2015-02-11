@@ -145,7 +145,7 @@ class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommuni
         LoginPlaintextCommunicator.eventLoginGeslaagd(self, downloadpercentage, uploadpercentage)
 
     def beeindig_sessie(self, error_code=0):
-        LoginPlaintextCommunicator.beeindig_sessie(self, error_code=0)
+        LoginPlaintextCommunicator.beeindig_sessie(self, error_code)
 
 class LogoutColoramaCommunicator(SuperColoramaCommunicator, LogoutPlaintextCommunicator):
     ## TODO: jo: (hackhackhack) manually override the mutliple inheritance
