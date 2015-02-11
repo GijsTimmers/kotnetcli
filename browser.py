@@ -26,6 +26,9 @@ import os                               ## Basislib
 
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
+## the maximum waiting time in seconds for browser connections
+BROWSER_TIMEOUT_SEC = 1.5
+
 ## The class doing the actual browser emulation work. One can extend this
 ## class to add specific behavior (e.g. communicating; err catching; etc).
 ## KotnetBrowser() is like an API: it contains all possible Browser operations.
@@ -35,18 +38,18 @@ from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 ## Some 
 
 class KotnetBrowser():
-    def __init__(self, gebruikersnaam, wachtwoord):
+    ## Note: the browser itself doesn't save any credentials. These are kept in a
+    ## credentials object that is supplied when needed
+    def __init__(self):
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
-        self.gebruikersnaam = gebruikersnaam    #TODO niet opslaan...
-        self.wachtwoord = wachtwoord
     
     ## returns True | False depending on whether or not the user seems to be on the
     ## kotnet network (connect to  netlogin.kuleuven.be)
-    def bevestig_kotnetverbinding():
-        ## try to open a TCP connection on port 443 with a timeout of 1.5 second
+    def bevestig_kotnetverbinding(self):
+        ## try to open a TCP connection on port 443 with a maximum waiting time
         try:
-            sock = socket.create_connection(("netlogin.kuleuven.be", 443), 1.5)
+            sock = socket.create_connection(("netlogin.kuleuven.be", 443), BROWSER_TIMEOUT_SEC)
             sock.close()
             return True
         except:
@@ -54,19 +57,19 @@ class KotnetBrowser():
     
     def login_open_netlogin(self):
         response = self.browser.open("https://netlogin.kuleuven.be", \
-        timeout=1.8)
+        timeout=BROWSER_TIMEOUT_SEC)
         #html = response.read()
 
     def login_kies_kuleuven(self):
         self.browser.select_form(nr=1)
         self.browser.submit()
     
-    def login_input_credentials(self):
+    def login_input_credentials(self, creds):
         self.browser.select_form(nr=1)
-        self.browser.form["uid"] = self.gebruikersnaam
+        self.browser.form["uid"] = creds.getGebruikersnaam()
         wachtwoordvaknaam = \
         self.browser.form.find_control(type="password").name
-        self.browser.form[wachtwoordvaknaam] = self.wachtwoord
+        self.browser.form[wachtwoordvaknaam] = creds.getWachtwoord()
 
     def login_send_credentials(self):
         self.browser.submit()

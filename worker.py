@@ -33,11 +33,11 @@ EXIT_SUCCESS = 0
 
 class SuperWorker(object):
     def __init__(self):
-        self.browser = "none"
-        #self.browser = browser.KotnetBrowser()
+        self.browser = browser.KotnetBrowser()
     
     def check_kotnet(self, co):
         if (not self.browser.bevestig_kotnetverbinding()):
+            ## TODO the message below should be sent through a communicator
             print "Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?"
             co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
