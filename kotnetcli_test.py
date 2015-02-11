@@ -15,7 +15,7 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View,
 ## CA 94042, USA.
 
-## kotnetcli_dev.py: an extension of kotnetcli.py, containing some
+## kotnetcli_test.py: an extension of kotnetcli.py, containing some
 ## extra developer/debug related command line options
 
 from kotnetcli import KotnetCLI
@@ -24,11 +24,12 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 ## TODO eventueel de dummy opties laten vallen en default naar dummy behavior
-## overschakelen in deze klasse
-class KotnetCLIDev(KotnetCLI):
+## overschakelen in deze klasse --> parseActionFlags overriden
+## en dan evt nog --run-tests om op te roepen vanuit travisCI
+class KotnetCLITester(KotnetCLI):
 
     def voegArgumentenToe(self):
-        super(KotnetCLIDev, self).voegArgumentenToe()
+        super(KotnetCLITester, self).voegArgumentenToe()
         
         self.workergroep.add_argument("-1", "--dummy-login",\
         help="Performs a dry-run logging in",\
@@ -52,19 +53,19 @@ class KotnetCLIDev(KotnetCLI):
             return (worker, fabriek)
         
         else:
-            return super(KotnetCLIDev, self).parseActionFlags(argumenten)
+            return super(KotnetCLITester, self).parseActionFlags(argumenten)
     
     def parseCredentialFlags(self, argumenten):
         if argumenten.worker == "dummy_login" or argumenten.worker == "dummy_logout":
             print "ik wil credentials ophalen voor spek en bonen"
             return #dummycreds
         else:
-            return super(KotnetCLIDev, self).parseCredentialFlags(argumenten)
+            return super(KotnetCLITester, self).parseCredentialFlags(argumenten)
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)
 if  __name__ =='__main__':
     print "== kotnetcli_dev started =="
-    k = KotnetCLIDev()
+    k = KotnetCLITester()
     k.parseArgumenten()
     print "== kotnetcli_dev done =="
