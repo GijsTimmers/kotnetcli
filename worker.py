@@ -31,9 +31,10 @@ import sys                              ## Basislib
 EXIT_FAILURE = 1 ## Tijdelijke exitcode, moet nog worden geïmplementeerd.
 EXIT_SUCCESS = 0
 
-class SuperWorker():
+class SuperWorker(object):
     def __init__(self):
-        self.browser = browser.KotnetBrowser()
+        self.browser = "none"
+        #self.browser = browser.KotnetBrowser()
 
 ## TODO eerst checken of server online / bereikbaar...
 
@@ -138,6 +139,7 @@ class DummyLogoutWorker(LogoutWorker):
     def __init__(self):
         self.browser = browser.DummyBrowser()
 
+'''
 class ForceerLoginWorker(LoginWorker, LogoutWorker):
     def go(self, co, creds):
         ## IP van uit te loggen apparaat opzoeken
@@ -164,3 +166,4 @@ class ForceerLoginWorker(LoginWorker, LogoutWorker):
         except:
             co.ipophalenFailure()
             sys.exit(EXIT_FAILURE)
+'''

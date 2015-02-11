@@ -191,7 +191,7 @@ class KotnetForceerBrowser(KotnetBrowser):
         return uitteloggenip    
 
 class DummyBrowser():
-    def __init__(self, gebruikersnaam, wachtwoord):
+    def __init__(self):
         pass
 
     def open_netlogin(self):

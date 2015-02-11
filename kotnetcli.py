@@ -28,12 +28,12 @@ import platform                         ## Om te kunnen compileren op Windows
 import sys                              ## Basislib
 import os                               ## Basislib
 
-from communicator import fabriek        ## Voor output op maat
+from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 
 ## Gijs: In de toekomst graag vervangen door fabriek
 
 from credentials import Credentials     ## Opvragen van nummer en wachtwoord
-from worker import LoginWorker, LogoutWorker, ForceerLoginWorker
+from worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
 
 version = "1.3.0-dev"
 
@@ -82,13 +82,15 @@ class KotnetCLI(object):
         help="Logs you in on KotNet (default)",\
         action="store_const", dest="worker", const="login", default="login")
 
-        self.workergroep.add_argument("-!", "--force-login",\
-        help="Logs you out on other IP's, and then in on this one",\
-        action="store_const", dest="worker", const="force_login")
-        
         self.workergroep.add_argument("-o", "--logout",\
         help="Logs you out off KotNet",\
         action="store_const", dest="worker", const="logout")
+        
+        '''
+        self.workergroep.add_argument("-!", "--force-login",\
+        help="Logs you out on other IP's, and then in on this one",\
+        action="store_const", dest="worker", const="force_login")
+        '''
         
         ## credentials type flags
         self.credentialsgroep.add_argument("-k", "--keyring",\
@@ -106,11 +108,17 @@ class KotnetCLI(object):
         action="store_const", dest="credentials", const="guest_mode")
         
         ## communicator flags
+        self.communicatorgroep.add_argument("-t", "--plaintext",\
+        help="Omits the curses interface by using plaintext output",\
+        action="store_const", dest="communicator", const="plaintext")
+        
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using colored text output (default)",\
         action="store_const", dest="communicator", const="colortext", \
         default="colortext")
         
+        ## voorlopig andere communicators uitschakelen in de dev branch
+        '''
         """
         communicatorgroep.add_argument("-a", "--android",\
         help="Logs you in using the Android login system",\
@@ -120,10 +128,6 @@ class KotnetCLI(object):
         self.communicatorgroep.add_argument("-u", "--curses",\
         help="Logs you in using curses output",\
         action="store_const", dest="communicator", const="curses")
-        
-        self.communicatorgroep.add_argument("-t", "--plaintext",\
-        help="Omits the curses interface by using plaintext output",\
-        action="store_const", dest="communicator", const="plaintext")
         
         self.communicatorgroep.add_argument("-d", "--dialog",\
         help="Omits the curses interface by using dialog based output",\
@@ -140,7 +144,8 @@ class KotnetCLI(object):
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
         action="store_const", dest="communicator", const="quiet")
-
+        '''
+    
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
         argumenten = self.parser.parse_args()
@@ -176,28 +181,34 @@ class KotnetCLI(object):
             worker = LoginWorker()
             fabriek = LoginCommunicatorFabriek()
         
-        elif argumenten.worker == "force_login":
-            print "ik moet en zal inloggen"
-            worker = ForceLoginWorker()
-            fabriek = LoginCommunicatorFabriek()
-        
         elif argumenten.worker == "logout":
             print "ik wil uitloggen"
             worker = LogoutWorker()
             fabriek = LogoutCommunicatorFabriek()
         
-        return worker, fabriek
+        '''elif argumenten.worker == "force_login":
+            print "ik moet en zal inloggen"
+            worker = ForceLoginWorker()
+            fabriek = LoginCommunicatorFabriek()
+        '''
+        
+        return (worker, fabriek)
     
     ## returns communicator
     def parseCommunicatorFlags(self, fabriek, argumenten):
-        if argumenten.communicator == "colortext":
+        if argumenten.communicator == "plaintext":
+            print "ik wil terug naar de basis"
+            return fabriek.createPlaintextCommunicator()
+        
+        elif argumenten.communicator == "colortext":
             print "ik wil vrolijke kleuren"
             return fabriek.createColoramaCommunicator()
         
-        elif argumenten.communicator == "plaintext":
-            print "ik wil terug naar de basis"
-            return fabriek.createPlaintextCommunicator()
-            
+        else:
+            print "ik ga mee met de stroom" # TODO kunnen we default niet specifieren mbv argparse module??
+            return fabriek.createColoramaCommunicator()
+        
+        '''
         elif argumenten.communicator == "summary":
             print "ik wil het mooie in de kleine dingen zien"
             return fabriek.createSummaryCommunicator()
@@ -208,7 +219,6 @@ class KotnetCLI(object):
         else:
             print "we still have to fix the others...."
         
-        '''
         if argumenten.communicator == "curses":
             print "ik wil vloeken"
             if os.name == "posix":

@@ -20,6 +20,7 @@
 
 from kotnetcli import KotnetCLI
 from worker import DummyLoginWorker, DummyLogoutWorker
+from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 ## TODO eventueel de dummy opties laten vallen en default naar dummy behavior
@@ -37,26 +38,28 @@ class KotnetCLIDev(KotnetCLI):
         help="Performs a dry-run logging out",\
         action="store_const", dest="worker", const="dummy_logout")
     
-    def parseActionFlags(self):
+    def parseActionFlags(self, argumenten):
         if argumenten.worker == "dummy_login":
             print "ik wil inloggen voor spek en bonen"
             worker = DummyLoginWorker()
             fabriek = LoginCommunicatorFabriek()
-        
+            return (worker, fabriek)
+            
         elif argumenten.worker == "dummy_logout":
             print "ik wil uitloggen voor spek en bonen"
             worker = DummyLogoutWorker()
             fabriek = LogoutCommunicatorFabriek()
+            return (worker, fabriek)
         
         else:
-            return super(KotnetCLIDev, self).parseActionFlags()
+            return super(KotnetCLIDev, self).parseActionFlags(argumenten)
     
-    def parseCredentialFlags(self):
+    def parseCredentialFlags(self, argumenten):
         if argumenten.worker == "dummy_login" or argumenten.worker == "dummy_logout":
             print "ik wil credentials ophalen voor spek en bonen"
             return #dummycreds
         else:
-            return super(KotnetCLIDev, self).parseCredentialFlags()
+            return super(KotnetCLIDev, self).parseCredentialFlags(argumenten)
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)
