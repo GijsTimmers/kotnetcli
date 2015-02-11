@@ -40,7 +40,18 @@ class KotnetBrowser():
         self.browser.addheaders = [('User-agent', 'Firefox')]
         self.gebruikersnaam = gebruikersnaam    #TODO niet opslaan...
         self.wachtwoord = wachtwoord
-        
+    
+    ## returns True | False depending on whether or not the user seems to be on the
+    ## kotnet network (connect to  netlogin.kuleuven.be)
+    def bevestig_kotnetverbinding():
+        ## try to open a TCP connection on port 443 with a timeout of 1.5 second
+        try:
+            sock = socket.create_connection(("netlogin.kuleuven.be", 443), 1.5)
+            sock.close()
+            return True
+        except:
+            return False
+    
     def login_open_netlogin(self):
         response = self.browser.open("https://netlogin.kuleuven.be", \
         timeout=1.8)
@@ -177,6 +188,9 @@ class KotnetBrowser():
 class DummyBrowser():
     def __init__(self):
         pass
+    
+    def bevestig_kotnetverbinding(self):
+        return True
 
     def login_open_netlogin(self):
         time.sleep(0.1)

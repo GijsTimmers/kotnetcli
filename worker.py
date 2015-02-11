@@ -35,13 +35,18 @@ class SuperWorker(object):
     def __init__(self):
         self.browser = "none"
         #self.browser = browser.KotnetBrowser()
-
-## TODO eerst checken of server online / bereikbaar...
+    
+    def check_kotnet(self, co):
+        if (not self.browser.bevestig_kotnetverbinding()):
+            print "Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?"
+            co.beeindig_sessie(EXIT_FAILURE)
+            sys.exit(EXIT_FAILURE)
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
 class LoginWorker(SuperWorker):
     def go(self, co, creds):
+        self.check_kotnet(co)
         self.netlogin(co)
         self.kies_kuleuven(co)
         self.login_gegevensinvoeren(co, creds)
@@ -55,7 +60,7 @@ class LoginWorker(SuperWorker):
             co.eventNetloginSuccess()
         except:
             co.eventNetloginFailure()
-            co.beeindig_sessie(1)
+            co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
 
     def kies_kuleuven(self, co):
