@@ -36,6 +36,9 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 from credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
 from worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
 
+import logging
+logger = logging.getLogger(__name__)
+
 version = "1.3.0-dev"
 
 ## An argument parse action that prints license information
@@ -76,6 +79,8 @@ class KotnetCLI(object):
         ## general flags
         self.parser.add_argument("-v", "--version", action="version", version=version)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, nargs=0)
+        self.parser.add_argument("-d", "--debug", help="show debug messages", \
+        action="store_const", const="debug")
         
         ## login type flags
         self.workergroep.add_argument("-i", "--login",\
@@ -153,6 +158,9 @@ class KotnetCLI(object):
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
         argumenten = self.parser.parse_args()
+        ## 0. general flags
+        if (argumenten.debug):
+            logging.basicConfig(level=logging.DEBUG)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags
@@ -164,7 +172,7 @@ class KotnetCLI(object):
 
     ## returns newly created credentials obj
     def parseCredentialFlags(self, argumenten):
-        print "ik haal de credentials uit de keyring"
+        logger.info("ik haal de credentials uit de keyring")
         return self.parseCredsFlags(argumenten, KeyRingCredentials())
     
     ## a helper method with a default credentials object argument
@@ -176,7 +184,7 @@ class KotnetCLI(object):
             return cr
                 
         elif argumenten.credentials == "forget":
-            print "ik wil vergeten"
+            logger.info("ik wil vergeten")
             try:
                 cr.forgetCreds()
                 print "You have succesfully removed your kotnetcli credentials."
@@ -186,7 +194,7 @@ class KotnetCLI(object):
                 sys.exit(1)
         
         elif argumenten.credentials == "guest_mode":
-            print "ik wil me anders voordoen dan ik ben"
+            logger.info("ik wil me anders voordoen dan ik ben")
             (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
             cr.saveGuestCreds(gebruikersnaam, wachtwoord)
             return cr
@@ -203,12 +211,12 @@ class KotnetCLI(object):
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):
         if argumenten.worker == "login":
-            print "ik wil inloggen"
+            logger.info("ik wil inloggen")
             worker = LoginWorker()
             fabriek = LoginCommunicatorFabriek()
         
         elif argumenten.worker == "logout":
-            print "ik wil uitloggen"
+            logger.info("ik wil uitloggen")
             worker = LogoutWorker()
             fabriek = LogoutCommunicatorFabriek()
         
@@ -227,15 +235,15 @@ class KotnetCLI(object):
         #    return fabriek.createQuietCommunicator()
         
         if argumenten.communicator == "plaintext":
-            print "ik wil terug naar de basis"
+            logger.info("ik wil terug naar de basis")
             return fabriek.createPlaintextCommunicator()
         
         elif argumenten.communicator == "colortext":
-            print "ik wil vrolijke kleuren"
+            logger.info("ik wil vrolijke kleuren")
             return fabriek.createColoramaCommunicator()
         
         else:
-            print "ik ga mee met de stroom" # TODO kunnen we default niet specifieren mbv argparse module??
+            logger.info("ik ga mee met de stroom") # TODO kunnen we default niet specifieren mbv argparse module??
             return fabriek.createColoramaCommunicator()
         
         '''
@@ -301,7 +309,5 @@ class KotnetCLI(object):
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)
 if  __name__ =='__main__':
-    print "== kotnetcli started =="
     k = KotnetCLI()
     k.parseArgumenten()
-    print "== kotnetcli done =="

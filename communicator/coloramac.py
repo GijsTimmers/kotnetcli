@@ -28,6 +28,9 @@ from plaintextc import (
 #from ..tools import cursor              ## Om cursor te verbergen/tonen
 from tools import cursor                ## Om cursor te verbergen/tonen
 
+import logging
+logger = logging.getLogger(__name__)
+
 ## Gijs:
 ## We hoeven geen relatieve import te gebruiken omdat de map waarin 
 ## kotnetcli.py zich bevindt de rootmap ($PYTHONPATH) is. De map 'tools'
@@ -36,15 +39,15 @@ from tools import cursor                ## Om cursor te verbergen/tonen
 
 
 try:            
-    print "Probeert Colorama te importeren...",
+    logging.debug("Probeert Colorama te importeren..."),
     from colorama import (              ## Voor gekleurde tekst.
                           Fore,
                           Style,
                           init as colorama_init
                           )
-    print "OK"
+    logging.debug("OK")
 except ImportError:
-    print "Couldn't import the colorama library."
+    logging.error("Couldn't import the colorama library.")
     pass
 
 class SuperColoramaCommunicator(SuperPlaintextCommunicator):

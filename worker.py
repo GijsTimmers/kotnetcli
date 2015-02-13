@@ -28,6 +28,9 @@ import sys                              ## Basislib
 #from tools import pinger                ## Om te checken of we op Kotnet zitten
 #from tools import errorcodes as error   ## Om magic number errors te voorkomen
 
+import logging
+logger = logging.getLogger(__name__)
+
 EXIT_FAILURE = 1 ## Tijdelijke exitcode, moet nog worden geïmplementeerd.
 EXIT_SUCCESS = 0
 
@@ -40,15 +43,16 @@ class SuperWorker(object):
         if (self.browser.bevestig_kotnetverbinding()):
             co.eventKotnetVerbindingSuccess()
         else:
-            #print "Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?"
             co.eventKotnetVerbindingFailure()
             co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?")
             sys.exit(EXIT_FAILURE)
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
 class LoginWorker(SuperWorker):
     def go(self, co, creds):
+        logger.info("enter LoginWorker.go()")
         self.check_kotnet(co)
         self.netlogin(co)
         self.kies_kuleuven(co)
@@ -100,12 +104,13 @@ class LoginWorker(SuperWorker):
         tup = self.browser.login_parse_results()
         ## check whether it worked out
         if len(tup) != 2:
-            #print "resultaten tuple len != 2"
             co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
+            logger.error("resultaten tuple len != 2")
         else:
             co.eventLoginGeslaagd(tup[0], tup[1])
             co.beeindig_sessie()
+            logger.info("LoginWorker: exiting with success")
             sys.exit(EXIT_SUCCESS)
 
 class DummyLoginWorker(LoginWorker):

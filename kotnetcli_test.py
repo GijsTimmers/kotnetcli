@@ -24,6 +24,9 @@ from worker import DummyLoginWorker, DummyLogoutWorker
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
 
+import logging
+logger = logging.getLogger(__name__)
+
 class RunTestsAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         print "not yet implemented"
@@ -35,6 +38,8 @@ class KotnetCLITester(KotnetCLI):
     def __init__(self):
         super(KotnetCLITester, self).__init__("[DUMMY] script \
         om in- of uit te loggen op KotNet")
+        ## debug output on by default
+        logging.basicConfig(level=logging.DEBUG)
 
     def voegArgumentenToe(self):
         super(KotnetCLITester, self).voegArgumentenToe()
@@ -45,25 +50,23 @@ class KotnetCLITester(KotnetCLI):
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):
         if argumenten.worker == "login":
-            print "ik wil inloggen voor spek en bonen"
+            logger.info("ik wil inloggen voor spek en bonen")
             worker = DummyLoginWorker()
             fabriek = LoginCommunicatorFabriek()
             
         elif argumenten.worker == "logout":
-            print "ik wil uitloggen voor spek en bonen"
+            logger.info("ik wil uitloggen voor spek en bonen")
             worker = DummyLogoutWorker()
             fabriek = LogoutCommunicatorFabriek()
         
         return (worker, fabriek)
         
     def parseCredentialFlags(self, argumenten):
-        print "ik wil credentials ophalen voor spek en bonen"
+        logger.info("ik wil credentials ophalen voor spek en bonen")
         return self.parseCredsFlags(argumenten, DummyCredentials())
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)
 if  __name__ =='__main__':
-    print "== kotnetcli_dev started =="
     k = KotnetCLITester()
     k.parseArgumenten()
-    print "== kotnetcli_dev done =="

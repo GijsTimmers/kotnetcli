@@ -58,7 +58,7 @@ class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
         return LoginPlaintextCommunicator()
     
     def createColoramaCommunicator(self):
-        from coloramac  import LoginColoramaCommunicator
+        from coloramac import LoginColoramaCommunicator
         return LoginColoramaCommunicator()
 
     def createSummaryCommunicator(self):
