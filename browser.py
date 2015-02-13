@@ -207,17 +207,25 @@ class KotnetBrowser():
             print html
 
 class DummyBrowser():
-    def __init__(self):
-        pass
+    ## allow custom test behavior via params
+    def __init__(self, kotnet_online, netlogin_unavailable, rccode, downl, upl):
+        self.kotnet_online=kotnet_online
+        self.netlogin_unavailable = netlogin_unavailable
+        self.rccode = rccode
+        self.download = abs(downl) %101
+        self.upload = abs(upl) %101
     
     def bevestig_kotnetverbinding(self):
-        return True
+        return self.kotnet_online
 
     def login_open_netlogin(self):
-        time.sleep(0.1)
+        if (not self.netlogin_unavailable):
+            time.sleep(0.1)
+        else:
+            raise Exception
 
-    def login_kies_kuleuven(self):
-        time.sleep(0.1)
+    #def login_kies_kuleuven(self):
+    #    time.sleep(0.1)
     
     def login_input_credentials(self, creds):
         time.sleep(0.1)
@@ -225,11 +233,19 @@ class DummyBrowser():
     def login_send_credentials(self):
         time.sleep(0.1)
 
-    ## This method parses the server's response. On success, it returns a tuple of
-    ## length 2: (downloadpercentage, uploadpercentage); else this method
-    ## returns a tuple of length 1, containing a descriptive errmsg
     def login_parse_results(self):
-        return (80, 100)
+        if self.rccode == 100:
+            return (self.download, self.upload)
+
+        ## 201 verkeerde username; 202 verkeerd wachtwoord
+        elif (self.rccode == 202) or (self.rccode == 201):
+            raise WrongCredentialsException()
+            
+        elif self.rccode == 206:
+            raise MaxNumberIPException()
+
+        else:
+            raise UnknownRCException(self.rccode, "<html>\n<p>the dummy html page</p>\n</html>")
 
 
 '''    

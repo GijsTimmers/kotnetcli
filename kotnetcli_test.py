@@ -23,14 +23,10 @@ from kotnetcli import KotnetCLI
 from worker import DummyLoginWorker, DummyLogoutWorker
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
+import testsuite
 
 import logging
 logger = logging.getLogger(__name__)
-
-class RunTestsAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        print "not yet implemented"
-        exit(0)
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 class KotnetCLITester(KotnetCLI):
@@ -39,13 +35,13 @@ class KotnetCLITester(KotnetCLI):
         super(KotnetCLITester, self).__init__("[DUMMY] script \
         om in- of uit te loggen op KotNet")
         ## debug output on by default
-        logging.basicConfig(level=logging.DEBUG)
+        #logging.basicConfig(level=logging.DEBUG)
 
     def voegArgumentenToe(self):
         super(KotnetCLITester, self).voegArgumentenToe()
         
         self.parser.add_argument("-r", "--run-tests", \
-        help="Run a bunch of tests", action=RunTestsAction, nargs=0)
+        help="Run a bunch of tests and assertions", action=testsuite.RunTestsAction, nargs=0)
     
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):

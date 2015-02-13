@@ -128,8 +128,8 @@ class LoginWorker(SuperWorker):
             sys.exit(EXIT_FAILURE)
 
 class DummyLoginWorker(LoginWorker):
-    def __init__(self):
-        self.browser = browser.DummyBrowser()
+    def __init__(self, kotnet_online=True, netlogin_unavailable=False, rccode=100, downl=44, upl=85):
+        self.browser = browser.DummyBrowser(kotnet_online, netlogin_unavailable, rccode, downl, upl)
 
 ## A worker class that either succesfull logs you off from kotnet
 ## or exits with failure, reporting events to the given communicator

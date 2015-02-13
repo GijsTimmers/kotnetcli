@@ -72,6 +72,7 @@ script:
     - ./dist/kotnetcli-lin -0 -d
     - ./dist/kotnetcli-lin -0 -s
     - ./dist/kotnetcli-lin -0 -q
+    - ./kotnetcli_test.py --run-tests
 
 notifications:
     - email: false
