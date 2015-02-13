@@ -90,8 +90,8 @@ class KotnetCLI(object):
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
         help="show license info and exit", nargs=0)
         self.parser.add_argument("--debug", help="specify the debug level " + \
-        "[ critical > error > warning (default) > info > debug ]", \
-        action=InitLoggingAction, default="warning")
+        "[ critical < error < warning (default) < info < debug ]", \
+        action=InitLoggingAction, default=log.init_logging("warning"))
         
         ## login type flags
         self.workergroep.add_argument("-i", "--login",\
