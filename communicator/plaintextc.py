@@ -74,11 +74,11 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         percentagefloat = float(percentage)
         percentagestring = str(percentage)
         
-        lengteVanBalkfloat = 10.0
-        lengteVanBalkint = 10
+        lengteVanBalkfloat = 15.0
+        lengteVanBalkint = 15
         lengteVanRuimteVoorPercentages = 3
         
-        aantalStreepjesObvPercentage = int(round(percentagefloat/lengteVanBalkfloat))
+        aantalStreepjesObvPercentage = int(round(percentagefloat/100.0 * lengteVanBalkfloat))
         print style + "[" + color + \
         "=" * aantalStreepjesObvPercentage + stop_color + \
         " " * (lengteVanBalkint-aantalStreepjesObvPercentage) + \
@@ -147,9 +147,9 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         self.print_wait("Netlogin openen............ ")
 
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        self.print_txt("Download:       ")
+        self.print_txt("Download:  ")
         self.print_balk(downloadpercentage)
-        self.print_txt("Upload:         ")
+        self.print_txt("Upload:    ")
         self.print_balk(uploadpercentage)
         
     def beeindig_sessie(self, error_code=0):
