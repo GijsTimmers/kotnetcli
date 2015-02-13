@@ -167,8 +167,7 @@ class KotnetCLI(object):
     def parseCredsFlags(self, argumenten, cr):
         if argumenten.credentials == "keyring":
             if (not cr.hasCreds()):
-                gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
-                wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+                (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
                 cr.saveCreds(gebruikersnaam, wachtwoord)
             return cr
                 
@@ -182,14 +181,20 @@ class KotnetCLI(object):
                 print "You have already removed your kotnetcli credentials."
                 sys.exit(1)
         
+        elif argumenten.credentials == "guest_mode":
+            print "ik wil me anders voordoen dan ik ben"
+            (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
+            cr.saveGuestCreds(gebruikersnaam, wachtwoord)
+            return cr
+            
         else:
             print "unknown credentials option"
             sys.exit(1)
-        '''
-        elif argumenten.credentials == "guest_mode":
-            print "ik wil me anders voordoen dan ik ben"
-            gebruikersnaam, wachtwoord = cr.guest()
-        '''
+            
+    def prompt_user_creds(self):
+        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
+        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+        return (gebruikersnaam, wachtwoord)
 
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):
