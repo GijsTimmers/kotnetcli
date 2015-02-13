@@ -26,8 +26,28 @@ import os                               ## Basislib
 
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
+import logging
+logger = logging.getLogger(__name__)
+
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
+NETLOGIN_URL = "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst=kuleuven&lang=nl&submit=Ga+verder+%2F+Continue"
+
+## custom exceptions
+class WrongCredentialsException(Exception):
+    pass
+
+##TODO hier het ip address in opslaan (~ hieronder de rccode)
+class MaxNumberIPException(Exception):
+    pass
+    
+class UnknownRCException(Exception):
+    def __init__(self, rccode, html):
+        self.rccode = rccode
+        self.html = html
+
+    def get_info(self):
+        return (self.rccode, self.html)
 
 ## The class doing the actual browser emulation work. One can extend this
 ## class to add specific behavior (e.g. communicating; err catching; etc).
@@ -56,13 +76,13 @@ class KotnetBrowser():
             return False
     
     def login_open_netlogin(self):
-        response = self.browser.open("https://netlogin.kuleuven.be", \
+        response = self.browser.open(NETLOGIN_URL, \
         timeout=BROWSER_TIMEOUT_SEC)
         #html = response.read()
 
-    def login_kies_kuleuven(self):
-        self.browser.select_form(nr=1)
-        self.browser.submit()
+    #def login_kies_kuleuven(self):
+    #    self.browser.select_form(nr=1)
+    #    self.browser.submit()
     
     def login_input_credentials(self, creds):
         (gebruikersnaam, wachtwoord) = creds.getCreds()
@@ -71,14 +91,13 @@ class KotnetBrowser():
         wachtwoordvaknaam = \
         self.browser.form.find_control(type="password").name
         self.browser.form[wachtwoordvaknaam] = wachtwoord
-
+    
     def login_send_credentials(self):
         self.browser.submit()
 
     ## This method parses the server's response. On success, it returns a tuple of
-    ## length 2: (downloadpercentage, uploadpercentage); else this method
-    ## returns a tuple of length 1, containing a descriptive errmsg
-    ## TODO vervang magic tuple len 1 met errmsg door gerichte exception of gewoon errcode?
+    ## length 2: (downloadpercentage, uploadpercentage); else it raises an
+    ## appropriate exception
     def login_parse_results(self):
         html = self.browser.response().read()
 
@@ -100,6 +119,8 @@ class KotnetBrowser():
                 ## je strings op meerdere matches wilt controleren, moet je
                 ## p.findall(c) gebruiken, zoals hieronder.
 
+        logger.debug("rccode is %s", rccode)
+
         if rccode == 100:
             ## succesvolle login
             ## downloadpercentage parsen
@@ -114,20 +135,16 @@ class KotnetBrowser():
 
             return (downloadpercentage, uploadpercentage)
 
-        elif rccode == 202:
-            ## verkeerd wachtwoord
-            return("Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
-            "--forget om deze te resetten.",)
-
+        ## 201 verkeerde username; 202 verkeerd wachtwoord
+        elif (rccode == 202) or (rccode == 201):
+            raise WrongCredentialsException()
+            
         elif rccode == 206:
             ## al ingelogd op ander IP
-            return ("U bent al ingelogd op een ander IP-adres. Gebruik " + \
-            "kotnetcli --force-login om u toch in te loggen.",)
+            raise MaxNumberIPException()
 
         else:
-            #print html
-            return ("\nrc-code onbekend. Stuur bovenstaande informatie naar \
-            gijs.timmers@student.kuleuven.be om ondersteuning te krijgen.",)
+            raise UnknownRCException(rccode, html)
     
     def logout_input_credentials(self):
         ## Lokale IP ophalen: lelijk, maar werkt goed en is snel. Is waar-

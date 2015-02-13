@@ -55,7 +55,7 @@ class LoginWorker(SuperWorker):
         logger.info("enter LoginWorker.go()")
         self.check_kotnet(co)
         self.netlogin(co)
-        self.kies_kuleuven(co)
+        #self.kies_kuleuven(co)
         self.login_gegevensinvoeren(co, creds)
         self.login_gegevensopsturen(co)
         self.login_resultaten(co)
@@ -70,15 +70,15 @@ class LoginWorker(SuperWorker):
             co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
 
-    def kies_kuleuven(self, co):
-        co.eventKuleuvenStart()
-        try:
-            self.browser.login_kies_kuleuven()
-            co.eventKuleuvenSuccess()
-        except:
-            co.eventKuleuvenFailure()
-            co.beeindig_sessie(EXIT_FAILURE)
-            sys.exit(EXIT_FAILURE)
+#    def kies_kuleuven(self, co):
+#        co.eventKuleuvenStart()
+#        try:
+#            self.browser.login_kies_kuleuven()
+#            co.eventKuleuvenSuccess()
+#        except:
+#            co.eventKuleuvenFailure()
+#            co.beeindig_sessie(EXIT_FAILURE)
+#            sys.exit(EXIT_FAILURE)
     
     def login_gegevensinvoeren(self, co, creds):
         co.eventInvoerenStart()
@@ -97,21 +97,35 @@ class LoginWorker(SuperWorker):
             co.eventOpsturenSuccess()
         except:
             co.eventOpsturenFailure()
-            co.beeindig_sessie()
+            co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
 
     def login_resultaten(self, co):
-        tup = self.browser.login_parse_results()
-        ## check whether it worked out
-        if len(tup) != 2:
-            co.beeindig_sessie(EXIT_FAILURE)
-            sys.exit(EXIT_FAILURE)
-            logger.error("resultaten tuple len != 2")
-        else:
+        try:
+            tup = self.browser.login_parse_results()
             co.eventLoginGeslaagd(tup[0], tup[1])
             co.beeindig_sessie()
             logger.info("LoginWorker: exiting with success")
             sys.exit(EXIT_SUCCESS)
+        except browser.WrongCredentialsException:
+            co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
+            "--forget om deze te resetten.")
+            sys.exit(EXIT_FAILURE)
+        except browser.MaxNumberIPException:
+            co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("U bent al ingelogd op een ander IP-adres. Gebruik " + \
+            "kotnetcli --force-login om u toch in te loggen.")
+            sys.exit(EXIT_FAILURE)
+        except browser.UnknownRCException, e:
+            co.beeindig_sessie(EXIT_FAILURE)
+            (rccode, html) = e.get_info()
+            logger.debug("====== START HTML DUMP ======\n")
+            logger.debug(html)
+            logger.debug("====== END HTML DUMP ======\n")
+            logger.error("rc-code '%s' onbekend. Probeer opnieuw met de --debug optie en maak een issue aan " + \
+            "(https://github.com/GijsTimmers/kotnetcli/issues/new) om ondersteuning te krijgen.", rccode)
+            sys.exit(EXIT_FAILURE)
 
 class DummyLoginWorker(LoginWorker):
     def __init__(self):
