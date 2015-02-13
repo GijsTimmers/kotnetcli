@@ -64,9 +64,8 @@ class KotnetCLI(object):
     ## If he applies none, each dest will use a default value, set with the
     ## default parameter in add_argument().
     ## These two things void the need for complex decision trees.
-    def __init__(self):
-        self.parser = argparse.ArgumentParser(description="Script om in- of uit \
-        te loggen op KotNet")
+    def __init__(self, descr="Script om in- of uit te loggen op KotNet"):
+        self.parser = argparse.ArgumentParser(descr)
         self.workergroep = self.parser.add_mutually_exclusive_group()
         self.credentialsgroep = self.parser.add_mutually_exclusive_group()
         self.communicatorgroep = self.parser.add_mutually_exclusive_group()
