@@ -16,36 +16,62 @@
 ## CA 94042, USA.
 
 import keyring                          ## Voor ophalen wachtwoord
-import getpass                          ## Voor invoer wachtwoord zonder print
 
-class Credentials():
-    def getset(self):
-        if (keyring.get_password("kotnetcli", "gebruikersnaam") == None) or\
-        (keyring.get_password("kotnetcli", "wachtwoord") == None):
-            gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
-            wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
-            
-            keyring.set_password("kotnetcli", "gebruikersnaam", gebruikersnaam)
-            keyring.set_password("kotnetcli", "wachtwoord", wachtwoord)
-        
-        gebruikersnaam = keyring.get_password("kotnetcli", "gebruikersnaam")
-        wachtwoord = keyring.get_password("kotnetcli", "wachtwoord")
-        return gebruikersnaam, wachtwoord
+class ForgetCredsException(Exception):
+    pass
+
+## a credentials implementation saving the credentials in the OS keyring
+## note: all user feedback should happen in the front-end (kotnetcli.py)
+class KeyRingCredentials():
+    def __init__(self):
+        self.kr = keyring.get_keyring()
+
+    def hasCreds(self):
+        return not ((self.kr.get_password("kotnetcli", "gebruikersnaam") == None) or\
+            (self.kr.get_password("kotnetcli", "wachtwoord") == None))
     
-    def forget(self):
-        try:                
-            keyring.delete_password("kotnetcli", "gebruikersnaam")
-            keyring.delete_password("kotnetcli", "wachtwoord")
-            print "You have succesfully removed your kotnetcli credentials."
+    def getCreds(self):
+        gebruikersnaam = self.kr.get_password("kotnetcli", "gebruikersnaam")
+        wachtwoord = self.kr.get_password("kotnetcli", "wachtwoord")
+        return (gebruikersnaam, wachtwoord)
+    
+    def saveCreds(self, gebruikersnaam, wachtwoord):
+        self.kr.set_password("kotnetcli", "gebruikersnaam", gebruikersnaam)
+        self.kr.set_password("kotnetcli", "wachtwoord", wachtwoord)
+    
+    def forgetCreds(self):
+        try:
+            self.kr.delete_password("kotnetcli", "gebruikersnaam")
+            self.kr.delete_password("kotnetcli", "wachtwoord")
         except keyring.errors.PasswordDeleteError:
-            print "You have already removed your kotnetcli credentials."
+            raise ForgetCredsException()
+
+'''
+class GuestCredentials():
+    def hasCreds
     
-    def guest(self):
-        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
-        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
-        return gebruikersnaam, wachtwoord
+    def getCreds
     
-    def dummy(self):
-        gebruikersnaam = "gebruikersnaam"
-        wachtwoord = "wachtwoord"
-        return gebruikersnaam, wachtwoord
+    def saveCreds
+    
+    def forgetCred
+'''
+
+class DummyCredentials():
+    def __init__(self):
+        self.user = "dummy_user"
+        self.password = "dummy_password"
+
+    def hasCreds(self):
+        return True
+    
+    def getCreds(self):
+        return (self.user, self.password)
+    
+    def saveCreds(self, gebruikersnaam, wachtwoord):
+        self.user = gebruikersnaam
+        self.password = wachtwoord
+    
+    def forgetCreds(self):
+        self.user = "None (deleted)"
+        self.password = "None (deleted)"

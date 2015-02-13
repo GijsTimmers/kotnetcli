@@ -27,12 +27,13 @@ import argparse                         ## Parst argumenten
 import platform                         ## Om te kunnen compileren op Windows
 import sys                              ## Basislib
 import os                               ## Basislib
+import getpass                          ## Voor invoer wachtwoord zonder print
 
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 
 ## Gijs: In de toekomst graag vervangen door fabriek
 
-from credentials import Credentials     ## Opvragen van nummer en wachtwoord
+from credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
 from worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
 
 version = "1.3.0-dev"
@@ -159,19 +160,36 @@ class KotnetCLI(object):
 
     ## returns newly created credentials obj
     def parseCredentialFlags(self, argumenten):
-        '''cr = Credentials()
+        print "ik haal de credentials uit de keyring"
+        return self.parseCredsFlags(argumenten, KeyRingCredentials())
+    
+    ## a helper method with a default credentials object argument
+    def parseCredsFlags(self, argumenten, cr):
         if argumenten.credentials == "keyring":
-            print "ik haal de credentials uit de keyring"
-            gebruikersnaam, wachtwoord = cr.getset()
-        
+            if (not cr.hasCreds()):
+                gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
+                wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
+                cr.saveCreds(gebruikersnaam, wachtwoord)
+            return cr
+                
         elif argumenten.credentials == "forget":
             print "ik wil vergeten"
-            cr.forget()
-            exit(0)
-       
+            try:
+                cr.forgetCreds()
+                print "You have succesfully removed your kotnetcli credentials."
+                sys.exit(0)
+            except ForgetCredsException:
+                print "You have already removed your kotnetcli credentials."
+                sys.exit(1)
+        
+        else:
+            print "unknown credentials option"
+            sys.exit(1)
+        '''
         elif argumenten.credentials == "guest_mode":
             print "ik wil me anders voordoen dan ik ben"
-            gebruikersnaam, wachtwoord = cr.guest()'''
+            gebruikersnaam, wachtwoord = cr.guest()
+        '''
 
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):

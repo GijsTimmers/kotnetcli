@@ -22,7 +22,7 @@ import argparse
 from kotnetcli import KotnetCLI
 from worker import DummyLoginWorker, DummyLogoutWorker
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
-
+from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
 
 class RunTestsAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -58,7 +58,7 @@ class KotnetCLITester(KotnetCLI):
         
     def parseCredentialFlags(self, argumenten):
         print "ik wil credentials ophalen voor spek en bonen"
-        return #dummycreds
+        return self.parseCredsFlags(argumenten, DummyCredentials())
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)

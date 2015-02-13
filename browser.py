@@ -65,11 +65,12 @@ class KotnetBrowser():
         self.browser.submit()
     
     def login_input_credentials(self, creds):
+        (gebruikersnaam, wachtwoord) = creds.getCreds()
         self.browser.select_form(nr=1)
-        self.browser.form["uid"] = creds.getGebruikersnaam()
+        self.browser.form["uid"] = gebruikersnaam
         wachtwoordvaknaam = \
         self.browser.form.find_control(type="password").name
-        self.browser.form[wachtwoordvaknaam] = creds.getWachtwoord()
+        self.browser.form[wachtwoordvaknaam] = wachtwoord
 
     def login_send_credentials(self):
         self.browser.submit()
