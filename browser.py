@@ -245,7 +245,7 @@ class DummyBrowser():
             raise MaxNumberIPException()
 
         else:
-            raise UnknownRCException(self.rccode, "<html>\n<p>the dummy html page</p>\n</html>")
+            raise UnknownRCException(self.rccode, "\n<html>\n<p>the dummy html page</p>\n</html>\n")
 
 
 '''    
