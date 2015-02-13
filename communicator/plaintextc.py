@@ -94,11 +94,20 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     #### 2. communicator method implementations common for both login and logout ####
 
-    def eventPingFailure(self):
-        self.printerr("Niet verbonden met het KU Leuven-netwerk.")
+    #def eventPingFailure(self):
+    #    self.printerr("Niet verbonden met het KU Leuven-netwerk.")
+    #    
+    #def eventPingAlreadyOnline(self):
+    #    self.printerr("U bent al online.")
+
+    def eventKotnetVerbindingStart(self):
+        self.print_wait("Kotnet verbinding testen... ")
         
-    def eventPingAlreadyOnline(self):
-        self.printerr("U bent al online.")
+    def eventKotnetVerbindingSuccess(self):
+        self.print_success()
+    
+    def eventKotnetVerbindingFailure(self):
+        self.print_fail()
 
     def eventNetloginSuccess(self):
         self.print_success()
@@ -106,21 +115,21 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         self.print_fail()
         
     def eventKuleuvenStart(self):
-        self.print_wait("KU Leuven kiezen...... ")
+        self.print_wait("KU Leuven kiezen........... ")
     def eventKuleuvenSuccess(self):
         self.print_success()
     def eventKuleuvenFailure(self):
         self.print_fail()
 
     def eventInvoerenStart(self):
-        self.print_wait("Gegevens invoeren..... ")
+        self.print_wait("Gegevens invoeren.......... ")
     def eventInvoerenSuccess(self):
         self.print_success()
     def eventInvoerenFailure(self):
         self.print_fail()
 
     def eventOpsturenStart(self):
-        self.print_wait("Gegevens opsturen..... ")
+        self.print_wait("Gegevens opsturen.......... ")
     def eventOpsturenSuccess(self):
         self.print_success()
     def eventOpsturenFailure(self):
@@ -135,16 +144,16 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         #print "------------------------------"
         
         
-        self.print_wait("Netlogin openen....... ")
+        self.print_wait("Netlogin openen............ ")
 
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        self.print_txt("Download:  ")
+        self.print_txt("Download:       ")
         self.print_balk(downloadpercentage)
-        self.print_txt("Upload:    ")
+        self.print_txt("Upload:         ")
         self.print_balk(uploadpercentage)
         
     def beeindig_sessie(self, error_code=0):
-        self.print_txt("Inloggen.............. "),
+        self.print_txt("Inloggen................... "),
         if error_code == 0:
             self.print_done()
         else:

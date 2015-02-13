@@ -36,9 +36,12 @@ class SuperWorker(object):
         self.browser = browser.KotnetBrowser()
     
     def check_kotnet(self, co):
-        if (not self.browser.bevestig_kotnetverbinding()):
-            ## TODO the message below should be sent through a communicator
-            print "Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?"
+        co.eventKotnetVerbindingStart()
+        if (self.browser.bevestig_kotnetverbinding()):
+            co.eventKotnetVerbindingSuccess()
+        else:
+            #print "Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?"
+            co.eventKotnetVerbindingFailure()
             co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
 
@@ -97,8 +100,8 @@ class LoginWorker(SuperWorker):
         tup = self.browser.login_parse_results()
         ## check whether it worked out
         if len(tup) != 2:
-            print "resultaten tuple len != 2"
-            co.beendig_sessie(EXIT_FAILURE)
+            #print "resultaten tuple len != 2"
+            co.beeindig_sessie(EXIT_FAILURE)
             sys.exit(EXIT_FAILURE)
         else:
             co.eventLoginGeslaagd(tup[0], tup[1])

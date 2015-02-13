@@ -26,7 +26,7 @@
 
 ## Gijs@Jo: Dit was mijn interpretatie, is deze correct?
 
-from quietc     import QuietCommunicator
+#from quietc     import LoginQuietCommunicator,     LogoutQuietCommunicator
 from summaryc   import LoginSummaryCommunicator,   LogoutSummaryCommunicator
 from bubblec    import LoginBubbleCommunicator,    LogoutBubbleCommunicator
 
@@ -51,17 +51,20 @@ class SuperCommunicatorFabriek:
 ## co.eventNetloginStart()               ## geeft de juiste output
 
 class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
-    def createSummaryCommunicator(self):
-        return LoginSummaryCommunicator()
-    
-    def createBubbleCommunicator(self):
-        return LoginBubbleCommunicator()
+    #def createQuietCommunicator(self):
+    #    return LoginQuietCommunicator()
     
     def createPlaintextCommunicator(self):
         return LoginPlaintextCommunicator()
     
     def createColoramaCommunicator(self):
         return LoginColoramaCommunicator()
+
+    def createSummaryCommunicator(self):
+        return LoginSummaryCommunicator()
+    
+    def createBubbleCommunicator(self):
+        return LoginBubbleCommunicator()
     
     def createCursesCommunicator(self):
         return LoginCursesCommunicator()

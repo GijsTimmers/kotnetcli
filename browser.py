@@ -125,7 +125,7 @@ class KotnetBrowser():
             "kotnetcli --force-login om u toch in te loggen.",)
 
         else:
-            print html
+            #print html
             return ("\nrc-code onbekend. Stuur bovenstaande informatie naar \
             gijs.timmers@student.kuleuven.be om ondersteuning te krijgen.",)
     

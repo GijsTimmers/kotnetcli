@@ -108,6 +108,10 @@ class KotnetCLI(object):
         action="store_const", dest="credentials", const="guest_mode")
         
         ## communicator flags
+        #self.communicatorgroep.add_argument("-q", "--quiet",\
+        #help="Hides all output",\
+        #action="store_const", dest="communicator", const="quiet")
+        
         self.communicatorgroep.add_argument("-t", "--plaintext",\
         help="Omits the curses interface by using plaintext output",\
         action="store_const", dest="communicator", const="plaintext")
@@ -218,6 +222,10 @@ class KotnetCLI(object):
     
     ## returns communicator
     def parseCommunicatorFlags(self, fabriek, argumenten):
+        #if argumenten.communicator == "quiet":
+        #    print "ik wil zwijgen"
+        #    return fabriek.createQuietCommunicator()
+        
         if argumenten.communicator == "plaintext":
             print "ik wil terug naar de basis"
             return fabriek.createPlaintextCommunicator()

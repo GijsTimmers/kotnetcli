@@ -88,17 +88,3 @@ class QuietCommunicator():
     
     def beeindig_sessie(self, error_code=0):
         pass
-
-## The abstract factory specifying the interface and maybe returning 
-## some defaults (or just passing)
-class SuperCommunicatorFabriek:
-   def createSummaryCommunicator():
-     pass
-
-class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
-    def createSummaryCommunicator():
-        LoginSummaryCommunicator()
-
-class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
-    def createSummaryCommunicator():
-        LogoutSummaryCommunicator()
