@@ -20,6 +20,8 @@ from worker import DummyLoginWorker, DummyLogoutWorker, EXIT_SUCCESS, EXIT_FAILU
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
 
+import sys
+
 import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -29,11 +31,23 @@ class RunTestsAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         creds = DummyCredentials()
         fab = LoginCommunicatorFabriek()
-        co = fab.createColoramaCommunicator()      ## change this line to test another communicator
-        #co = fab.createPlaintextCommunicator()
+        
+        self.test_lazy_import(fab)
+        co = fab.createColoramaCommunicator()   ## change this line to test another communicator
         self.run_dummy_login_tests(co, creds)
         
         exit(0)
+    
+    def test_lazy_import(self, fab):
+        logger.info("testing lazy importing of communicators...")
+
+        assert not ("colorama" in sys.modules.keys())
+        fab.createPlaintextCommunicator()
+        assert not ("colorama" in sys.modules.keys())
+        fab.createColoramaCommunicator()
+        assert "colorama" in sys.modules.keys()
+
+        logger.info("lazy importing of communicators seems OK")
     
     def run_dummy_login_tests(self, co, creds):
         logger.info("running dummy login testsuite with communicator " + \
@@ -114,6 +128,6 @@ class RunTestsAction(argparse.Action):
             logger.info(" UNKNOWN RC (DEBUG OFF) DUMMY LOGIN END\n")
         
         logger.info(" end of dummy login testsuite with communicator " + \
-        "'%s'\n", co.__class__.__name__)
+        "'%s'", co.__class__.__name__)
 
 ## end class RunTestsAction
