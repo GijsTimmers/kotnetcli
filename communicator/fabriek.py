@@ -27,17 +27,16 @@
 ## Gijs@Jo: Dit was mijn interpretatie, is deze correct?
 
 #from quietc     import LoginQuietCommunicator,     LogoutQuietCommunicator
-from summaryc   import LoginSummaryCommunicator,   LogoutSummaryCommunicator
-from bubblec    import LoginBubbleCommunicator,    LogoutBubbleCommunicator
+#from summaryc   import LoginSummaryCommunicator,   LogoutSummaryCommunicator
+#from bubblec    import LoginBubbleCommunicator,    LogoutBubbleCommunicator
 
-from plaintextc import LoginPlaintextCommunicator, LogoutPlaintextCommunicator
-from coloramac  import LoginColoramaCommunicator,  LogoutColoramaCommunicator
-
-from cursesc    import LoginCursesCommunicator,    LogoutCursesCommunicator
-from dialogc    import DialogCommunicator
+#from cursesc    import LoginCursesCommunicator,    LogoutCursesCommunicator
+#from dialogc    import DialogCommunicator
 ## Gijs@Jo: Graag aanpassen zodra de LoginDialogCommunicator en
 ##          LogoutDialogCommunicator af is.
 
+
+## NOTE: lazy importing in the corresponding factory methods :-)
 
 ## The abstract factory specifying the interface and maybe returning 
 ## some defaults (or just passing)
@@ -55,9 +54,11 @@ class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
     #    return LoginQuietCommunicator()
     
     def createPlaintextCommunicator(self):
+        from plaintextc import LoginPlaintextCommunicator
         return LoginPlaintextCommunicator()
     
     def createColoramaCommunicator(self):
+        from coloramac  import LoginColoramaCommunicator
         return LoginColoramaCommunicator()
 
     def createSummaryCommunicator(self):
