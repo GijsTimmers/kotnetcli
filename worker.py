@@ -52,7 +52,7 @@ class SuperWorker(object):
 ## or exits with failure, reporting events to the given communicator
 class LoginWorker(SuperWorker):
     def go(self, co, creds):
-        logger.info("enter LoginWorker.go()")
+        logger.debug("enter LoginWorker.go()")
         self.check_kotnet(co)
         self.netlogin(co)
         #self.kies_kuleuven(co)
@@ -105,7 +105,7 @@ class LoginWorker(SuperWorker):
             tup = self.browser.login_parse_results()
             co.eventLoginGeslaagd(tup[0], tup[1])
             co.beeindig_sessie()
-            logger.info("LoginWorker: exiting with success")
+            logger.debug("LoginWorker: exiting with success")
             sys.exit(EXIT_SUCCESS)
         except browser.WrongCredentialsException:
             co.beeindig_sessie(EXIT_FAILURE)

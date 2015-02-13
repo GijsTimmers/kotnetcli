@@ -36,6 +36,7 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 from credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
 from worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
 
+from tools import log
 import logging
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,14 @@ class PrintLicenceAction(argparse.Action):
         print "view the full source code and to collaborate on the project."
         exit(0)
 
+class InitLoggingAction(argparse.Action):
+    def __call__(self, parser, namespace, log_level, option_string=None):
+        try:
+            log.init_logging(log_level)
+        except ValueError:
+            print "kotnetcli: Invalid debug level: %s" % log_level
+            sys.exit(1)
+        
 ## A class encapsulating the argument parsing behavior
 ## Note: directly inherit from "object" in order to be able to use super() in child classes
 class KotnetCLI(object):
@@ -78,9 +87,11 @@ class KotnetCLI(object):
     def voegArgumentenToe(self):
         ## general flags
         self.parser.add_argument("-v", "--version", action="version", version=version)
-        self.parser.add_argument("-l", "--license", action=PrintLicenceAction, nargs=0)
-        self.parser.add_argument("-d", "--debug", help="show debug messages", \
-        action="store_const", const="debug")
+        self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
+        help="show license info and exit", nargs=0)
+        self.parser.add_argument("--debug", help="specify the debug level " + \
+        "[ critical > error > warning (default) > info > debug ]", \
+        action=InitLoggingAction, default="warning")
         
         ## login type flags
         self.workergroep.add_argument("-i", "--login",\
@@ -113,19 +124,20 @@ class KotnetCLI(object):
         action="store_const", dest="credentials", const="guest_mode")
         
         ## communicator flags
-        #self.communicatorgroep.add_argument("-q", "--quiet",\
-        #help="Hides all output",\
-        #action="store_const", dest="communicator", const="quiet")
-        
-        self.communicatorgroep.add_argument("-t", "--plaintext",\
-        help="Omits the curses interface by using plaintext output",\
-        action="store_const", dest="communicator", const="plaintext")
-        
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using colored text output (default)",\
         action="store_const", dest="communicator", const="colortext", \
         default="colortext")
         
+        self.communicatorgroep.add_argument("-t", "--plaintext",\
+        help="Logs you in using plaintext output",\
+        action="store_const", dest="communicator", const="plaintext")
+
+        
+        #self.communicatorgroep.add_argument("-q", "--quiet",\
+        #help="Hides all output",\
+        #action="store_const", dest="communicator", const="quiet")
+                
         ## voorlopig andere communicators uitschakelen in de dev branch
         '''
         """
@@ -158,9 +170,6 @@ class KotnetCLI(object):
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
         argumenten = self.parser.parse_args()
-        ## 0. general flags
-        if (argumenten.debug):
-            logging.basicConfig(level=logging.DEBUG)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags

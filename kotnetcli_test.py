@@ -25,6 +25,8 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
 import testsuite
 
+from tools import log
+log.init_logging("info")
 import logging
 logger = logging.getLogger(__name__)
 
@@ -34,8 +36,6 @@ class KotnetCLITester(KotnetCLI):
     def __init__(self):
         super(KotnetCLITester, self).__init__("[DUMMY] script \
         om in- of uit te loggen op KotNet")
-        ## debug output on by default
-        #logging.basicConfig(level=logging.DEBUG)
 
     def voegArgumentenToe(self):
         super(KotnetCLITester, self).voegArgumentenToe()

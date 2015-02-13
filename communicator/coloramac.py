@@ -28,6 +28,7 @@ from plaintextc import (
 #from ..tools import cursor              ## Om cursor te verbergen/tonen
 from tools import cursor                ## Om cursor te verbergen/tonen
 
+#from kotnetcli import logger
 import logging
 logger = logging.getLogger(__name__)
 
@@ -39,15 +40,15 @@ logger = logging.getLogger(__name__)
 
 
 try:            
-    logging.debug("Probeert Colorama te importeren..."),
+    logger.debug("Probeert Colorama te importeren..."),
     from colorama import (              ## Voor gekleurde tekst.
                           Fore,
                           Style,
                           init as colorama_init
                           )
-    logging.debug("OK")
+    logger.debug("OK")
 except ImportError:
-    logging.error("Couldn't import the colorama library.")
+    logger.error("Couldn't import the colorama library.")
     pass
 
 class SuperColoramaCommunicator(SuperPlaintextCommunicator):
