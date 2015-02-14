@@ -55,13 +55,12 @@ class PrintLicenceAction(argparse.Action):
         print "view the full source code and to collaborate on the project."
         exit(0)
 
-class InitLoggingAction(argparse.Action):
-    def __call__(self, parser, namespace, log_level, option_string=None):
-        try:
-            log.init_logging(log_level)
-        except ValueError:
-            print "kotnetcli: Invalid debug level: %s" % log_level
-            sys.exit(1)
+def init_debug_level(log_level):
+    try:
+        log.init_logging(log_level)
+    except ValueError:
+        print "kotnetcli: Invalid debug level: %s" % log_level
+        sys.exit(1)
         
 ## A class encapsulating the argument parsing behavior
 ## Note: directly inherit from "object" in order to be able to use super() in child classes
@@ -91,7 +90,7 @@ class KotnetCLI(object):
         help="show license info and exit", nargs=0)
         self.parser.add_argument("--debug", help="specify the debug level " + \
         "[ critical < error < warning (default) < info < debug ]", \
-        action=InitLoggingAction, default=log.init_logging("warning"))
+        action="store", default="warning")
         
         ## login type flags
         self.workergroep.add_argument("-i", "--login",\
@@ -170,6 +169,8 @@ class KotnetCLI(object):
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
         argumenten = self.parser.parse_args()
+        ## 0. general flags
+        init_debug_level(argumenten.debug)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags

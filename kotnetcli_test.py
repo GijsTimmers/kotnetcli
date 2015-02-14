@@ -25,8 +25,6 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
 import testsuite
 
-from tools import log
-log.init_logging("info")
 import logging
 logger = logging.getLogger(__name__)
 

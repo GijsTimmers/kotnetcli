@@ -22,13 +22,14 @@ from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoor
 
 import sys
 
+from tools import log
 import logging
 logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.INFO)
 
 ## TODO assert for the correct fine grained exit code here (see corresponding issue)
 class RunTestsAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
+        log.init_logging("info")
         creds = DummyCredentials()
         fab = LoginCommunicatorFabriek()
         
