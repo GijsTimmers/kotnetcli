@@ -21,8 +21,8 @@ import sys                              ## for advanced print functions
 #import os                               ## Basislib
 #import platform                         ## Om onderscheid Lin/Mac te maken
 from quietc import QuietCommunicator
-#from ..tools import cursor              ## Om cursor te verbergen/tonen
-from tools import cursor                ## Om cursor te verbergen/tonen
+from ..tools import cursor              ## Om cursor te verbergen/tonen
+#from tools import cursor                ## Om cursor te verbergen/tonen
 
 ## Gijs:
 ## We hoeven geen relatieve import te gebruiken omdat de map waarin 

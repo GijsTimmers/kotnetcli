@@ -20,10 +20,10 @@
 
 import argparse
 from kotnetcli import KotnetCLI
-from worker import DummyLoginWorker, DummyLogoutWorker
-from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
-from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
-import testsuite
+from src.worker import DummyLoginWorker, DummyLogoutWorker
+from src.communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
+from src.credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
+import src.testsuite as testsuite
 
 import logging
 logger = logging.getLogger(__name__)

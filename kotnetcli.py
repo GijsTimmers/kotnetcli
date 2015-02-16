@@ -29,14 +29,14 @@ import sys                              ## Basislib
 import os                               ## Basislib
 import getpass                          ## Voor invoer wachtwoord zonder print
 
-from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
+from src.communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 
 ## Gijs: In de toekomst graag vervangen door fabriek
 
-from credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
-from worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
+from src.credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
+from src.worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
 
-from tools import log
+from src.tools import log
 import logging
 logger = logging.getLogger(__name__)
 
