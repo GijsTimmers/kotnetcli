@@ -25,8 +25,8 @@ from plaintextc import (
                         LoginPlaintextCommunicator,
                         LogoutPlaintextCommunicator
                         )
-#from ..tools import cursor              ## Om cursor te verbergen/tonen
-from tools import cursor                ## Om cursor te verbergen/tonen
+from ..tools import cursor              ## Om cursor te verbergen/tonen
+#from tools import cursor                ## Om cursor te verbergen/tonen
 
 #from kotnetcli import logger
 import logging

@@ -21,13 +21,14 @@ import sys                              ## Basislib
 import os                               ## Basislib
 import platform                         ## Om onderscheid Lin/Mac te maken
 #from ..tools import cursor                ## Om cursor te verbergen/tonen
-from tools import cursor                ## Om cursor te verbergen/tonen
+from ..tools import cursor                ## Om cursor te verbergen/tonen
 
 ## Gijs:
 ## We hoeven geen relatieve import te gebruiken omdat de map waarin 
 ## kotnetcli.py zich bevindt de rootmap ($PYTHONPATH) is. De map 'tools'
 ## bevindt zich daar ook; daarom hoeven we niet te verwijzen naar de lokatie
 ## ten opzichte van deze specifieke communicator (denk ik)
+##jo: nu wel door de src folder
 
 
 class QuietCommunicator():   
