@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
+# PYTHON_ARGCOMPLETE_OK
 
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
@@ -24,6 +25,7 @@
 #jo: zijn alle imports hieronder nog nodig?
 import subprocess                       ## Om systeemcommando's uit te voeren
 import argparse                         ## Parst argumenten
+import argcomplete                      ## Argumenten aanvullen met Tab
 import platform                         ## Om te kunnen compileren op Windows
 import sys                              ## Basislib
 import os                               ## Basislib
@@ -76,12 +78,16 @@ class KotnetCLI(object):
     ## If he applies none, each dest will use a default value, set with the
     ## default parameter in add_argument().
     ## These two things void the need for complex decision trees.
+    ## Finally, we call argcomplete, so that we can complete flags automatically
+    ## when using bash.
+    
     def __init__(self, descr="Script om in- of uit te loggen op KotNet"):
         self.parser = argparse.ArgumentParser(descr)
         self.workergroep = self.parser.add_mutually_exclusive_group()
         self.credentialsgroep = self.parser.add_mutually_exclusive_group()
         self.communicatorgroep = self.parser.add_mutually_exclusive_group()
         self.voegArgumentenToe()
+        argcomplete.autocomplete(self.parser)
     
     def voegArgumentenToe(self):
         ## general flags
