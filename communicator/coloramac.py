@@ -69,7 +69,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ## en multiple inheritance van de juiste subplaintext in de subs
     ## Gijs: Merci!
     
-    def __init__(self):
+    def __init__(self, color):
         """
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
@@ -78,7 +78,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         """
         colorama_init()
         cursor.hide()
-        self.init_colors()
+        self.init_colors(color.upper())
     
     ## any communicator wanting to customize the colors can override
     ## this method to define new colors and styles
@@ -86,7 +86,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ##
     ## Gijs: Wat bedoel je? Bvb de balk verbergen, etc?
     
-    def init_colors(self):
+    def init_colors(self, colorname):
         self.ERR_COLOR = Fore.RED
         self.ERR_STYLE = Style.BRIGHT
         self.WAIT_STYLE = Style.BRIGHT
@@ -94,7 +94,8 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         self.SUCCESS_STYLE = Style.BRIGHT
         self.SUCCESS_COLOR = Fore.GREEN
         self.FAIL_STYLE = Style.BRIGHT
-        self.FAIL_COLOR = Fore.RED
+        logger.debug("setting self.FAIL_COLOR to %s", colorname)
+        self.FAIL_COLOR = getattr(Fore, colorname) #Fore.RED
         self.PERC_STYLE = Style.BRIGHT
         self.CRITICAL_PERC_COLOR = Fore.RED
         self.LOW_PERC_COLOR = Fore.YELLOW

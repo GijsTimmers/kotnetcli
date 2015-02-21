@@ -85,7 +85,8 @@ class KotnetCLI(object):
         self.parser = argparse.ArgumentParser(descr)
         self.workergroep = self.parser.add_mutually_exclusive_group()
         self.credentialsgroep = self.parser.add_mutually_exclusive_group()
-        self.communicatorgroep = self.parser.add_mutually_exclusive_group()
+        self.communicatorgroep = self.parser.add_argument_group("communicator options", \
+        "A pluggable visualisation system for everyones needs")
         self.voegArgumentenToe()
         argcomplete.autocomplete(self.parser)
     
@@ -131,12 +132,13 @@ class KotnetCLI(object):
         ## communicator flags
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using colored text output (default)",\
-        action="store_const", dest="communicator", const="colortext", \
-        default="colortext")
+        nargs="?", default="False", const="Fore.RED")
+        #action="store_const", dest="communicator", const="colortext", \
+        #default="colortext")
         
         self.communicatorgroep.add_argument("-t", "--plaintext",\
         help="Logs you in using plaintext output",\
-        action="store_const", dest="communicator", const="plaintext")
+        action="store_true") #, dest="communicator", const="plaintext")
 
         
         #self.communicatorgroep.add_argument("-q", "--quiet",\
@@ -177,6 +179,7 @@ class KotnetCLI(object):
         argumenten = self.parser.parse_args()
         ## 0. general flags
         init_debug_level(argumenten.debug)
+        logger.debug("parse_args() is: \n%s", argumenten)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags
@@ -250,13 +253,13 @@ class KotnetCLI(object):
         #    print "ik wil zwijgen"
         #    return fabriek.createQuietCommunicator()
         
-        if argumenten.communicator == "plaintext":
+        if argumenten.plaintext:
             logger.info("ik wil terug naar de basis")
             return fabriek.createPlaintextCommunicator()
         
-        elif argumenten.communicator == "colortext":
-            logger.info("ik wil vrolijke kleuren")
-            return fabriek.createColoramaCommunicator()
+        elif argumenten.color:
+            logger.info("ik wil vrolijke kleuren: %s", argumenten.color)
+            return fabriek.createColoramaCommunicator(argumenten.color)
         
         else:
             logger.info("ik ga mee met de stroom") # TODO kunnen we default niet specifieren mbv argparse module??
