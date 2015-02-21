@@ -49,7 +49,7 @@ try:
     logger.debug("OK")
 except ImportError:
     logger.error("Couldn't import the colorama library.")
-    pass
+    exit(1)
 
 class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ## I changed the structure: it used to be:
@@ -69,16 +69,22 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ## en multiple inheritance van de juiste subplaintext in de subs
     ## Gijs: Merci!
     
-    def __init__(self, color):
+    def __init__(self, colorNameList):
         """
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 
             Style,                              ## 
             init as colorama_init)              ## 
         """
+        if not (len(colorNameList) == 3):
+            logger.error("given colorNameList %s of length %s should have length 4", \
+            colorNameList, len(colorNameList))
+            exit(1)
+        
+        colorNameList = map(lambda x:x.upper(), colorNameList)
         colorama_init()
         cursor.hide()
-        self.init_colors(color)
+        self.init_colors(colorNameList)
     
     ## any communicator wanting to customize the colors can override
     ## this method to define new colors and styles
@@ -86,20 +92,23 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ##
     ## Gijs: Wat bedoel je? Bvb de balk verbergen, etc?
     
-    def init_colors(self, colorname):
-        self.ERR_COLOR = Fore.RED
+    def init_colors(self, colorNameList):
+        logger.debug("the given colornamelist is %s", colorNameList)
+        err_color = getattr(Fore, colorNameList.pop())
+        wait_color = getattr(Fore, colorNameList.pop())        
+        ok_color = getattr(Fore, colorNameList.pop())
+        self.ERR_COLOR = err_color #Fore.RED
         self.ERR_STYLE = Style.BRIGHT
         self.WAIT_STYLE = Style.BRIGHT
-        self.WAIT_COLOR = Fore.YELLOW
+        self.WAIT_COLOR = wait_color #Fore.YELLOW
         self.SUCCESS_STYLE = Style.BRIGHT
-        self.SUCCESS_COLOR = Fore.GREEN
+        self.SUCCESS_COLOR = ok_color #Fore.GREEN
         self.FAIL_STYLE = Style.BRIGHT
-        logger.debug("setting self.FAIL_COLOR to %s", colorname)
-        self.FAIL_COLOR = getattr(Fore, colorname.upper()) #Fore.RED
+        self.FAIL_COLOR = err_color #Fore.RED
         self.PERC_STYLE = Style.BRIGHT
-        self.CRITICAL_PERC_COLOR = Fore.RED
-        self.LOW_PERC_COLOR = Fore.YELLOW
-        self.OK_PERC_COLOR = Fore.GREEN
+        self.CRITICAL_PERC_COLOR = err_color #Fore.RED
+        self.LOW_PERC_COLOR = wait_color #Fore.YELLOW
+        self.OK_PERC_COLOR = ok_color #Fore.GREEN
 
     ## Overrides the printing of an error string on stderr
     def printerr(self, msg):
