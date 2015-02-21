@@ -43,7 +43,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 version = "1.3.0-dev"
-DEFAULT_COLORAMA_COLORS= [ "green", "yellow", "red" ]
 
 ## An argument parse action that prints license information
 ## on stdout and exits
@@ -260,14 +259,14 @@ class KotnetCLI(object):
             return fabriek.createPlaintextCommunicator()
         
         elif argumenten.color:
-            logger.info("ik wil vrolijke kleuren: %s", argumenten.color)
+            logger.info("ik wil vrolijke custom kleuren: %s", argumenten.color)
             return fabriek.createColoramaCommunicator(argumenten.color)
         
         else:
             ## default option: argumenten.color
             ## we don't use argparse's mutually exclusive groups so we need a default case here
             logger.info("ik ga mee met de stroom")
-            return fabriek.createColoramaCommunicator(DEFAULT_COLORAMA_COLORS)
+            return fabriek.createColoramaCommunicator()
         
         '''
         elif argumenten.communicator == "summary":

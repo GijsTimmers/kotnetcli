@@ -43,16 +43,17 @@ class KotnetCLITester(KotnetCLI):
     
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):
-        if argumenten.worker == "login":
+        if argumenten.logout:
+            logger.info("ik wil uitloggen voor spek en bonen")
+            worker = DummyLogoutWorker()
+            fabriek = LogoutCommunicatorFabriek()
+            
+        else:
+            ## default option: argumenten.login
             logger.info("ik wil inloggen voor spek en bonen")
             worker = DummyLoginWorker()
             fabriek = LoginCommunicatorFabriek()
             
-        elif argumenten.worker == "logout":
-            logger.info("ik wil uitloggen voor spek en bonen")
-            worker = DummyLogoutWorker()
-            fabriek = LogoutCommunicatorFabriek()
-        
         return (worker, fabriek)
         
     def parseCredentialFlags(self, argumenten):
