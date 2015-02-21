@@ -76,15 +76,16 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
             Style,                              ## 
             init as colorama_init)              ## 
         """
-        if not (len(colorNameList) == 3):
-            logger.error("given colorNameList %s of length %s should have length 4", \
-            colorNameList, len(colorNameList))
+        try:        
+            colorNameList = map(lambda x:x.upper(), colorNameList)
+            self.init_colors(colorNameList)
+        except Exception, e:
+            logger.error("something went wrong when initializing colors; " + \
+            "did you provide a correct colorNameList %s?", colorNameList)
+            logger.error("exception is: %s" % e)
             exit(1)
-        
-        colorNameList = map(lambda x:x.upper(), colorNameList)
         colorama_init()
         cursor.hide()
-        self.init_colors(colorNameList)
     
     ## any communicator wanting to customize the colors can override
     ## this method to define new colors and styles
@@ -94,18 +95,19 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     
     def init_colors(self, colorNameList):
         logger.debug("the given colornamelist is %s", colorNameList)
+        style = getattr(Style, colorNameList.pop())
         err_color = getattr(Fore, colorNameList.pop())
         wait_color = getattr(Fore, colorNameList.pop())        
         ok_color = getattr(Fore, colorNameList.pop())
         self.ERR_COLOR = err_color #Fore.RED
-        self.ERR_STYLE = Style.BRIGHT
-        self.WAIT_STYLE = Style.BRIGHT
+        self.ERR_STYLE = style #Style.BRIGHT
+        self.WAIT_STYLE = style #Style.BRIGHT
         self.WAIT_COLOR = wait_color #Fore.YELLOW
-        self.SUCCESS_STYLE = Style.BRIGHT
+        self.SUCCESS_STYLE = style #Style.BRIGHT
         self.SUCCESS_COLOR = ok_color #Fore.GREEN
-        self.FAIL_STYLE = Style.BRIGHT
+        self.FAIL_STYLE = style #Style.BRIGHT
         self.FAIL_COLOR = err_color #Fore.RED
-        self.PERC_STYLE = Style.BRIGHT
+        self.PERC_STYLE = style #Style.BRIGHT
         self.CRITICAL_PERC_COLOR = err_color #Fore.RED
         self.LOW_PERC_COLOR = wait_color #Fore.YELLOW
         self.OK_PERC_COLOR = ok_color #Fore.GREEN

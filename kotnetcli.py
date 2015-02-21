@@ -87,12 +87,12 @@ class KotnetCLI(object):
     
     def __init__(self, descr="Script om in- of uit te loggen op KotNet"):
         self.parser = argparse.ArgumentParser(descr)
-        self.workergroep = self.parser.add_argument_group("worker options", \
-        "specify the login action")
-        self.credentialsgroep = self.parser.add_argument_group("credentials options", \
-        "manage your credentials")
-        self.communicatorgroep = self.parser.add_argument_group("communicator options", \
-        "a pluggable visualisation system for everyones needs")
+        self.workergroep = self.parser.add_argument_group("worker options")#, \
+        #"specify the login action")
+        self.credentialsgroep = self.parser.add_argument_group("credentials options")#, \
+        #"manage your credentials")
+        self.communicatorgroep = self.parser.add_argument_group("communicator options") #, \
+        #"a pluggable visualisation system for everyones needs")
         self.voegArgumentenToe()
         argcomplete.autocomplete(self.parser)
     
@@ -143,8 +143,8 @@ class KotnetCLI(object):
         ## default=False to get "store_true" semantics when option not specified
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using colored text output (default); arguments = ok_color, wait_color, err_color",\
-        choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"],
-        nargs=3, default=False, metavar="col")
+        choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "bright", "normal"],
+        nargs=4, default=False, metavar="col")
         
         #self.communicatorgroep.add_argument("-q", "--quiet",\
         #help="Hides all output",\
