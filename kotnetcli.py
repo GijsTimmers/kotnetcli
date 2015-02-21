@@ -43,6 +43,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 version = "1.3.0-dev"
+DEFAULT_COLORAMA_COLOR="red"
 
 ## An argument parse action that prints license information
 ## on stdout and exits
@@ -80,26 +81,34 @@ class KotnetCLI(object):
     ## These two things void the need for complex decision trees.
     ## Finally, we call argcomplete, so that we can complete flags automatically
     ## when using bash.
+    ##
+    ## jo: we don't use argparse's mutually exclusive groups here as it doesn't
+    ## support grouping in the help messages
     
     def __init__(self, descr="Script om in- of uit te loggen op KotNet"):
         self.parser = argparse.ArgumentParser(descr)
-        self.workergroep = self.parser.add_mutually_exclusive_group()
-        self.credentialsgroep = self.parser.add_mutually_exclusive_group()
+        self.workergroep = self.parser.add_argument_group("worker options", \
+        "Allow you to specify the login action")
+        self.credentialsgroep = self.parser.add_argument_group("Credentials options", \
+        "Allow you to manage credentials")
         self.communicatorgroep = self.parser.add_argument_group("communicator options", \
         "A pluggable visualisation system for everyones needs")
         self.voegArgumentenToe()
         argcomplete.autocomplete(self.parser)
     
     def voegArgumentenToe(self):
-        ## general flags
+        ########## general flags ##########
         self.parser.add_argument("-v", "--version", action="version", version=version)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
         help="show license info and exit", nargs=0)
-        self.parser.add_argument("--debug", help="specify the debug level " + \
-        "[ critical < error < warning (default) < info < debug ]", \
+        ## debug flag with optional (nargs=?) level; defaults to warning if option 
+        ##not present; defaults to debug if option present but no level specified
+        self.parser.add_argument("-d", "--debug", help="specify the debug verbosity", \
+        nargs="?", const="debug", metavar="LEVEL",
+        choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
         action="store", default="warning")
         
-        ## login type flags
+        ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\
         help="Logs you in on KotNet (default)",\
         action="store_const", dest="worker", const="login", default="login")
@@ -114,7 +123,7 @@ class KotnetCLI(object):
         action="store_const", dest="worker", const="force_login")
         '''
         
-        ## credentials type flags
+        ########## credentials type flags ##########
         self.credentialsgroep.add_argument("-k", "--keyring",\
         help="Makes kotnetcli pick up your credentials from the keyring (default)",\
         action="store_const", dest="credentials", const="keyring", \
@@ -129,17 +138,17 @@ class KotnetCLI(object):
         default credentials",\
         action="store_const", dest="credentials", const="guest_mode")
         
-        ## communicator flags
-        self.communicatorgroep.add_argument("-c", "--color",\
-        help="Logs you in using colored text output (default)",\
-        nargs="?", default="False", const="Fore.RED")
-        #action="store_const", dest="communicator", const="colortext", \
-        #default="colortext")
-        
+        ########## communicator flags ##########
         self.communicatorgroep.add_argument("-t", "--plaintext",\
         help="Logs you in using plaintext output",\
-        action="store_true") #, dest="communicator", const="plaintext")
+        action="store_true")
 
+        ## nargs=? to allow a user to supply an optional colorname argument
+        ## TODO for now proof-of-concept: only one color
+        ## default=False to get "store_true" semantics when option not specified
+        self.communicatorgroep.add_argument("-c", "--color",\
+        help="Logs you in using colored text output (default)",\
+        nargs="?", default=False, const=DEFAULT_COLORAMA_COLOR)
         
         #self.communicatorgroep.add_argument("-q", "--quiet",\
         #help="Hides all output",\
@@ -262,8 +271,9 @@ class KotnetCLI(object):
             return fabriek.createColoramaCommunicator(argumenten.color)
         
         else:
-            logger.info("ik ga mee met de stroom") # TODO kunnen we default niet specifieren mbv argparse module??
-            return fabriek.createColoramaCommunicator()
+            ## we don't use argparse's mutually exclusive groups so we need a default case here
+            logger.info("ik ga mee met de stroom")
+            return fabriek.createColoramaCommunicator(DEFAULT_COLORAMA_COLOR)
         
         '''
         elif argumenten.communicator == "summary":

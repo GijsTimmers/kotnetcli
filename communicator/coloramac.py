@@ -78,7 +78,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         """
         colorama_init()
         cursor.hide()
-        self.init_colors(color.upper())
+        self.init_colors(color)
     
     ## any communicator wanting to customize the colors can override
     ## this method to define new colors and styles
@@ -95,7 +95,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         self.SUCCESS_COLOR = Fore.GREEN
         self.FAIL_STYLE = Style.BRIGHT
         logger.debug("setting self.FAIL_COLOR to %s", colorname)
-        self.FAIL_COLOR = getattr(Fore, colorname) #Fore.RED
+        self.FAIL_COLOR = getattr(Fore, colorname.upper()) #Fore.RED
         self.PERC_STYLE = Style.BRIGHT
         self.CRITICAL_PERC_COLOR = Fore.RED
         self.LOW_PERC_COLOR = Fore.YELLOW
