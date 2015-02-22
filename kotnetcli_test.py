@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 class KotnetCLITester(KotnetCLI):
 
     def __init__(self):
-        super(KotnetCLITester, self).__init__("[DUMMY] script \
-        om in- of uit te loggen op KotNet")
+        super(KotnetCLITester, self).__init__("dummy script " + \
+        "om in- of uit te loggen op KotNet")
 
     def voegArgumentenToe(self):
         super(KotnetCLITester, self).voegArgumentenToe()
