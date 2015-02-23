@@ -143,7 +143,7 @@ class KotnetCLI(object):
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using colored text output (default); arguments = ok_color, wait_color, err_color, style",\
         choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "bright", "normal"],
-        nargs=4, default=False, metavar="col")
+        nargs=4, default=False, metavar="COL")
         
         #self.communicatorgroep.add_argument("-q", "--quiet",\
         #help="Hides all output",\
