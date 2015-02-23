@@ -84,7 +84,7 @@ class KotnetCLI(object):
     ## jo: we don't use argparse's mutually exclusive groups here as it doesn't
     ## support grouping in the help messages
     
-    def __init__(self, descr="Script om in- of uit te loggen op KotNet"):
+    def __init__(self, descr="Script om in- of uit te loggen op KotNet", log_level_default = "warning"):
         self.parser = argparse.ArgumentParser(descr)
         self.workergroep = self.parser.add_argument_group("worker options")#, \
         #"specify the login action")
@@ -92,20 +92,20 @@ class KotnetCLI(object):
         #"manage your credentials")
         self.communicatorgroep = self.parser.add_argument_group("communicator options") #, \
         #"a pluggable visualisation system for everyones needs")
-        self.voegArgumentenToe()
+        self.voegArgumentenToe(log_level_default)
         argcomplete.autocomplete(self.parser)
     
-    def voegArgumentenToe(self):
+    def voegArgumentenToe(self, log_level_default):
         ########## general flags ##########
         self.parser.add_argument("-v", "--version", action="version", version=version)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
         help="show license info and exit", nargs=0)
-        ## debug flag with optional (nargs=?) level; defaults to warning if option 
+        ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if option 
         ## not present; defaults to debug if option present but no level specified
         self.parser.add_argument("-d", "--debug", help="specify the debug verbosity", \
         nargs="?", const="debug", metavar="LEVEL",
         choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
-        action="store", default="warning")
+        action="store", default=log_level_default)
         
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\

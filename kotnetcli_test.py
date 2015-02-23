@@ -23,38 +23,39 @@ from kotnetcli import KotnetCLI
 from worker import DummyLoginWorker, DummyLogoutWorker
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
-import testsuite
+from testsuite import LoginTestsuiteWorker
 
 import logging
 logger = logging.getLogger(__name__)
+
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 class KotnetCLITester(KotnetCLI):
 
     def __init__(self):
         super(KotnetCLITester, self).__init__("dummy script " + \
-        "om in- of uit te loggen op KotNet")
-
-    def voegArgumentenToe(self):
-        super(KotnetCLITester, self).voegArgumentenToe()
+        "om in- of uit te loggen op KotNet", log_level_default="info")
+        
+    def voegArgumentenToe(self, log_level_default):
+        super(KotnetCLITester, self).voegArgumentenToe(log_level_default)
         
         self.parser.add_argument("-r", "--run-tests", \
-        help="Run a bunch of tests and assertions", action=testsuite.RunTestsAction, nargs=0)
+        help="Run a bunch of tests and assertions", action="store_true")
     
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):
         if argumenten.logout:
             logger.info("ik wil uitloggen voor spek en bonen")
-            worker = DummyLogoutWorker()
-            fabriek = LogoutCommunicatorFabriek()
+            return (DummyLogoutWorker(), LogoutCommunicatorFabriek())
+        
+        elif argumenten.run_tests:
+            logger.info("ik wil testen")
+            return (LoginTestsuiteWorker(), LoginCommunicatorFabriek())
             
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen voor spek en bonen")
-            worker = DummyLoginWorker()
-            fabriek = LoginCommunicatorFabriek()
-            
-        return (worker, fabriek)
+            return (DummyLoginWorker(), LoginCommunicatorFabriek())
         
     def parseCredentialFlags(self, argumenten):
         logger.info("ik wil credentials ophalen voor spek en bonen")

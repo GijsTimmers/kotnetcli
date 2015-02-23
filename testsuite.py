@@ -15,44 +15,24 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-import argparse
-from worker import DummyLoginWorker, DummyLogoutWorker, EXIT_SUCCESS, EXIT_FAILURE
-from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
-from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
-
-import sys
+from worker import DummyLoginWorker, DummyLogoutWorker, SuperWorker, EXIT_SUCCESS, EXIT_FAILURE
 
 from tools import log
 import logging
 logger = logging.getLogger(__name__)
 
-## TODO assert for the correct fine grained exit code here (see corresponding issue)
-class RunTestsAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        log.init_logging("info")
-        creds = DummyCredentials()
-        fab = LoginCommunicatorFabriek()
-        
-        self.test_lazy_import(fab)
-        co = fab.createColoramaCommunicator()   ## change this line to test another communicator
-        self.run_dummy_login_tests(co, creds)
-        
-        exit(0)
-    
-    def test_lazy_import(self, fab):
-        logger.info("testing lazy importing of communicators...")
+class LoginTestsuiteWorker(SuperWorker):
 
-        assert not ("colorama" in sys.modules.keys())
-        fab.createPlaintextCommunicator()
-        assert not ("colorama" in sys.modules.keys())
-        fab.createColoramaCommunicator()
-        assert "colorama" in sys.modules.keys()
-
-        logger.info("lazy importing of communicators seems OK")
-    
-    def run_dummy_login_tests(self, co, creds):
+    def go(self, co, creds):
         logger.info("running dummy login testsuite with communicator " + \
         "'%s'\n", co.__class__.__name__)
+        self.run_dummy_login_tests(co, creds)
+        logger.info("end of dummy login testsuite with communicator " + \
+        "'%s'", co.__class__.__name__)
+        exit(0)
+    
+    ## TODO assert for the correct fine grained exit code here (see corresponding issue)
+    def run_dummy_login_tests(self, co, creds):
     
         logger.info("DEFAULT DUMMY LOGIN START")
         worker = DummyLoginWorker()
@@ -128,7 +108,4 @@ class RunTestsAction(argparse.Action):
             assert (e.code == EXIT_FAILURE)
             logger.info("UNKNOWN RC (DEBUG OFF) DUMMY LOGIN END\n")
         
-        logger.info("end of dummy login testsuite with communicator " + \
-        "'%s'", co.__class__.__name__)
-
-## end class RunTestsAction
+## end class LoginTestsuiteWorker

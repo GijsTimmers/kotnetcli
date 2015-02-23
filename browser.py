@@ -234,6 +234,8 @@ class DummyBrowser():
         time.sleep(0.1)
 
     def login_parse_results(self):
+        logger.debug("rccode is %s", self.rccode)
+        
         if self.rccode == 100:
             return (self.download, self.upload)
 

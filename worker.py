@@ -53,12 +53,17 @@ class SuperWorker(object):
 class LoginWorker(SuperWorker):
     def go(self, co, creds):
         logger.debug("enter LoginWorker.go()")
+        
         self.check_kotnet(co)
         self.netlogin(co)
         #self.kies_kuleuven(co)
         self.login_gegevensinvoeren(co, creds)
         self.login_gegevensopsturen(co)
         self.login_resultaten(co)
+        
+        co.beeindig_sessie()
+        logger.debug("LoginWorker: exiting with success")
+        sys.exit(EXIT_SUCCESS)        
         
     def netlogin(self, co):
         co.eventNetloginStart()
@@ -104,9 +109,6 @@ class LoginWorker(SuperWorker):
         try:
             tup = self.browser.login_parse_results()
             co.eventLoginGeslaagd(tup[0], tup[1])
-            co.beeindig_sessie()
-            logger.debug("LoginWorker: exiting with success")
-            sys.exit(EXIT_SUCCESS)
         except browser.WrongCredentialsException:
             co.beeindig_sessie(EXIT_FAILURE)
             logger.error("Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
