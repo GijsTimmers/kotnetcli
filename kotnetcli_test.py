@@ -41,6 +41,10 @@ class KotnetCLITester(KotnetCLI):
         
         self.parser.add_argument("-r", "--run-tests", \
         help="Run a bunch of tests and assertions", action="store_true")
+        
+        self.parser.add_argument("--timeout", metavar="DELAY", \
+        help="Specify the timeout (in seconds) voor dummy browser replies", \
+        type=float, default=0.1)
     
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):
@@ -50,12 +54,14 @@ class KotnetCLITester(KotnetCLI):
         
         elif argumenten.run_tests:
             logger.info("ik wil testen")
-            return (LoginTestsuiteWorker(), LoginCommunicatorFabriek())
+            return (LoginTestsuiteWorker(argumenten.timeout), \
+                LoginCommunicatorFabriek())
             
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen voor spek en bonen")
-            return (DummyLoginWorker(), LoginCommunicatorFabriek())
+            return (DummyLoginWorker(argumenten.timeout), \
+                LoginCommunicatorFabriek())
         
     def parseCredentialFlags(self, argumenten):
         logger.info("ik wil credentials ophalen voor spek en bonen")

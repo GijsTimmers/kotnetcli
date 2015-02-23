@@ -31,7 +31,15 @@ logger = logging.getLogger(__name__)
 
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
+
+## the login url containing the institution choice
 NETLOGIN_URL = "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst=kuleuven&lang=nl&submit=Ga+verder+%2F+Continue"
+
+## login rc codes contained in the response html page
+RC_LOGIN_SUCCESS            = 100
+RC_LOGIN_INVALID_USERNAME = 201
+RC_LOGIN_INVALID_PASSWORD = 202
+RC_LOGIN_MAX_IP             = 206
 
 ## custom exceptions
 class WrongCredentialsException(Exception):
@@ -56,7 +64,6 @@ class UnknownRCException(Exception):
 ## proper Worker() is instantiated by kotnetcli.py, and this instance calls
 ## only the Browser() methods that it needs.
 ## Some 
-
 class KotnetBrowser():
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
@@ -121,8 +128,7 @@ class KotnetBrowser():
 
         logger.debug("rccode is %s", rccode)
 
-        if rccode == 100:
-            ## succesvolle login
+        if rccode == RC_LOGIN_SUCCESS:
             ## downloadpercentage parsen
             p = re.compile("\d+")
             m = p.findall(comments[6])
@@ -135,12 +141,11 @@ class KotnetBrowser():
 
             return (downloadpercentage, uploadpercentage)
 
-        ## 201 verkeerde username; 202 verkeerd wachtwoord
-        elif (rccode == 202) or (rccode == 201):
+        elif (rccode == RC_LOGIN_INVALID_USERNAME) or \
+            (rccode == RC_LOGIN_INVALID_PASSWORD):
             raise WrongCredentialsException()
             
-        elif rccode == 206:
-            ## al ingelogd op ander IP
+        elif rccode == RC_LOGIN_MAX_IP:
             raise MaxNumberIPException()
 
         else:
@@ -208,7 +213,8 @@ class KotnetBrowser():
 
 class DummyBrowser():
     ## allow custom test behavior via params
-    def __init__(self, kotnet_online, netlogin_unavailable, rccode, downl, upl):
+    def __init__(self, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
+        self.dummy_timeout = dummy_timeout
         self.kotnet_online=kotnet_online
         self.netlogin_unavailable = netlogin_unavailable
         self.rccode = rccode
@@ -220,7 +226,7 @@ class DummyBrowser():
 
     def login_open_netlogin(self):
         if (not self.netlogin_unavailable):
-            time.sleep(0.1)
+            time.sleep(self.dummy_timeout)
         else:
             raise Exception
 
@@ -228,22 +234,22 @@ class DummyBrowser():
     #    time.sleep(0.1)
     
     def login_input_credentials(self, creds):
-        time.sleep(0.1)
+        time.sleep(self.dummy_timeout)
 
     def login_send_credentials(self):
-        time.sleep(0.1)
+        time.sleep(self.dummy_timeout)
 
     def login_parse_results(self):
         logger.debug("rccode is %s", self.rccode)
         
-        if self.rccode == 100:
+        if self.rccode == RC_LOGIN_SUCCESS:
             return (self.download, self.upload)
 
-        ## 201 verkeerde username; 202 verkeerd wachtwoord
-        elif (self.rccode == 202) or (self.rccode == 201):
+        elif (self.rccode == RC_LOGIN_INVALID_PASSWORD) or \
+            (self.rccode == RC_LOGIN_INVALID_USERNAME):
             raise WrongCredentialsException()
             
-        elif self.rccode == 206:
+        elif self.rccode == RC_LOGIN_MAX_IP:
             raise MaxNumberIPException()
 
         else:
