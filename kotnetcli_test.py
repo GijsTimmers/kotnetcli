@@ -28,6 +28,12 @@ from testsuite import LoginTestsuiteWorker
 import logging
 logger = logging.getLogger(__name__)
 
+## a custom type checker for argparse
+def positive_float(string):
+    value = float(string)
+    if (value < 0):
+        raise argparse.ArgumentTypeError("%s is not a positive float value" % string)
+    return value 
 
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 class KotnetCLITester(KotnetCLI):
@@ -44,7 +50,7 @@ class KotnetCLITester(KotnetCLI):
         
         self.parser.add_argument("--timeout", metavar="DELAY", \
         help="Specify the timeout (in seconds) voor dummy browser replies", \
-        type=float, default=0.1)
+        type=positive_float, default=0.1)
     
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):
