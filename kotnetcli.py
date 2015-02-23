@@ -80,32 +80,39 @@ class KotnetCLI(object):
     ## These two things void the need for complex decision trees.
     ## Finally, we call argcomplete, so that we can complete flags automatically
     ## when using bash.
+    ##
+    ## jo: we don't use argparse's mutually exclusive groups here as it doesn't
+    ## support grouping in the help messages
     
     def __init__(self, descr="Script om in- of uit te loggen op KotNet"):
         self.parser = argparse.ArgumentParser(descr)
-        self.workergroep = self.parser.add_mutually_exclusive_group()
-        self.credentialsgroep = self.parser.add_mutually_exclusive_group()
-        self.communicatorgroep = self.parser.add_mutually_exclusive_group()
+        self.workergroep = self.parser.add_argument_group("worker options")#, \
+        #"specify the login action")
+        self.credentialsgroep = self.parser.add_argument_group("credentials options")#, \
+        #"manage your credentials")
+        self.communicatorgroep = self.parser.add_argument_group("communicator options") #, \
+        #"a pluggable visualisation system for everyones needs")
         self.voegArgumentenToe()
         argcomplete.autocomplete(self.parser)
     
     def voegArgumentenToe(self):
-        ## general flags
+        ########## general flags ##########
         self.parser.add_argument("-v", "--version", action="version", version=version)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
         help="show license info and exit", nargs=0)
-        self.parser.add_argument("--debug", help="specify the debug level " + \
-        "[ critical < error < warning (default) < info < debug ]", \
+        ## debug flag with optional (nargs=?) level; defaults to warning if option 
+        ## not present; defaults to debug if option present but no level specified
+        self.parser.add_argument("-d", "--debug", help="specify the debug verbosity", \
+        nargs="?", const="debug", metavar="LEVEL",
+        choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
         action="store", default="warning")
         
-        ## login type flags
+        ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\
-        help="Logs you in on KotNet (default)",\
-        action="store_const", dest="worker", const="login", default="login")
-
+        help="Logs you in on KotNet (default)", action="store_true")
+        
         self.workergroep.add_argument("-o", "--logout",\
-        help="Logs you out off KotNet",\
-        action="store_const", dest="worker", const="logout")
+        help="Logs you out off KotNet", action="store_true")
         
         '''
         self.workergroep.add_argument("-!", "--force-login",\
@@ -113,31 +120,30 @@ class KotnetCLI(object):
         action="store_const", dest="worker", const="force_login")
         '''
         
-        ## credentials type flags
+        ########## credentials type flags ##########
         self.credentialsgroep.add_argument("-k", "--keyring",\
         help="Makes kotnetcli pick up your credentials from the keyring (default)",\
-        action="store_const", dest="credentials", const="keyring", \
-        default="keyring")
+        action="store_true")
         
         self.credentialsgroep.add_argument("-f", "--forget",\
         help="Makes kotnetcli forget your credentials",\
-        action="store_const", dest="credentials", const="forget")
+        action="store_true")
         
         self.credentialsgroep.add_argument("-g", "--guest-mode",\
         help="Logs you in as a different user without forgetting your \
-        default credentials",\
-        action="store_const", dest="credentials", const="guest_mode")
+        default credentials", action="store_true")
         
-        ## communicator flags
-        self.communicatorgroep.add_argument("-c", "--color",\
-        help="Logs you in using colored text output (default)",\
-        action="store_const", dest="communicator", const="colortext", \
-        default="colortext")
-        
+        ########## communicator flags ##########
         self.communicatorgroep.add_argument("-t", "--plaintext",\
         help="Logs you in using plaintext output",\
-        action="store_const", dest="communicator", const="plaintext")
+        action="store_true")
 
+        ## nargs=3 to allow a user to supply optional colorname arguments
+        ## default=False to get "store_true" semantics when option not specified
+        self.communicatorgroep.add_argument("-c", "--color",\
+        help="Logs you in using colored text output (default); arguments = ok_color, wait_color, err_color, style",\
+        choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "bright", "normal"],
+        nargs=4, default=False, metavar="COL")
         
         #self.communicatorgroep.add_argument("-q", "--quiet",\
         #help="Hides all output",\
@@ -177,6 +183,7 @@ class KotnetCLI(object):
         argumenten = self.parser.parse_args()
         ## 0. general flags
         init_debug_level(argumenten.debug)
+        logger.debug("parse_args() is: %s", argumenten)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags
@@ -193,13 +200,7 @@ class KotnetCLI(object):
     
     ## a helper method with a default credentials object argument
     def parseCredsFlags(self, argumenten, cr):
-        if argumenten.credentials == "keyring":
-            if (not cr.hasCreds()):
-                (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
-                cr.saveCreds(gebruikersnaam, wachtwoord)
-            return cr
-                
-        elif argumenten.credentials == "forget":
+        if argumenten.forget:
             logger.info("ik wil vergeten")
             try:
                 cr.forgetCreds()
@@ -209,15 +210,18 @@ class KotnetCLI(object):
                 print "You have already removed your kotnetcli credentials."
                 sys.exit(1)
         
-        elif argumenten.credentials == "guest_mode":
+        elif argumenten.guest_mode:
             logger.info("ik wil me anders voordoen dan ik ben")
             (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
             cr.saveGuestCreds(gebruikersnaam, wachtwoord)
             return cr
             
         else:
-            print "unknown credentials option"
-            sys.exit(1)
+            ## default option: argumenten.keyring
+            if (not cr.hasCreds()):
+                (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
+                cr.saveCreds(gebruikersnaam, wachtwoord)
+            return cr
             
     def prompt_user_creds(self):
         gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
@@ -226,16 +230,16 @@ class KotnetCLI(object):
 
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):
-        if argumenten.worker == "login":
-            logger.info("ik wil inloggen")
-            worker = LoginWorker()
-            fabriek = LoginCommunicatorFabriek()
-        
-        elif argumenten.worker == "logout":
+        if argumenten.logout:
             logger.info("ik wil uitloggen")
             worker = LogoutWorker()
             fabriek = LogoutCommunicatorFabriek()
-        
+        else:
+            ## default option: argumenten.login
+            logger.info("ik wil inloggen")
+            worker = LoginWorker()
+            fabriek = LoginCommunicatorFabriek()
+                
         '''elif argumenten.worker == "force_login":
             print "ik moet en zal inloggen"
             worker = ForceLoginWorker()
@@ -250,16 +254,18 @@ class KotnetCLI(object):
         #    print "ik wil zwijgen"
         #    return fabriek.createQuietCommunicator()
         
-        if argumenten.communicator == "plaintext":
+        if argumenten.plaintext:
             logger.info("ik wil terug naar de basis")
             return fabriek.createPlaintextCommunicator()
         
-        elif argumenten.communicator == "colortext":
-            logger.info("ik wil vrolijke kleuren")
-            return fabriek.createColoramaCommunicator()
+        elif argumenten.color:
+            logger.info("ik wil vrolijke custom kleuren: %s", argumenten.color)
+            return fabriek.createColoramaCommunicator(argumenten.color)
         
         else:
-            logger.info("ik ga mee met de stroom") # TODO kunnen we default niet specifieren mbv argparse module??
+            ## default option: argumenten.color
+            ## we don't use argparse's mutually exclusive groups so we need a default case here
+            logger.info("ik ga mee met de stroom")
             return fabriek.createColoramaCommunicator()
         
         '''

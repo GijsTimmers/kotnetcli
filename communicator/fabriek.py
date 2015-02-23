@@ -49,6 +49,8 @@ class SuperCommunicatorFabriek:
 ## co = co.createColoramaCommunicator() 
 ## co.eventNetloginStart()               ## geeft de juiste output
 
+DEFAULT_COLORAMA_COLORS= [ "green", "yellow", "red", "bright" ]
+
 class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
     #def createQuietCommunicator(self):
     #    return LoginQuietCommunicator()
@@ -57,9 +59,9 @@ class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
         from plaintextc import LoginPlaintextCommunicator
         return LoginPlaintextCommunicator()
     
-    def createColoramaCommunicator(self):
+    def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
         from coloramac import LoginColoramaCommunicator
-        return LoginColoramaCommunicator()
+        return LoginColoramaCommunicator(colorNameList)
 
     def createSummaryCommunicator(self):
         return LoginSummaryCommunicator()

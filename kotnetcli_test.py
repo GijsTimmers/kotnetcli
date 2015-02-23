@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 class KotnetCLITester(KotnetCLI):
 
     def __init__(self):
-        super(KotnetCLITester, self).__init__("[DUMMY] script \
-        om in- of uit te loggen op KotNet")
+        super(KotnetCLITester, self).__init__("dummy script " + \
+        "om in- of uit te loggen op KotNet")
 
     def voegArgumentenToe(self):
         super(KotnetCLITester, self).voegArgumentenToe()
@@ -43,16 +43,17 @@ class KotnetCLITester(KotnetCLI):
     
     ## override with dummy behavior
     def parseActionFlags(self, argumenten):
-        if argumenten.worker == "login":
+        if argumenten.logout:
+            logger.info("ik wil uitloggen voor spek en bonen")
+            worker = DummyLogoutWorker()
+            fabriek = LogoutCommunicatorFabriek()
+            
+        else:
+            ## default option: argumenten.login
             logger.info("ik wil inloggen voor spek en bonen")
             worker = DummyLoginWorker()
             fabriek = LoginCommunicatorFabriek()
             
-        elif argumenten.worker == "logout":
-            logger.info("ik wil uitloggen voor spek en bonen")
-            worker = DummyLogoutWorker()
-            fabriek = LogoutCommunicatorFabriek()
-        
         return (worker, fabriek)
         
     def parseCredentialFlags(self, argumenten):
