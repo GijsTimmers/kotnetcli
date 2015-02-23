@@ -183,7 +183,7 @@ class KotnetCLI(object):
         argumenten = self.parser.parse_args()
         ## 0. general flags
         init_debug_level(argumenten.debug)
-        logger.debug("parse_args() is: \n%s", argumenten)
+        logger.debug("parse_args() is: %s", argumenten)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags
