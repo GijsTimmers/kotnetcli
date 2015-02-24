@@ -83,15 +83,18 @@ class KotnetCLI(object):
     ##
     ## jo: we don't use argparse's mutually exclusive groups here as it doesn't
     ## support grouping in the help messages
+    ##
+    ## jo: hackhackhack: http://bugs.python.org/issue10680
+    ##  just add the mutually exclusive group in a normal one
     
     def __init__(self, descr="Script om in- of uit te loggen op KotNet", log_level_default = "warning"):
         self.parser = argparse.ArgumentParser(descr)
-        self.workergroep = self.parser.add_argument_group("worker options")#, \
-        #"specify the login action")
-        self.credentialsgroep = self.parser.add_argument_group("credentials options")#, \
-        #"manage your credentials")
-        self.communicatorgroep = self.parser.add_argument_group("communicator options") #, \
-        #"a pluggable visualisation system for everyones needs")
+        dummygroup = self.parser.add_argument_group("worker options")
+        self.workergroep = dummygroup.add_mutually_exclusive_group()
+        dummygroup = self.parser.add_argument_group("credentials options")
+        self.credentialsgroep = dummygroup.add_mutually_exclusive_group()
+        dummygroup = self.parser.add_argument_group("communicator options")
+        self.communicatorgroep = dummygroup.add_mutually_exclusive_group()
         self.voegArgumentenToe(log_level_default)
         argcomplete.autocomplete(self.parser)
     
