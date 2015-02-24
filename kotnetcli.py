@@ -262,8 +262,7 @@ class KotnetCLI(object):
             return fabriek.createColoramaCommunicator(argumenten.color)
         
         else:
-            ## default option: argumenten.color
-            ## we don't use argparse's mutually exclusive groups so we need a default case here
+            ## default option: argumenten.color with default colors
             logger.info("ik ga mee met de stroom")
             return fabriek.createColoramaCommunicator()
         

@@ -45,7 +45,7 @@ class KotnetCLITester(KotnetCLI):
     def voegArgumentenToe(self, log_level_default):
         super(KotnetCLITester, self).voegArgumentenToe(log_level_default)
         
-        self.parser.add_argument("-r", "--run-tests", \
+        self.workergroep.add_argument("-r", "--run-tests", \
         help="Run a bunch of tests and assertions", action="store_true")
         
         self.parser.add_argument("--timeout", metavar="DELAY", \
