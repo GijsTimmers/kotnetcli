@@ -36,7 +36,7 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 ## Gijs: In de toekomst graag vervangen door fabriek
 
 from credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
-from worker import LoginWorker, LogoutWorker #, ForceerLoginWorker
+from worker import LoginWorker, LogoutWorker, EXIT_FAILURE, EXIT_SUCCESS #, ForceerLoginWorker
 
 from tools import log
 import logging
@@ -72,23 +72,19 @@ class KotnetCLI(object):
     ##
     ## We create three different groups, whose arguments can't be mixed (using
     ## the add_mutually_exclusive_group() option. If you enter non-combinable
-    ## options, you'll get an error.
-    ## Then, we create three dests: worker, credentials and communicator.
-    ## The value to each of these dests depends on the flags the user applies.
-    ## If he applies none, each dest will use a default value, set with the
-    ## default parameter in add_argument().
-    ## These two things void the need for complex decision trees.
+    ## options, you'll get an error. To support grouping in the help messages,
+    ## we add them inside an argument_group (as in http://bugs.python.org/issue10680)
+    ##
+    ## Then, we use "store_true" to allow elif style switching over the groups. Non-true
+    ## values can be specified by using "default=False" to get "store_true" semantics.
+    ## This avoids the need for complex decision trees.
+    ##
     ## Finally, we call argcomplete, so that we can complete flags automatically
     ## when using bash.
-    ##
-    ## jo: we don't use argparse's mutually exclusive groups here as it doesn't
-    ## support grouping in the help messages
-    ##
-    ## jo: hackhackhack: http://bugs.python.org/issue10680
-    ##  just add the mutually exclusive group in a normal one
-    
     def __init__(self, descr="Script om in- of uit te loggen op KotNet", log_level_default = "warning"):
-        self.parser = argparse.ArgumentParser(descr)
+        epilog_string = "return values:\n  %s\t\t\ton success\n  %s\t\t\ton failure" % (EXIT_SUCCESS, EXIT_FAILURE)
+        self.parser = argparse.ArgumentParser(description=descr, epilog=epilog_string, \
+            formatter_class=argparse.RawDescriptionHelpFormatter)
         dummygroup = self.parser.add_argument_group("worker options")
         self.workergroep = dummygroup.add_mutually_exclusive_group()
         dummygroup = self.parser.add_argument_group("credentials options")
@@ -105,7 +101,7 @@ class KotnetCLI(object):
         help="show license info and exit", nargs=0)
         ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if option 
         ## not present; defaults to debug if option present but no level specified
-        self.parser.add_argument("-d", "--debug", help="specify the debug verbosity", \
+        self.parser.add_argument("--debug", help="specify the debug verbosity", \
         nargs="?", const="debug", metavar="LEVEL",
         choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
         action="store", default=log_level_default)
