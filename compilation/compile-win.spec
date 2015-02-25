@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['kotnetcli.py'],
+a = Analysis(['..\\kotnetcli.py'],
              pathex=['/home/gijs/Scripts/kotnetcli/build'],
              hiddenimports = ['keyring.backends.file',
                  'keyring.backends.Gnome',
