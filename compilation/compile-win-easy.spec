@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['..\\kotnetcli.py'],
+a = Analysis(['..\\kotnetcli-win-easy.py'],
              pathex=['/home/gijs/Scripts/kotnetcli/build'],
              hiddenimports = ['keyring.backends.file',
                  'keyring.backends.Gnome',
@@ -23,7 +23,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='kotnetcli-win.exe',
+          name='kotnetcli-win-easy.exe',
           debug=False,
           strip=None,
           upx=True,

@@ -30,6 +30,7 @@ from worker import LoginWorker, EXIT_FAILURE
 from credentials import KeyRingCredentials
 from communicator.fabriek import LoginCommunicatorFabriek
 
+import sys
 import time
 import traceback
 
@@ -68,5 +69,5 @@ if  __name__ =='__main__':
     logger.info("now waiting %s seconds" % TIMEOUT)
     time.sleep(TIMEOUT)
     logger.debug("now exiting with code %s" % exit_code)
-    exit(exit_code)
+    sys.exit(exit_code)
     
