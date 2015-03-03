@@ -42,7 +42,11 @@ from tools import log
 import logging
 logger = logging.getLogger(__name__)
 
-version = "1.3.0-dev"
+## Hardcode the version. Development versions should be suffixed with -dev;
+## release versions should be followed with "Name" as well. Some examples:
+## __version__ = '1.2.1 "American Craftsman"'   (A release)
+## __version__ = '1.2.1-dev'                    (A development version)
+__version__ = '1.3.0-dev'
 
 ## An argument parse action that prints license information
 ## on stdout and exits
@@ -81,7 +85,8 @@ class KotnetCLI(object):
     ##
     ## Finally, we call argcomplete, so that we can complete flags automatically
     ## when using bash.
-    def __init__(self, descr="Script om in- of uit te loggen op KotNet", log_level_default = "warning"):
+    def __init__(self, descr="Script om in- of uit te loggen op KotNet", \
+    log_level_default = "warning"):
         epilog_string = "return values:\n  %s\t\t\ton success\n  %s\t\t\ton failure" % (EXIT_SUCCESS, EXIT_FAILURE)
         self.parser = argparse.ArgumentParser(description=descr, epilog=epilog_string, \
             formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -96,7 +101,8 @@ class KotnetCLI(object):
     
     def voegArgumentenToe(self, log_level_default):
         ########## general flags ##########
-        self.parser.add_argument("-v", "--version", action="version", version=version)
+        self.parser.add_argument("-v", "--version", action="version", \
+        version=__version__)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
         help="show license info and exit", nargs=0)
         ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if option 

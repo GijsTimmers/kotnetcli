@@ -1,0 +1,17 @@
+- Draait op Linux?
+- Draait op Windows?
+- Draait op Mac OS?
+
+- Dependancies bijgewerkt in README?
+
+- Compileert op Linux?
+- Gecompileerde Linux-versie werkt?
+
+- Compileert op Windows?
+- Gecompileerde Windows-versie werkt?
+
+- Compileert op Mac OS?
+- Gecompileerde Mac OS-versie werkt?
+
+
+- __version__ bijgewerkt?
