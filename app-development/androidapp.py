@@ -9,8 +9,24 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 
+## We willen met meerdere schermen werken:
+## - Startscherm: bevat de drie knoppen
+## - Actiescherm: bevat de output, zoals bij --login en --logout. Kan evt.
+##   gesplitst worden in een aparte Loginscherm en Logoutscherm.
+## - Instellingenscherm: bevat meerdere widgets: "Gebruikersnaam", "Wachtwoord",
+##   "Opslaan", "Vergeten", "Licenties". Het laatste veld kunnen we evt. ver-
+##   vangen door een klein knopje op het hoofscherm.
+## 
+## Om dit allemaal proper aan elkaar te hangen, gebruiken we een ScreenManager:
+## docs:        http://kivy.org/docs/api-kivy.uix.screenmanager.html
+## uitlegvideo: https://www.youtube.com/watch?v=xx-NLOg6x8o
+
+
+
 class Schermen():
     def __init__(self):
+        
+        ## Layout definiëren
         print "Laadt de Schermen-klasse in"
         
         self.b = BoxLayout(orientation="vertical")
@@ -33,6 +49,7 @@ class Schermen():
     
 
     def inlogscherm(self, instantie, waarde):
+        ## Deze functie wordt aangeroepen door Schermen().kli
         if waarde == "down":
             print "KNOP=" + instantie.text
             print "Aangeklikt, moet nu gaan inloggen"
