@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="LoginWorker" version="3">
+  <DEPS>
+    <ID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+    <PID name="kotnetcli back-end" mc="Package" uid="202c7e64-75e9-4ed1-a2d0-6b839a30aa09"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[LoginWorker]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedOperation">
+        <OBJECT>
+          <ID name="go(co, creds)" mc="Operation" uid="4dbb5b3f-1150-4fa0-9c55-d74db8d72ce9"/>
+          <PID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+          <ATTRIBUTES>
+            <ATT name="Concurrency">false</ATT>
+            <ATT name="Final">false</ATT>
+            <ATT name="Passing">MethodOut</ATT>
+            <ATT name="Visibility">Public</ATT>
+            <ATT name="IsClass">false</ATT>
+            <ATT name="IsAbstract">false</ATT>
+            <ATT name="Name"><![CDATA[go(co, creds)]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES></DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

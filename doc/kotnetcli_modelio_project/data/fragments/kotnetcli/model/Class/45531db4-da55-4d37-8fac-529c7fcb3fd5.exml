@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="AdroidApp" version="3">
+  <DEPS>
+    <ID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+    <EXTID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+    <EXTID name="kivy.uix.label" mc="DataType" uid="c2c04811-ecfe-457d-8aa4-b5efef3f6d1a"/>
+    <EXTID name="kivy.uix.progressbar" mc="DataType" uid="0f14c3dc-8905-46d8-a5e0-d2b2e7425d50"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+    <PID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[AdroidApp]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedAttribute">
+        <OBJECT>
+          <ID name="lblOutput" mc="Attribute" uid="2a7a7d7b-036c-44ce-b647-ccf1dcbcc066"/>
+          <PID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+          <ATTRIBUTES>
+            <ATT name="TypeConstraint"></ATT>
+            <ATT name="Value"></ATT>
+            <ATT name="TargetIsClass">false</ATT>
+            <ATT name="Changeable">ReadWrite</ATT>
+            <ATT name="IsDerived">false</ATT>
+            <ATT name="IsOrdered">false</ATT>
+            <ATT name="IsUnique">false</ATT>
+            <ATT name="MultiplicityMin"><![CDATA[1]]></ATT>
+            <ATT name="MultiplicityMax"><![CDATA[1]]></ATT>
+            <ATT name="Visibility">Public</ATT>
+            <ATT name="IsClass">false</ATT>
+            <ATT name="IsAbstract">false</ATT>
+            <ATT name="Name"><![CDATA[lblOutput]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="Type">
+              <ID name="kivy.uix.label" mc="DataType" uid="c2c04811-ecfe-457d-8aa4-b5efef3f6d1a"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+        <OBJECT>
+          <ID name="progress" mc="Attribute" uid="f5f64dec-f729-4b8a-80cf-ed8d47973139"/>
+          <PID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+          <ATTRIBUTES>
+            <ATT name="TypeConstraint"></ATT>
+            <ATT name="Value"></ATT>
+            <ATT name="TargetIsClass">false</ATT>
+            <ATT name="Changeable">ReadWrite</ATT>
+            <ATT name="IsDerived">false</ATT>
+            <ATT name="IsOrdered">false</ATT>
+            <ATT name="IsUnique">false</ATT>
+            <ATT name="MultiplicityMin"><![CDATA[1]]></ATT>
+            <ATT name="MultiplicityMax"><![CDATA[1]]></ATT>
+            <ATT name="Visibility">Public</ATT>
+            <ATT name="IsClass">false</ATT>
+            <ATT name="IsAbstract">false</ATT>
+            <ATT name="Name"><![CDATA[progress]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="Type">
+              <ID name="kivy.uix.progressbar" mc="DataType" uid="0f14c3dc-8905-46d8-a5e0-d2b2e7425d50"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+      <COMP relation="DependsOnDependency">
+        <OBJECT>
+          <ID name="to start the login process" mc="Usage" uid="c6a2226c-ffec-4bbe-a858-de370aa79632"/>
+          <PID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+          <ATTRIBUTES>
+            <ATT name="DependsOnId"></ATT>
+            <ATT name="DependsOnName"></ATT>
+            <ATT name="Name"><![CDATA[to start the login process]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="DependsOn">
+              <ID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Android Kivy front-end" version="3">
+  <DEPS>
+    <ID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
+    <COMPID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+    <COMPID name="AndroidKeyring" mc="Class" uid="c17353ca-ec3a-4863-aa0c-93c30a636aa1"/>
+    <COMPID name="AndroidLoginCommunicator" mc="Class" uid="4084f60b-3fa4-4b99-b68e-7e046c31fd53"/>
+    <COMPID name="kivy.storage.jsonstore" mc="Class" uid="c1bad920-9bfb-45a1-b50e-ad1fb8c104d1"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
+    <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[Android Kivy front-end]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedElement">
+        <COMPID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+        <COMPID name="AndroidKeyring" mc="Class" uid="c17353ca-ec3a-4863-aa0c-93c30a636aa1"/>
+        <COMPID name="kivy.storage.jsonstore" mc="Class" uid="c1bad920-9bfb-45a1-b50e-ad1fb8c104d1"/>
+        <COMPID name="AndroidLoginCommunicator" mc="Class" uid="4084f60b-3fa4-4b99-b68e-7e046c31fd53"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

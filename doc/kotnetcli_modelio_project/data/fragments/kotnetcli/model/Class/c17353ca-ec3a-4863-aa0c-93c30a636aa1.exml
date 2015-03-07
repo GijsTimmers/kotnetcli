@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="AndroidKeyring" version="3">
+  <DEPS>
+    <ID name="AndroidKeyring" mc="Class" uid="c17353ca-ec3a-4863-aa0c-93c30a636aa1"/>
+    <EXTID name="Credentials" mc="Class" uid="c023634c-7895-4c98-bcba-4b5c11806cec"/>
+    <EXTID name="kivy.storage.jsonstore" mc="Class" uid="c1bad920-9bfb-45a1-b50e-ad1fb8c104d1"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="AndroidKeyring" mc="Class" uid="c17353ca-ec3a-4863-aa0c-93c30a636aa1"/>
+    <PID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[AndroidKeyring]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="Parent">
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="25398790-eca3-498e-9e68-4756ca2cd32b"/>
+          <PID name="AndroidKeyring" mc="Class" uid="c17353ca-ec3a-4863-aa0c-93c30a636aa1"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="Credentials" mc="Class" uid="c023634c-7895-4c98-bcba-4b5c11806cec"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+      <COMP relation="DependsOnDependency">
+        <OBJECT>
+          <ID name="" mc="Usage" uid="e017b18b-04c0-4536-b5af-94c1913090ea"/>
+          <PID name="AndroidKeyring" mc="Class" uid="c17353ca-ec3a-4863-aa0c-93c30a636aa1"/>
+          <ATTRIBUTES>
+            <ATT name="DependsOnId"></ATT>
+            <ATT name="DependsOnName"></ATT>
+            <ATT name="Name"></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="DependsOn">
+              <ID name="kivy.storage.jsonstore" mc="Class" uid="c1bad920-9bfb-45a1-b50e-ad1fb8c104d1"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>
