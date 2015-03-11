@@ -1,0 +1,140 @@
+#:kivy 1.7.1
+#:import ScreenManager kivy.uix.screenmanager
+#:import Screen kivy.uix.screenmanager
+#:import NoTransition kivy.uix.screenmanager
+
+<MenuScreen>:
+    BoxLayout:
+        id: hoofdbox
+        orientation: "vertical"
+        
+        BoxLayout:
+            id: titelbox
+            orientation: "vertical"
+            size_hint_y: 0.15
+            
+            
+            Label:
+                text: "kotnetcli"
+                font_size: 30
+                size_hint_y: 0.6
+        
+            Label:
+                text: "by Gijs Timmers and Jo Van Bulck"
+                font_size: 14
+                size_hint_y: 0.4
+            
+        BoxLayout:
+            id: knoppenbox
+            orientation: "vertical"
+            
+            Button:
+                id: inlogknop
+                text: "Inloggen"
+                on_press:
+                    app.ga_naar_actiescherm_en_log_in()
+                
+            Button:
+                id: uitlogknop
+                text: "Uitloggen"
+                on_press:
+                    root.manager.current = "action"
+                    root.uitloggen()
+            
+            Button:
+                id: instellingenknop
+                text: "Instellingen"
+                on_press: root.manager.current = "settings"
+
+<ActionScreen>:
+    BoxLayout:
+        id: hoofdbox
+        orientation: "vertical"
+        
+        BoxLayout:
+            id: titelbox
+            orientation: "vertical"
+            size_hint_y: 0.15
+            
+            
+            Label:
+                text: "kotnetcli"
+                font_size: 30
+                size_hint_y: 0.6
+        
+            Label:
+                text: "by Gijs Timmers and Jo Van Bulck"
+                font_size: 14
+                size_hint_y: 0.4
+        
+        
+        BoxLayout:
+            id: knoppenbox
+            orientation: "vertical"
+            
+            CodeInput:
+                id: outputvak
+                font_size: 20
+                size_hint_y: 0.8
+            
+            Button:
+                id: afsluitknop
+                text: "Terug naar hoofdmenu"
+                size_hint_y: 0.2
+                on_press: root.manager.current = 'menu'
+                
+                
+            
+        
+<SettingsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        
+        Label:
+            text: "kotnetcli"
+            font_size: 30
+            size_hint_y: None
+            height: 60
+        
+        Label:
+            text: "by Gijs Timmers and Jo Van Bulck"
+            font_size: 14
+            size_hint_y: None
+            height: 30
+        
+        TextInput:
+            id: veld_gebruikersnaam
+            hint_text: "Gebruikersnaam"
+            multiline: False
+            size_hint_y: None
+            height: 30
+            keyboard_suggestions: False
+            password: False
+            write_tab: False
+            #on_text_validate: root.stelGebruikersnaamIn(self.text)
+        
+        TextInput:
+            id: veld_wachtwoord
+            hint_text: "Wachtwoord"
+            multiline: False
+            size_hint_y: None
+            height: 30
+            keyboard_suggestions: False
+            password: True
+            write_tab: False
+            #on_text_validate: root.stelWachtwoordIn(self.text)
+        
+        
+        Button:
+            text: "Opslaan"
+            size_hint_y: 0.3
+            on_press: root.toonData()
+        
+        Label:
+            id: toonvak
+            text: "Nog geen data ontvangen..."
+        
+        Button:
+            text: "Terug naar hoofdmenu"
+            size_hint_y: 0.2
+            on_press: root.manager.current = 'menu'

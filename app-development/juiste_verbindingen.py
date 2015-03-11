@@ -23,153 +23,7 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock ## Om een interval in te bouwen, zonder de loop te blokkeren
 from kivy.storage.jsonstore import JsonStore
-
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
-
-# Create both screens. Please note the root.manager.current: this is how
-# you can control the ScreenManager from kv. Each screen has by default a
-# property manager that gives you the instance of the ScreenManager used.
-Builder.load_string("""
-<MenuScreen>:
-    BoxLayout:
-        id: hoofdbox
-        orientation: "vertical"
-        
-        BoxLayout:
-            id: titelbox
-            orientation: "vertical"
-            size_hint_y: 0.15
-            
-            
-            Label:
-                text: "kotnetcli"
-                font_size: 30
-                size_hint_y: 0.6
-        
-            Label:
-                text: "by Gijs Timmers and Jo Van Bulck"
-                font_size: 14
-                size_hint_y: 0.4
-            
-        BoxLayout:
-            id: knoppenbox
-            orientation: "vertical"
-            
-            Button:
-                id: inlogknop
-                text: "Inloggen"
-                on_press:
-                    app.ga_naar_actiescherm_en_log_in()
-                
-            Button:
-                id: uitlogknop
-                text: "Uitloggen"
-                on_press:
-                    root.manager.current = "action"
-                    root.uitloggen()
-            
-            Button:
-                id: instellingenknop
-                text: "Instellingen"
-                on_press: root.manager.current = "settings"
-
-<ActionScreen>:
-    BoxLayout:
-        id: hoofdbox
-        orientation: "vertical"
-        
-        BoxLayout:
-            id: titelbox
-            orientation: "vertical"
-            size_hint_y: 0.15
-            
-            
-            Label:
-                text: "kotnetcli"
-                font_size: 30
-                size_hint_y: 0.6
-        
-            Label:
-                text: "by Gijs Timmers and Jo Van Bulck"
-                font_size: 14
-                size_hint_y: 0.4
-        
-        
-        BoxLayout:
-            id: knoppenbox
-            orientation: "vertical"
-            
-            CodeInput:
-                id: outputvak
-                font_size: 20
-                size_hint_y: 0.8
-            
-            Button:
-                id: afsluitknop
-                text: "Terug naar hoofdmenu"
-                size_hint_y: 0.2
-                on_press: root.manager.current = 'menu'
-                
-                
-            
-        
-<SettingsScreen>:
-    BoxLayout:
-        orientation: "vertical"
-        
-        Label:
-            text: "kotnetcli"
-            font_size: 30
-            size_hint_y: None
-            height: 60
-        
-        Label:
-            text: "by Gijs Timmers and Jo Van Bulck"
-            font_size: 14
-            size_hint_y: None
-            height: 30
-        
-        TextInput:
-            id: veld_gebruikersnaam
-            hint_text: "Gebruikersnaam"
-            multiline: False
-            size_hint_y: None
-            height: 30
-            keyboard_suggestions: False
-            password: False
-            write_tab: False
-            #on_text_validate: root.stelGebruikersnaamIn(self.text)
-        
-        TextInput:
-            id: veld_wachtwoord
-            hint_text: "Wachtwoord"
-            multiline: False
-            size_hint_y: None
-            height: 30
-            keyboard_suggestions: False
-            password: True
-            write_tab: False
-            #on_text_validate: root.stelWachtwoordIn(self.text)
-        
-        
-        Button:
-            text: "Opslaan"
-            size_hint_y: 0.3
-            on_press: root.toonData()
-        
-        Label:
-            id: toonvak
-            text: "Nog geen data ontvangen..."
-        
-        Button:
-            text: "Terug naar hoofdmenu"
-            size_hint_y: 0.2
-            on_press: root.manager.current = 'menu'
-            
-""")
-
-
-
 
 class MenuScreen(Screen):
     pass
@@ -203,11 +57,9 @@ class SettingsScreen(Screen):
     pass
 
 
-
-
 class TestApp(App):
     def build(self):
-        # Create the screen manager
+        ## Screen manager aanmaken
         
         self.menuscherm = MenuScreen(name="menu")
         self.actiescherm = ActionScreen(name="actie")
@@ -226,9 +78,6 @@ class TestApp(App):
         print self.root.current
         self.actiescherm.inloggen()
         
-        ## Huidig vraagstuk: Hoe zorgen we dat een drukknop in self.menuscherm
-        ## leidt tot het wisselen naar een self.actiescherm, én dan automatisch
-        ## inlogt?
         
 
 if __name__ == '__main__':
