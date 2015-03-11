@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="kivy.uix.progressbar" version="3">
+  <DEPS>
+    <ID name="kivy.uix.progressbar" mc="DataType" uid="0f14c3dc-8905-46d8-a5e0-d2b2e7425d50"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="kivy.uix.progressbar" mc="DataType" uid="0f14c3dc-8905-46d8-a5e0-d2b2e7425d50"/>
+    <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <ATTRIBUTES>
+      <ATT name="IsElementary">true</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[kivy.uix.progressbar]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

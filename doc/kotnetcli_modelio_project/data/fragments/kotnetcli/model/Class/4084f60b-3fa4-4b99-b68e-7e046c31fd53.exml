@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="AndroidLoginCommunicator" version="3">
+  <DEPS>
+    <ID name="AndroidLoginCommunicator" mc="Class" uid="4084f60b-3fa4-4b99-b68e-7e046c31fd53"/>
+    <EXTID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+    <EXTID name="QuietLoginCommunicator" mc="Class" uid="9fd8d916-b9bf-48db-8801-e05674ff75f0"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="AndroidLoginCommunicator" mc="Class" uid="4084f60b-3fa4-4b99-b68e-7e046c31fd53"/>
+    <PID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[AndroidLoginCommunicator]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="Parent">
+        <OBJECT>
+          <ID name="Generalization" mc="Generalization" uid="7bf5f0ca-a92a-4b64-a69d-6bc7e34d22a9"/>
+          <PID name="AndroidLoginCommunicator" mc="Class" uid="4084f60b-3fa4-4b99-b68e-7e046c31fd53"/>
+          <ATTRIBUTES>
+            <ATT name="Discriminator"></ATT>
+            <ATT name="Name"><![CDATA[Generalization]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="SuperType">
+              <ID name="QuietLoginCommunicator" mc="Class" uid="9fd8d916-b9bf-48db-8801-e05674ff75f0"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+      <COMP relation="DependsOnDependency">
+        <OBJECT>
+          <ID name="modifies kivy GUI elements to display progress" mc="Usage" uid="b7176490-8b87-4a56-a074-3e43b9634a95"/>
+          <PID name="AndroidLoginCommunicator" mc="Class" uid="4084f60b-3fa4-4b99-b68e-7e046c31fd53"/>
+          <ATTRIBUTES>
+            <ATT name="DependsOnId"></ATT>
+            <ATT name="DependsOnName"></ATT>
+            <ATT name="Name"><![CDATA[modifies kivy GUI elements to display progress]]></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="DependsOn">
+              <ID name="AdroidApp" mc="Class" uid="45531db4-da55-4d37-8fac-529c7fcb3fd5"/>
+            </LINK>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

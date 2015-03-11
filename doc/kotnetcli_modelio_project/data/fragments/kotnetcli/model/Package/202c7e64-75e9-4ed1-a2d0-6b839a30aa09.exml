@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="kotnetcli back-end" version="3">
+  <DEPS>
+    <ID name="kotnetcli back-end" mc="Package" uid="202c7e64-75e9-4ed1-a2d0-6b839a30aa09"/>
+    <COMPID name="Credentials" mc="Class" uid="c023634c-7895-4c98-bcba-4b5c11806cec"/>
+    <COMPID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+    <COMPID name="QuietLoginCommunicator" mc="Class" uid="9fd8d916-b9bf-48db-8801-e05674ff75f0"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="kotnetcli back-end" mc="Package" uid="202c7e64-75e9-4ed1-a2d0-6b839a30aa09"/>
+    <PID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[kotnetcli back-end]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedElement">
+        <COMPID name="Credentials" mc="Class" uid="c023634c-7895-4c98-bcba-4b5c11806cec"/>
+        <COMPID name="QuietLoginCommunicator" mc="Class" uid="9fd8d916-b9bf-48db-8801-e05674ff75f0"/>
+        <COMPID name="LoginWorker" mc="Class" uid="a0c579c1-a1f3-4e2e-bd7b-b6f62d896a59"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

@@ -2,17 +2,22 @@
 <!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="kotnetcli" version="3">
   <DEPS>
     <ID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
+    <COMPID name="AbstractColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
+    <COMPID name="AbstractPlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
     <COMPID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
-    <COMPID name="ColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
+    <COMPID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
     <COMPID name="Interaction" mc="Interaction" uid="32889ff2-d595-4608-8346-c65fec41153e"/>
     <COMPID name="LoginColoramaCommunicator" mc="Class" uid="94611351-3175-45b7-9c07-0e5119c299f2"/>
     <COMPID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
     <COMPID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
-    <COMPID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+    <COMPID name="LogoutColoramaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
     <COMPID name="LogoutPlainTextCommunicator" mc="Class" uid="26b3db0a-8ee2-4998-bd0b-ea01d0fa1512"/>
     <COMPID name="LogoutQuietCommunicator" mc="Class" uid="152dd48f-2e42-4f25-a764-36d69e97ba0d"/>
-    <COMPID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
     <COMPID name="cd_communicator" mc="ClassDiagram" uid="b8ca56b6-379d-47ad-9b93-de9c2f839359"/>
+    <COMPID name="kivy.uix.label" mc="DataType" uid="c2c04811-ecfe-457d-8aa4-b5efef3f6d1a"/>
+    <COMPID name="kivy.uix.progressbar" mc="DataType" uid="0f14c3dc-8905-46d8-a5e0-d2b2e7425d50"/>
+    <COMPID name="kotnetcli Class diagram" mc="ClassDiagram" uid="f836517d-c4f8-4355-bc99-53fb7abe422b"/>
+    <COMPID name="kotnetcli back-end" mc="Package" uid="202c7e64-75e9-4ed1-a2d0-6b839a30aa09"/>
   </DEPS>
   <OBJECT>
     <ID name="kotnetcli" mc="Package" uid="0a445028-d837-4205-8e27-3e123aab0047"/>
@@ -34,15 +39,20 @@
         <COMPID name="AbstractQuietCommunicator" mc="Class" uid="dce0706b-8ef2-4b9a-ba51-f51f276dfd11"/>
         <COMPID name="LoginQuietCommunicator" mc="Class" uid="de43505b-ea69-4210-82d3-943702c82e77"/>
         <COMPID name="LogoutQuietCommunicator" mc="Class" uid="152dd48f-2e42-4f25-a764-36d69e97ba0d"/>
-        <COMPID name="PlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
+        <COMPID name="AbstractPlainTextCommunicator" mc="Class" uid="0a34ae86-8bf9-47cc-b7a7-79e6a242867d"/>
         <COMPID name="LoginPlainTextCommunicator" mc="Class" uid="8715a70a-ff53-4f56-a09e-32f5d83d48d1"/>
         <COMPID name="LogoutPlainTextCommunicator" mc="Class" uid="26b3db0a-8ee2-4998-bd0b-ea01d0fa1512"/>
-        <COMPID name="ColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
+        <COMPID name="AbstractColoramaCommunicator" mc="Class" uid="b12b1fc6-3bd3-4b24-bf3a-ab0e6355d8eb"/>
         <COMPID name="LoginColoramaCommunicator" mc="Class" uid="94611351-3175-45b7-9c07-0e5119c299f2"/>
-        <COMPID name="LogoutColormaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+        <COMPID name="LogoutColoramaCommunicator" mc="Class" uid="80e03dbe-8cc7-4b67-af37-ebc84e3e8499"/>
+        <COMPID name="Android Kivy front-end" mc="Package" uid="6fad567b-5a9d-4d87-9d45-d3164cf03e48"/>
+        <COMPID name="kotnetcli back-end" mc="Package" uid="202c7e64-75e9-4ed1-a2d0-6b839a30aa09"/>
+        <COMPID name="kivy.uix.label" mc="DataType" uid="c2c04811-ecfe-457d-8aa4-b5efef3f6d1a"/>
+        <COMPID name="kivy.uix.progressbar" mc="DataType" uid="0f14c3dc-8905-46d8-a5e0-d2b2e7425d50"/>
       </COMP>
       <COMP relation="Product">
         <COMPID name="cd_communicator" mc="ClassDiagram" uid="b8ca56b6-379d-47ad-9b93-de9c2f839359"/>
+        <COMPID name="kotnetcli Class diagram" mc="ClassDiagram" uid="f836517d-c4f8-4355-bc99-53fb7abe422b"/>
       </COMP>
     </DEPENDENCIES>
   </OBJECT>
