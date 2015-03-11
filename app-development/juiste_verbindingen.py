@@ -17,7 +17,7 @@
 
 import re
 import sys
-import time                 ## Enkel om login te simuleren.
+
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -32,10 +32,10 @@ class ActionScreen(Screen):
     def inloggen(self):
         def update_tekst(*args):
             self.af_te_drukken_tekst = (
-            "Netlogin openen...   [ OK ]", \
-            "Netlogin openen...   [ OK ]\nGegevens invoeren... [ OK ]", \
-            "Netlogin openen...   [ OK ]\nGegevens invoeren... [ OK ]\nGegevens opsturen... [ OK ]", \
-            "Netlogin openen...   [ OK ]\nGegevens invoeren... [ OK ]\nGegevens opsturen... [ OK ]\nDownload:            [ 82%]\nUpload:              [100%]"
+            "Netlogin openen..... [ OK ]", \
+            "Netlogin openen..... [ OK ]\nGegevens invoeren... [ OK ]", \
+            "Netlogin openen..... [ OK ]\nGegevens invoeren... [ OK ]\nGegevens opsturen... [ OK ]", \
+            "Netlogin openen..... [ OK ]\nGegevens invoeren... [ OK ]\nGegevens opsturen... [ OK ]\nDownload:            [ 82%]\nUpload:              [100%]"
             )
             
             try:
@@ -57,7 +57,7 @@ class SettingsScreen(Screen):
     pass
 
 
-class TestApp(App):
+class KotnetApp(App):
     def build(self):
         ## Screen manager aanmaken
         
@@ -77,8 +77,16 @@ class TestApp(App):
         self.root.current = "actie"
         print self.root.current
         self.actiescherm.inloggen()
+    
+    def on_pause(self):
+        ## Here you can save data if needed
+        return True
+
+    def on_resume(self):
+        ## Here you can check if any data needs replacing (usually nothing)
+        pass
         
         
 
 if __name__ == '__main__':
-    TestApp().run()
+    KotnetApp().run()

@@ -1,0 +1,133 @@
+#:kivy 1.7.1
+#:import ScreenManager kivy.uix.screenmanager
+#:import Screen kivy.uix.screenmanager
+#:import NoTransition kivy.uix.screenmanager
+
+<Bovenbalk@BoxLayout>:
+    id: hoofdbox
+    orientation: "vertical"
+    
+    BoxLayout:
+        id: titelbox
+        orientation: "vertical"
+        
+        Label:
+            text: "kotnetcli"
+            font_size: 60
+            size_hint_y: 0.6
+    
+        Label:
+            text: "by Gijs Timmers and Jo Van Bulck"
+            font_size: 30
+            size_hint_y: 0.4
+
+<MenuScreen>:
+    BoxLayout:
+        id: hoofdbox
+        orientation: "vertical"
+        
+        Bovenbalk:
+            size_hint_y: 0.20
+
+        BoxLayout:
+            id: knoppenbox
+            orientation: "vertical"
+            size_hint_y: 0.80
+            
+            Button:
+                id: inlogknop
+                text: "Inloggen"
+                font_size: 50
+                on_press:
+                    app.ga_naar_actiescherm_en_log_in()
+                
+            Button:
+                id: uitlogknop
+                text: "Uitloggen"
+                font_size: 50
+                on_press:
+                    root.manager.current = "action"
+                    root.uitloggen()
+            
+            Button:
+                id: instellingenknop
+                text: "Instellingen"
+                font_size: 50
+                on_press: root.manager.current = "settings"
+
+<ActionScreen>:
+    BoxLayout:
+        id: hoofdbox
+        orientation: "vertical"
+        
+        Bovenbalk:
+            size_hint_y: 0.2
+        
+        
+        BoxLayout:
+            id: knoppenbox
+            orientation: "vertical"
+            size_hint_y: 0.8
+            
+            CodeInput:
+                id: outputvak
+                font_size: 40
+                size_hint_y: 0.6
+            
+            Button:
+                id: afsluitknop
+                text: "Terug naar hoofdmenu"
+                size_hint_y: 0.2
+                on_press: root.manager.current = 'menu'
+                
+                
+            
+        
+<SettingsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        
+        Bovenbalk:
+            size_hint_y: 0.2
+        
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 0.8
+            
+            TextInput:
+                id: veld_gebruikersnaam
+                hint_text: "Gebruikersnaam"
+                font_size: 75
+                multiline: False
+                size_hint_y: 0.15
+                keyboard_suggestions: False
+                password: False
+                write_tab: False
+                #on_text_validate: root.stelGebruikersnaamIn(self.text)
+            
+            TextInput:
+                id: veld_wachtwoord
+                hint_text: "Wachtwoord"
+                font_size: 75
+                multiline: False
+                size_hint_y: 0.15
+                keyboard_suggestions: False
+                password: True
+                write_tab: False
+                #on_text_validate: root.stelWachtwoordIn(self.text)
+            
+            Label:
+                id: toonvak
+                font_size: 60
+                size_hint_y: 0.30
+                text: "Nog geen data ontvangen..."
+            
+            Button:
+                text: "Opslaan"
+                size_hint_y: 0.30
+                on_press: root.toonData()
+            
+            Button:
+                text: "Terug naar hoofdmenu"
+                size_hint_y: 0.1
+                on_press: root.manager.current = 'menu'
