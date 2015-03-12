@@ -18,7 +18,7 @@
 import re
 import sys
 import threading
-from browser import KotnetBrowser
+import mechanize
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock ## Om een interval in te bouwen, zonder de loop te blokkeren
@@ -51,132 +51,81 @@ class ActionScreen(Screen):
     def print_balk(self, percentage):
             return self.print_generic_balk(percentage, "", "", "", "")
     
-    def worker1(self):
-        self.status = "bezig"
-        self.kb = KotnetBrowser()
-        self.kb.login_open_netlogin()
-        self.ids["outputvak"].text = "Netlogin openen.......... [ OK ]\n"
-        self.status = "klaar"
-    
-    def worker2(self):
-        class creds():
-            def getCreds(self):
-                keyring = JsonStore("keyring.json")
-                gebruikersnaam = keyring.get("kotnetcli")["gebruikersnaam"]
-                wachtwoord     = keyring.get("kotnetcli")["wachtwoord"]
-                
-                print "----------------"
-                print "Gebruikersnaam: " + gebruikersnaam
-                print "Wachtwoord:     " + wachtwoord
-                print "----------------"
-                print "--> Opgehaald."
-                
-                return (gebruikersnaam, wachtwoord)
-            
-        self.kb.login_input_credentials(creds())
-        self.ids["outputvak"].text += "Gegevens invoeren........ [ OK ]\n"
-    
-    def worker3(self):
-        self.kb.login_send_credentials()
-        self.ids["outputvak"].text += "Gegevens opsturen........ [ OK ]\n"
+    #def inloggen_go(self, dt):
+    def inloggen_go(self):
+        self.ids["outputvak"].text = "Netlogin openen.......... "
+        self.browser = mechanize.Browser()
+        self.browser.addheaders = [('User-agent', 'Firefox')]
+        response = self.browser.open("https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst=kuleuven&lang=nl&submit=Ga+verder+%2F+Continue", \
+        timeout=1.5)
+        self.ids["outputvak"].text += "[ OK ]\n"
+        self.ids["voortgangsbalk"].value = 33
+        
+        #self.ids["outputvak"].text = "Netlogin openen.......... [ OK ]\n"
+        
+        self.ids["outputvak"].text += "Gegevens invoeren........ "
+        keyring = JsonStore("keyring.json")
+        gebruikersnaam = keyring.get("kotnetcli")["gebruikersnaam"]
+        wachtwoord     = keyring.get("kotnetcli")["wachtwoord"]
+        
+        print "----------------"
+        print "Gebruikersnaam: " + gebruikersnaam
+        print "Wachtwoord:     " + wachtwoord
+        print "----------------"
+        print "--> Opgehaald."
+        
+        
+        self.browser.select_form(nr=1)
+        self.browser.form["uid"] = gebruikersnaam
+        wachtwoordvaknaam = \
+        self.browser.form.find_control(type="password").name
+        self.browser.form[wachtwoordvaknaam] = wachtwoord
+        self.ids["outputvak"].text += "[ OK ]\n"
+        self.ids["voortgangsbalk"].value = 66
+        
+        self.ids["outputvak"].text += "Gegevens opsturen........ "
+        self.browser.submit()
+        #self.ids["outputvak"].text += "Gegevens opsturen........ [ OK ]\n"
+        
+        
+        html = unicode(self.browser.response().read(), "utf-8")
+        #print html
+        print "---------------------------------------------"
+        print "---------------------------------------------"
+        print "---------------------------------------------"
         
         ## Parsen gaat wél op PC, niet op Android: bs4 conflicteert met mechanize
         ## rond een bepaalde library, die ze allebei nodig hebben.
-        ## Workaround: parsen met iets anders dan bs4.
+        ## Workaround: parsen met re ipv bs4.
         
-        #(up, down) = self.kb.login_parse_results()
+        downstring       = re.findall("(?<=available download = )\d+ of \d+", html)[0]
+        downverbruikt    = float(re.findall("\d+", downstring)[0])
+        downtotaal       = float(re.findall("\d+", downstring)[1])
+        downpercentage   = int(round(downverbruikt/downtotaal * 100))
         
-        #self.ids["outputvak"].text += "Download:            [" + str(down) + "%]\n"
-        #self.ids["outputvak"].text += "Upload:              [" + str(up)   + "%]\n"
-        #self.ids["outputvak"].text += "Download " + self.print_balk(down) + "\n"
-        #self.ids["outputvak"].text += "Upload   " + self.print_balk(up)   + "\n"
-    
-    def inloggen_go(self, dt):
-        self.status = "klaar"
-        thread = threading.Thread(target=self.worker1)
-        thread.start()
-        thread.join()
-        thread = threading.Thread(target=self.worker2)
-        thread.start()
-        thread.join()
-        thread = threading.Thread(target=self.worker3)
-        thread.start()
+        upstring         = re.findall("(?<=available upload = )\d+ of \d+", html)[0]
+        upverbruikt      = float(re.findall("\d+", upstring)[0])
+        uptotaal         = float(re.findall("\d+", upstring)[1])
+        uppercentage     = int(round(upverbruikt/uptotaal * 100))
         
-        #Clock.schedule_once(self.worker1)
-        #Clock.schedule_once(self.worker2)
-        #Clock.schedule_once(self.worker3)
-        #event = Clock.create_trigger(self.worker1)
-        #event()
-        #event = Clock.create_trigger(self.worker2)
-        #event()
-        #event = Clock.create_trigger(self.worker3)
-        #event()
-        """
-        self.ids["outputvak"].lexer = TextLexer()
-                
-        self.kb = KotnetBrowser()
-        self.kb.login_open_netlogin()
-        self.ids["outputvak"].text = "Netlogin openen.......... [ OK ]\n"
-    
-    
-        class creds():
-            def getCreds(self):
-                keyring = JsonStore("keyring.json")
-                gebruikersnaam = keyring.get("kotnetcli")["gebruikersnaam"]
-                wachtwoord     = keyring.get("kotnetcli")["wachtwoord"]
-                
-                print "----------------"
-                print "Gebruikersnaam: " + gebruikersnaam
-                print "Wachtwoord:     " + wachtwoord
-                print "----------------"
-                print "--> Opgehaald."
-                
-                return (gebruikersnaam, wachtwoord)
-            
-        self.kb.login_input_credentials(creds())
-        self.ids["outputvak"].text += "Gegevens invoeren........ [ OK ]\n"
-    
-    
-        self.kb.login_send_credentials()
-        self.ids["outputvak"].text += "Gegevens opsturen........ [ OK ]\n"
+        print downpercentage
+        print uppercentage
         
-        (up, down) = self.kb.login_parse_results()
+        self.ids["outputvak"].text += "[ OK ]\n"
+        self.ids["outputvak"].text += "Download " + self.print_balk(downpercentage) + "\n"
+        self.ids["outputvak"].text += "Upload   " + self.print_balk(uppercentage)   + "\n"
+        self.ids["voortgangsbalk"].value = 100
         
-        #self.ids["outputvak"].text += "Download:            [" + str(down) + "%]\n"
-        #self.ids["outputvak"].text += "Upload:              [" + str(up)   + "%]\n"
-        self.ids["outputvak"].text += "Download " + self.print_balk(down) + "\n"
-        self.ids["outputvak"].text += "Upload   " + self.print_balk(up)   + "\n"
-        """
+        ## Thread eindigt vanzelf, want er is niks meer te doen.
     
     def inloggen(self):
-        Clock.schedule_once(self.inloggen_go, 0)
+        ## Thread starten, anders blokkeert het Browser()-werk de GUI-loop,
+        ## en krijg je een hangende app.
+        t = threading.Thread(target=self.inloggen_go)
+        t.start()
         
-    """
-    def inloggen(self):
-        def update_tekst(*args):
-            self.af_te_drukken_tekst = (
-            "Netlogin openen..... [ OK ]", \
-            "Netlogin openen..... [ OK ]\nGegevens invoeren... [ OK ]", \
-            "Netlogin openen..... [ OK ]\nGegevens invoeren... [ OK ]\nGegevens opsturen... [ OK ]", \
-            "Netlogin openen..... [ OK ]\nGegevens invoeren... [ OK ]\nGegevens opsturen... [ OK ]\nDownload:            [ 82%]\nUpload:              [100%]"
-            )
-            
-            try:
-                self.ids["outputvak"].text = self.af_te_drukken_tekst[self.index]
-                self.index += 1
-            except IndexError:
-                ## indien index out of range (dus: einde bereikt): stop. Dat
-                ## gaat volgens de documentatie door een False te returnen
-                ## bij een methode die is aangeroepen door Clock.
-                return False
-            
-            
-        self.index = 0
-        
-        ## Gebruik Clock ipv time.sleep om tekst te updaten om de zoveel tijd
-        Clock.schedule_interval(update_tekst, 0.5)
-    """
     def uitloggen(self):
+        ## Moet nog aan gewerkt worden.
         print "Ik wil uitloggen."
 
 class SettingsScreen(Screen):
@@ -245,9 +194,10 @@ class SettingsScreen(Screen):
 
 
 class KotnetApp(App):
+    
     def build(self):
         ## Kivy-instellingen uitschakelen bij druk op Menu-knop
-        self.use_kivy_settings = False
+        self.use_kivy_settings = False        
         
         ## Screen manager aanmaken
         self.menuscherm = MenuScreen(name="menu")
@@ -301,17 +251,6 @@ class KotnetApp(App):
         self.root.current = "actie"
         self.actiescherm.uitloggen()
     
-    
-    """
-    def on_pause(self):
-        ## Here you can save data if needed
-        return True
-
-    def on_resume(self):
-        ## Here you can check if any data needs replacing (usually nothing)
-        pass
-    """
-        
 
 if __name__ == '__main__':
     KotnetApp().run()
