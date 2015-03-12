@@ -2,6 +2,7 @@
 #:import ScreenManager kivy.uix.screenmanager
 #:import Screen kivy.uix.screenmanager
 #:import NoTransition kivy.uix.screenmanager
+#:import KivyLexer kivy.extras.highlight 
 
 <Bovenbalk@BoxLayout>:
     id: hoofdbox
@@ -46,8 +47,7 @@
                 text: "Uitloggen"
                 font_size: 50
                 on_press:
-                    root.manager.current = "action"
-                    root.uitloggen()
+                    app.ga_naar_actiescherm_en_log_uit()
             
             Button:
                 id: instellingenknop
@@ -71,7 +71,7 @@
             
             CodeInput:
                 id: outputvak
-                font_size: 40
+                font_size: 30
                 size_hint_y: 0.6
             
             Button:
@@ -97,37 +97,35 @@
             TextInput:
                 id: veld_gebruikersnaam
                 hint_text: "Gebruikersnaam"
-                font_size: 75
+                font_size: 90
                 multiline: False
-                size_hint_y: 0.15
+                size_hint_y: 0.20
+                input_type: "text"
                 keyboard_suggestions: False
                 password: False
                 write_tab: False
-                #on_text_validate: root.stelGebruikersnaamIn(self.text)
+                
             
             TextInput:
                 id: veld_wachtwoord
                 hint_text: "Wachtwoord"
-                font_size: 75
+                font_size: 120
                 multiline: False
-                size_hint_y: 0.15
+                size_hint_y: 0.20
+                input_type: "text"
                 keyboard_suggestions: False
                 password: True
                 write_tab: False
-                #on_text_validate: root.stelWachtwoordIn(self.text)
-            
-            Label:
-                id: toonvak
-                font_size: 60
-                size_hint_y: 0.30
-                text: "Nog geen data ontvangen..."
+                
             
             Button:
+                id: opslaanvergeetknop
                 text: "Opslaan"
-                size_hint_y: 0.30
-                on_press: root.toonData()
+                size_hint_y: 0.20
+                on_press: root.saveOrForget()
+                toestand: "opslaan"
             
             Button:
                 text: "Terug naar hoofdmenu"
-                size_hint_y: 0.1
+                size_hint_y: 0.4
                 on_press: root.manager.current = 'menu'
