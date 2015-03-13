@@ -51,8 +51,8 @@ class ActionScreen(Screen):
     def print_balk(self, percentage):
             return self.print_generic_balk(percentage, "", "", "", "")
     
-    #def inloggen_go(self, dt):
-    def inloggen_go(self):
+
+    def inloggen(self):
         self.ids["outputvak"].text = "Netlogin openen.......... "
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
@@ -117,16 +117,12 @@ class ActionScreen(Screen):
         self.ids["voortgangsbalk"].value = 100
         
         ## Thread eindigt vanzelf, want er is niks meer te doen.
-    
-    def inloggen(self):
-        ## Thread starten, anders blokkeert het Browser()-werk de GUI-loop,
-        ## en krijg je een hangende app.
-        t = threading.Thread(target=self.inloggen_go)
-        t.start()
+
         
     def uitloggen(self):
         ## Moet nog aan gewerkt worden.
         print "Ik wil uitloggen."
+        self.ids["outputvak"].text += "Wordt aan gewerkt...\n"
 
 class SettingsScreen(Screen):
     def saveOrForget(self):
@@ -245,7 +241,8 @@ class KotnetApp(App):
         
     def ga_naar_actiescherm_en_log_in(self):
         self.root.current = "actie"
-        self.actiescherm.inloggen()
+        t = threading.Thread(target=self.actiescherm.inloggen)
+        t.start()
     
     def ga_naar_actiescherm_en_log_uit(self):
         self.root.current = "actie"
