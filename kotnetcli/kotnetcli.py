@@ -331,9 +331,13 @@ class KotnetCLI(object):
         '''
 ## end class KotnetCLI
 
+## Losse main()-functie, zodat setup.py gemakkelijk een executable voor deze
+## methode kan aanleggen in /usr/bin.
+def main():
+    k = KotnetCLI()
+    k.parseArgumenten()
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)
-if  __name__ =='__main__':
-    k = KotnetCLI()
-    k.parseArgumenten()
+if __name__ == "__main__":
+    main()
