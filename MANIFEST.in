@@ -1,0 +1,3 @@
+include *.py
+recursive-include communicator *.py *.md
+prune examples/sample?/build
