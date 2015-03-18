@@ -73,6 +73,7 @@
             
             CodeInput:
                 id: outputvak
+                readonly: True
                 font_size: 30
                 size_hint_y: 0.6
             
@@ -87,7 +88,9 @@
                 text: "Terug naar hoofdmenu"
                 font_size: 50
                 size_hint_y: 0.2
-                on_press: root.manager.current = 'menu'
+                on_press:
+                    outputvak.text = ""
+                    root.manager.current = 'menu'
                 
                 
             
@@ -130,7 +133,7 @@
             Button:
                 id: opslaanvergeetknop
                 text: "Opslaan"
-                #size_hint_y: 0.20
+                font_size: 50
                 size_hint_y: 0.33333
                 on_press: root.saveOrForget()
                 toestand: "opslaan"
