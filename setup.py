@@ -21,7 +21,18 @@ from setuptools import setup
 
 setup(
   name = "kotnetcli",
-  packages = ["kotnetcli"], # this must be the same as the name above
+  #packages = ["kotnetcli", "kotnetcli.communicator", "kotnetcli.tools"], # this must be the same as the name above
+  
+  ## Omweg via py_modules, om gekloot met die packages te voorkomen.
+  """
+  py_modules = ["kotnetcli.kotnetcli", "kotnetcli.tools", "kotnetcli.communicator",
+  "kotnetcli.browser", "kotnetcli.credentials", "kotnetcli.worker", 
+  "kotnetcli.tools.cursor", "kotnetcli.tools.errorcodes", "kotnetcli.tools.log", "kotnetcli.tools.pinger",
+  "kotnetcli.communicator.fabriek", "kotnetcli.communicator.quietc", "kotnetcli.communicator.plaintextc", 
+  "kotnetcli.communicator.bubblec", "kotnetcli.communicator.coloramac", "kotnetcli.communicator.cursesc",
+  "kotnetcli.communicator.dialogc", "kotnetcli.communicator.summaryc"
+  ],
+  """
   version = "1.3.0",
   description = "An easy automated way to log in on Kotnet",
   author = "Gijs Timmers and Jo Van Bulck",
@@ -40,7 +51,7 @@ setup(
   classifiers = [],
   entry_points = {
               "console_scripts": [
-                  "kotnetcli = kotnetcli:kotnetcli",
+                  "kotnetcli = kotnetcli.kotnetcli:main",
                                  ],
                   },
 )
