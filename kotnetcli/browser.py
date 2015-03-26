@@ -79,7 +79,8 @@ class KotnetBrowser():
             sock = socket.create_connection(("netlogin.kuleuven.be", 443), BROWSER_TIMEOUT_SEC)
             sock.close()
             return True
-        except:
+        except socket.error:
+            ## note: socket.timeout, socket.gaierror and socket.herror seem to be subclasses of socket.error
             return False
     
     def login_open_netlogin(self):
