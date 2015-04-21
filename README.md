@@ -102,8 +102,8 @@ This section lists the platform specific instructions to resolve the above depen
         
   - Mac OS X (using [Homebrew](http://brew.sh/)):
 
-        $ brew install ncurses
-        $ brew install homebrew/python/python-dbus
+        $ brew install ncurses dialog \
+          homebrew/python/python-dbus
         $ sudo pip install mechanize keyring notify2 \
           colorama python2-pythondialog beautifulsoup4 \
           argcomplete
