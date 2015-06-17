@@ -1,1 +1,0 @@
-../kotnetcli-android.py
