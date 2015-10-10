@@ -24,12 +24,13 @@ logger = logging.getLogger(__name__)
 
 class LoginTestsuiteWorker(SuperWorker):
 
-    def __init__(self, dummy_browser_timeout):
+    def __init__(self, inst, dummy_browser_timeout):
+        self.inst = inst
         self.timeout = dummy_browser_timeout
 
     def go(self, co, creds):
-        logger.info("running dummy login testsuite with communicator " + \
-        "'%s'" % co.__class__.__name__ + " and timeout %s\n" % self.timeout)
+        logger.info("running dummy login testsuite with communicator '%s' and " \
+        "timeout %s for inst '%s'\n", co.__class__.__name__, self.timeout, self.inst)
         self.run_dummy_login_tests(co, creds)
         logger.info("end of dummy login testsuite with communicator " + \
         "'%s'", co.__class__.__name__)
@@ -39,7 +40,7 @@ class LoginTestsuiteWorker(SuperWorker):
     def run_dummy_login_tests(self, co, creds):
     
         logger.info("DEFAULT DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout)
+        worker = DummyLoginWorker(self.inst, self.timeout)
         try:
             worker.go(co, creds)
         except SystemExit, e:
@@ -47,7 +48,7 @@ class LoginTestsuiteWorker(SuperWorker):
             logger.info("DEFAULT DUMMY LOGIN END\n")
         
         logger.info("LOW PERCENTAGES DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout, True, False, browser.RC_LOGIN_SUCCESS, -5, 22.5)        
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_SUCCESS, -5, 22.5)        
         try:
             worker.go(co, creds)
         except SystemExit, e:
@@ -55,7 +56,7 @@ class LoginTestsuiteWorker(SuperWorker):
             logger.info("LOW PERCENTAGES DUMMY LOGIN END\n")
         
         logger.info("KOTNET OFFLINE DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout, False)        
+        worker = DummyLoginWorker(self.inst, self.timeout, False) 
         try:
             worker.go(co, creds)
         except SystemExit, e:
@@ -63,7 +64,7 @@ class LoginTestsuiteWorker(SuperWorker):
             logger.info("KOTNET OFFLINE DUMMY LOGIN END\n")
         
         logger.info("NETLOGIN OFFLINE DUMMY LOGIN START")
-        worker = DummyLoginWorker(0.1, True, True)        
+        worker = DummyLoginWorker(self.inst, self.timeout, True, True)        
         try:
             worker.go(co, creds)
         except SystemExit, e:
@@ -71,7 +72,7 @@ class LoginTestsuiteWorker(SuperWorker):
             logger.info("NETLOGIN OFFLINE DUMMY LOGIN END\n")
         
         logger.info("INVALID USERNAME DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout, True, False, browser.RC_LOGIN_INVALID_USERNAME)        
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_INVALID_USERNAME)        
         try:
             worker.go(co, creds)
         except SystemExit, e:
@@ -79,7 +80,7 @@ class LoginTestsuiteWorker(SuperWorker):
             logger.info("INVALID USERNAME DUMMY LOGIN END\n")
         
         logger.info("INVALID PASSWORD DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout, True, False, browser.RC_LOGIN_INVALID_PASSWORD)        
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_INVALID_PASSWORD)        
         try:
             worker.go(co, creds)
         except SystemExit, e:
@@ -87,15 +88,23 @@ class LoginTestsuiteWorker(SuperWorker):
             logger.info("INVALID PASSWORD DUMMY LOGIN END\n")
         
         logger.info("MAX IP DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout, True, False, browser.RC_LOGIN_MAX_IP)        
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_MAX_IP)        
         try:
             worker.go(co, creds)
         except SystemExit, e:
             assert (e.code == EXIT_FAILURE)
             logger.info("MAX IP DUMMY LOGIN END\n")
+        
+        logger.info("UNKNOWN INSTITUTION DUMMY LOGIN START")
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_INVALID_INSTITUTION)        
+        try:
+            worker.go(co, creds)
+        except SystemExit, e:
+            assert (e.code == EXIT_FAILURE)
+            logger.info("UNKNOWN INSTITUTION DUMMY LOGIN END\n")
 
         logger.info("UNKNOWN RC (DEBUG ON) DUMMY LOGIN START")
-        worker = DummyLoginWorker(self.timeout, True, False, 300)
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, 300)
         worker_logger = logging.getLogger("worker")
         worker_logger.setLevel(logging.DEBUG)
         try:

@@ -32,18 +32,28 @@ logger = logging.getLogger(__name__)
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
 
-## the login url containing the institution choice
-NETLOGIN_URL = "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst=kuleuven&lang=nl&submit=Ga+verder+%2F+Continue"
+## the part of the login url before the institution choice
+NETLOGIN_URL_PART_1 = "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst="
+## the part of the login url after the institution choice
+NETLOGIN_URL_PART_2 = "&lang=nl&submit=Ga+verder+%2F+Continue"
 
 ## login rc codes contained in the response html page
 RC_LOGIN_SUCCESS            = 100
-RC_LOGIN_INVALID_USERNAME = 201
-RC_LOGIN_INVALID_PASSWORD = 202
+RC_LOGIN_INVALID_USERNAME   = 201
+RC_LOGIN_INVALID_PASSWORD   = 202
 RC_LOGIN_MAX_IP             = 206
+RC_INVALID_INSTITUTION      = 211
 
 ## custom exceptions
 class WrongCredentialsException(Exception):
     pass
+
+class InvalidInstitutionException(Exception):
+    def __init__(self, inst):
+        self.inst = inst
+    
+    def get_inst(self):
+        return self.inst
 
 ##TODO hier het ip address in opslaan (~ hieronder de rccode)
 class MaxNumberIPException(Exception):
@@ -65,9 +75,12 @@ class UnknownRCException(Exception):
 ## only the Browser() methods that it needs.
 ## Some 
 class KotnetBrowser():
+     
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
-    def __init__(self):
+    def __init__(self, inst):
+        self.institution = inst
+        self.netlogin_url = NETLOGIN_URL_PART_1 + inst + NETLOGIN_URL_PART_2
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
     
@@ -84,7 +97,7 @@ class KotnetBrowser():
             return False
     
     def login_open_netlogin(self):
-        response = self.browser.open(NETLOGIN_URL, \
+        response = self.browser.open(self.netlogin_url, \
         timeout=BROWSER_TIMEOUT_SEC)
         #html = response.read()
 
@@ -148,6 +161,9 @@ class KotnetBrowser():
             
         elif rccode == RC_LOGIN_MAX_IP:
             raise MaxNumberIPException()
+
+        elif rccode == RC_INVALID_INSTITUTION:
+            raise InvalidInstitutionException(self.institution)
 
         else:
             raise UnknownRCException(rccode, html)
@@ -214,7 +230,8 @@ class KotnetBrowser():
 
 class DummyBrowser():
     ## allow custom test behavior via params
-    def __init__(self, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
+    def __init__(self, inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
+        self.institution = inst
         self.dummy_timeout = dummy_timeout
         self.kotnet_online=kotnet_online
         self.netlogin_unavailable = netlogin_unavailable
@@ -252,6 +269,9 @@ class DummyBrowser():
             
         elif self.rccode == RC_LOGIN_MAX_IP:
             raise MaxNumberIPException()
+
+        elif self.rccode == RC_INVALID_INSTITUTION:
+            raise InvalidInstitutionException(self.institution)
 
         else:
             raise UnknownRCException(self.rccode, "\n<html>\n<p>the dummy html page</p>\n</html>\n")

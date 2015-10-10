@@ -111,6 +111,10 @@ class KotnetCLI(object):
         nargs="?", const="debug", metavar="LEVEL",
         choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
         action="store", default=log_level_default)
+        self.parser.add_argument("--institution", help="specify the instititution", \
+        nargs="?", const="kuleuven", metavar="INST",
+        choices=[ 'kuleuven', 'kuleuven-campusnet'],
+        action="store", default="kuleuven")
         
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\
@@ -237,12 +241,12 @@ class KotnetCLI(object):
     def parseActionFlags(self, argumenten):
         if argumenten.logout:
             logger.info("ik wil uitloggen")
-            worker = LogoutWorker()
+            worker = LogoutWorker(argumenten.institution)
             fabriek = LogoutCommunicatorFabriek()
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen")
-            worker = LoginWorker()
+            worker = LoginWorker(argumenten.institution)
             fabriek = LoginCommunicatorFabriek()
                 
         '''elif argumenten.worker == "force_login":

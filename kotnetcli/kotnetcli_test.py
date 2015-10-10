@@ -60,13 +60,13 @@ class KotnetCLITester(KotnetCLI):
         
         elif argumenten.run_tests:
             logger.info("ik wil testen")
-            return (LoginTestsuiteWorker(argumenten.timeout), \
+            return (LoginTestsuiteWorker(argumenten.institution, argumenten.timeout), \
                 LoginCommunicatorFabriek())
             
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen voor spek en bonen")
-            return (DummyLoginWorker(argumenten.timeout), \
+            return (DummyLoginWorker(argumenten.institution, argumenten.timeout), \
                 LoginCommunicatorFabriek())
         
     def parseCredentialFlags(self, argumenten):
