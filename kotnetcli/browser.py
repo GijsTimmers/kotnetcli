@@ -43,9 +43,13 @@ RC_LOGIN_INVALID_USERNAME   = 201
 RC_LOGIN_INVALID_PASSWORD   = 202
 RC_LOGIN_MAX_IP             = 206
 RC_INVALID_INSTITUTION      = 211
+RC_INTERNAL_SCRIPT_ERR      = 301
 
 ## custom exceptions
 class WrongCredentialsException(Exception):
+    pass
+
+class InternalScriptErrorException(Exception):
     pass
 
 class InvalidInstitutionException(Exception):
@@ -164,6 +168,9 @@ class KotnetBrowser():
 
         elif rccode == RC_INVALID_INSTITUTION:
             raise InvalidInstitutionException(self.institution)
+        
+        elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
+            raise InternalScriptErrorException()
 
         else:
             raise UnknownRCException(rccode, html)
@@ -272,6 +279,9 @@ class DummyBrowser():
 
         elif self.rccode == RC_INVALID_INSTITUTION:
             raise InvalidInstitutionException(self.institution)
+        
+        elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
+            raise InternalScriptErrorException()
 
         else:
             raise UnknownRCException(self.rccode, "\n<html>\n<p>the dummy html page</p>\n</html>\n")

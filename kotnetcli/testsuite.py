@@ -79,6 +79,14 @@ class LoginTestsuiteWorker(SuperWorker):
             assert (e.code == EXIT_FAILURE)
             logger.info("INVALID USERNAME DUMMY LOGIN END\n")
         
+        logger.info("INTERNAL SCRIPT ERROR LOGIN START")
+        worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_INTERNAL_SCRIPT_ERR)        
+        try:
+            worker.go(co, creds)
+        except SystemExit, e:
+            assert (e.code == EXIT_FAILURE)
+            logger.info("INTERNAL SCRIPT ERROR LOGIN END\n")
+        
         logger.info("INVALID PASSWORD DUMMY LOGIN START")
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_INVALID_PASSWORD)        
         try:

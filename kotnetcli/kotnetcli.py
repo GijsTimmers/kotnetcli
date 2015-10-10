@@ -89,7 +89,7 @@ class KotnetCLI(object):
     log_level_default = "warning"):
         epilog_string = "return values:\n  %s\t\t\ton success\n  %s\t\t\ton failure" % (EXIT_SUCCESS, EXIT_FAILURE)
         self.parser = argparse.ArgumentParser(description=descr, epilog=epilog_string, \
-            formatter_class=argparse.RawDescriptionHelpFormatter)
+            formatter_class=argparse.RawDescriptionHelpFormatter,conflict_handler='resolve')
         dummygroup = self.parser.add_argument_group("worker options")
         self.workergroep = dummygroup.add_mutually_exclusive_group()
         dummygroup = self.parser.add_argument_group("credentials options")
@@ -108,13 +108,13 @@ class KotnetCLI(object):
         ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if option 
         ## not present; defaults to debug if option present but no level specified
         self.parser.add_argument("--debug", help="specify the debug verbosity", \
-        nargs="?", const="debug", metavar="LEVEL",
-        choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
-        action="store", default=log_level_default)
+            nargs="?", const="debug", metavar="LEVEL",
+            choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
+            action="store", default=log_level_default)
         self.parser.add_argument("--institution", help="specify the instititution", \
-        nargs="?", const="kuleuven", metavar="INST",
-        choices=[ 'kuleuven', 'kuleuven-campusnet'],
-        action="store", default="kuleuven")
+            nargs="?", const="kuleuven", metavar="INST",
+            choices=[ 'kuleuven', 'kuleuven-campusnet'],
+            action="store", default="kuleuven")
         
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\

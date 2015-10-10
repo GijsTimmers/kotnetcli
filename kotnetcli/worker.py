@@ -125,6 +125,11 @@ class LoginWorker(SuperWorker):
             logger.error("Uw gekozen institutie '%s' klopt niet. Gebruik " + \
             "kotnetcli --institution om een andere institutie te kiezen.", e.get_inst())
             sys.exit(EXIT_FAILURE)
+        except browser.InternalScriptErrorException:
+            co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("De kotnet server rapporteert een 'internal script error'." \
+                " Probeer opnieuw in te loggen...")
+            sys.exit(EXIT_FAILURE)
         except browser.UnknownRCException, e:
             co.beeindig_sessie(EXIT_FAILURE)
             (rccode, html) = e.get_info()

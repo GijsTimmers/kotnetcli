@@ -25,6 +25,8 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
 from testsuite import LoginTestsuiteWorker
 
+import browser # for RC_CODES
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -44,6 +46,11 @@ class KotnetCLITester(KotnetCLI):
         
     def voegArgumentenToe(self, log_level_default):
         super(KotnetCLITester, self).voegArgumentenToe(log_level_default)
+        
+        ## override the login option to allow a user-defined rccode to be passed
+        self.workergroep.add_argument("-i", "--login", help="joooo",
+            nargs="?", type=int, const=browser.RC_LOGIN_SUCCESS, metavar="RC_CODE",
+            action="store", default=browser.RC_LOGIN_SUCCESS)
         
         self.workergroep.add_argument("-r", "--run-tests", \
         help="Run a bunch of tests and assertions", action="store_true")
@@ -65,8 +72,10 @@ class KotnetCLITester(KotnetCLI):
             
         else:
             ## default option: argumenten.login
-            logger.info("ik wil inloggen voor spek en bonen")
-            return (DummyLoginWorker(argumenten.institution, argumenten.timeout), \
+            logger.info("ik wil inloggen voor spek en bonen met RC_CODE %s",
+                argumenten.login)
+            return (DummyLoginWorker(argumenten.institution, argumenten.timeout, \
+                True, False, argumenten.login), \
                 LoginCommunicatorFabriek())
         
     def parseCredentialFlags(self, argumenten):
