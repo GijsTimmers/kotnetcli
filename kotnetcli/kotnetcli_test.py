@@ -48,15 +48,16 @@ class KotnetCLITester(KotnetCLI):
         super(KotnetCLITester, self).voegArgumentenToe(log_level_default)
         
         ## override the login option to allow a user-defined rccode to be passed
-        self.workergroep.add_argument("-i", "--login", help="joooo",
+        self.workergroep.add_argument("-i", "--login",
+            help="Simulates a login to KotNet with a given rccode result",
             nargs="?", type=int, const=browser.RC_LOGIN_SUCCESS, metavar="RC_CODE",
             action="store", default=browser.RC_LOGIN_SUCCESS)
         
         self.workergroep.add_argument("-r", "--run-tests", \
-        help="Run a bunch of tests and assertions", action="store_true")
+        help="Runs a bunch of tests and assertions", action="store_true")
         
         self.parser.add_argument("--timeout", metavar="DELAY", \
-        help="Specify the timeout (in seconds) voor dummy browser replies", \
+        help="specify the timeout (in seconds) voor dummy browser replies", \
         type=positive_float, default=0.1)
     
     ## override with dummy behavior
