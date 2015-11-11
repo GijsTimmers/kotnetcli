@@ -126,7 +126,7 @@ class KotnetBrowser():
     def login_parse_results(self):
         html = self.browser.response().read()
 
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, "lxml")
 
         ## Zoek naar de rc-code in de comments van het html-bestand. Deze
         ## bevat de status.
