@@ -21,14 +21,7 @@ import sys                              ## for advanced print functions
 #import os                               ## Basislib
 #import platform                         ## Om onderscheid Lin/Mac te maken
 from quietc import QuietCommunicator
-#from ..tools import cursor              ## Om cursor te verbergen/tonen
-from tools import cursor                ## Om cursor te verbergen/tonen
-
-## Gijs:
-## We hoeven geen relatieve import te gebruiken omdat de map waarin 
-## kotnetcli.py zich bevindt de rootmap ($PYTHONPATH) is. De map 'tools'
-## bevindt zich daar ook; daarom hoeven we niet te verwijzen naar de lokatie
-## ten opzichte van deze specifieke communicator (denk ik)
+import cursor
 
 class SuperPlaintextCommunicator(QuietCommunicator):
     def __init__(self):

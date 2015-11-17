@@ -41,7 +41,7 @@
 ## The abstract factory specifying the interface and maybe returning 
 ## some defaults (or just passing)
 class SuperCommunicatorFabriek:
-    def createSummaryCommunicator():
+    def createSummaryCommunicator(self):
         pass
 
 ## LoginCommunicatorFabriek: functies als volgt aanroepen:

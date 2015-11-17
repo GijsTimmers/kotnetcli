@@ -17,11 +17,9 @@
 
 import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
-import urllib                           ## Diverse URL-manipulaties
 import urlparse                         ## Diverse URL-manipulaties
 import mechanize                        ## Emuleert een browser
 import socket                           ## Voor ophalen IP
-import sys                              ## Basislib
 import os                               ## Basislib
 
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
@@ -78,7 +76,7 @@ class UnknownRCException(Exception):
 ## proper Worker() is instantiated by kotnetcli.py, and this instance calls
 ## only the Browser() methods that it needs.
 ## Some 
-class KotnetBrowser():
+class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
@@ -101,7 +99,7 @@ class KotnetBrowser():
             return False
     
     def login_open_netlogin(self):
-        response = self.browser.open(self.netlogin_url, \
+        self.browser.open(self.netlogin_url, \
         timeout=BROWSER_TIMEOUT_SEC)
         #html = response.read()
 
@@ -235,7 +233,7 @@ class KotnetBrowser():
         else:
             print html
 
-class DummyBrowser():
+class DummyBrowser(object):
     ## allow custom test behavior via params
     def __init__(self, inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
         self.institution = inst
@@ -287,7 +285,7 @@ class DummyBrowser():
             raise UnknownRCException(self.rccode, "\n<html>\n<p>the dummy html page</p>\n</html>\n")
 
 
-'''    
+"""
 ## Deze klasse bevat functies voor de forceer-loginmethode. Gaan we nu nog
 ## niet gebruiken. Deze klasse wordt later waarschijnlijk samengevoegd met
 ## KotnetBrowser().
@@ -304,4 +302,4 @@ class KotnetForceerBrowser(KotnetBrowser):
         uitteloggenip = form.contents[3]["value"]
 
         return uitteloggenip    
-'''
+"""
