@@ -2,12 +2,12 @@
 *.pyo
 *.ttf
 *.egg-info
+*~
 build/
 dist/
 pyinstaller/
 htmls/
 
 test-win.sh
-#test*
 
 logoutformulieringevuld.html
