@@ -109,17 +109,20 @@ class KotnetCLI(object):
         ########## general flags ##########
         self.parser.add_argument("-v", "--version", action="version", \
         version=__version__)
-        self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
-        help="show license info and exit", nargs=0)
+        
         ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if option 
         ## not present; defaults to debug if option present but no level specified
+        self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
+        help="show license info and exit", nargs=0)
+        
         self.parser.add_argument("--debug", help="specify the debug verbosity", \
             nargs="?", const="debug", metavar="LEVEL",
             choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
             action="store", default=log_level_default)
+        
         self.parser.add_argument("--institution", help="specify the instititution", \
             nargs="?", const="kuleuven", metavar="INST",
-            choices=[ 'kuleuven', 'kuleuven-campusnet'],
+            choices=["kuleuven", "kotnetext", "kuleuven-campusnet"],
             action="store", default="kuleuven")
         
         ########## login type flags ##########
@@ -165,13 +168,7 @@ class KotnetCLI(object):
         #action="store_const", dest="communicator", const="quiet")
                 
         ## voorlopig andere communicators uitschakelen in de dev branch
-        '''
-        """
-        communicatorgroep.add_argument("-a", "--android",\
-        help="Logs you in using the Android login system",\
-        action="store_const", dest="communicator", const="android")
-        """
-        
+        """        
         self.communicatorgroep.add_argument("-u", "--curses",\
         help="Logs you in using curses output",\
         action="store_const", dest="communicator", const="curses")
@@ -191,7 +188,7 @@ class KotnetCLI(object):
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
         action="store_const", dest="communicator", const="quiet")
-        '''
+        """
     
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):

@@ -30,11 +30,6 @@ logger = logging.getLogger(__name__)
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
 
-## the part of the login url before the institution choice
-NETLOGIN_URL_PART_1 = "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst="
-## the part of the login url after the institution choice
-NETLOGIN_URL_PART_2 = "&lang=nl&submit=Ga+verder+%2F+Continue"
-
 ## login rc codes contained in the response html page
 RC_LOGIN_SUCCESS            = 100
 RC_LOGIN_INVALID_USERNAME   = 201
@@ -82,7 +77,11 @@ class KotnetBrowser(object):
     ## credentials object that is supplied when needed
     def __init__(self, inst):
         self.institution = inst
-        self.netlogin_url = NETLOGIN_URL_PART_1 + inst + NETLOGIN_URL_PART_2
+        self.netlogin_url = (
+        "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst={}"
+        "&lang=nl&submit=Ga+verder+%2F+Continue".format(self.institution)
+        )
+        
         self.browser = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Firefox')]
     
