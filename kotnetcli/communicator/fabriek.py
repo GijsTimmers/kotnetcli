@@ -24,19 +24,6 @@
 ## de worker de juiste event kan aanroepen: bvb co.eventNetloginStart(), zonder
 ## te weten welke communicator dat nu precies is.
 
-## Gijs@Jo: Dit was mijn interpretatie, is deze correct?
-
-#from quietc     import LoginQuietCommunicator,     LogoutQuietCommunicator
-#from summaryc   import LoginSummaryCommunicator,   LogoutSummaryCommunicator
-#from bubblec    import LoginBubbleCommunicator,    LogoutBubbleCommunicator
-
-#from cursesc    import LoginCursesCommunicator,    LogoutCursesCommunicator
-#from dialogc    import DialogCommunicator
-## Gijs@Jo: Graag aanpassen zodra de LoginDialogCommunicator en
-##          LogoutDialogCommunicator af is.
-
-
-## NOTE: lazy importing in the corresponding factory methods :-)
 
 ## The abstract factory specifying the interface and maybe returning 
 ## some defaults (or just passing)
@@ -52,15 +39,15 @@ class SuperCommunicatorFabriek:
 DEFAULT_COLORAMA_COLORS= [ "green", "yellow", "red", "bright" ]
 
 class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
-    #def createQuietCommunicator(self):
-    #    return LoginQuietCommunicator()
+    def createQuietCommunicator(self):
+        return LoginQuietCommunicator()
     
     def createPlaintextCommunicator(self):
-        from plaintextc import LoginPlaintextCommunicator
+        from .plaintextc import LoginPlaintextCommunicator
         return LoginPlaintextCommunicator()
     
     def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
-        from coloramac import LoginColoramaCommunicator
+        from .coloramac import LoginColoramaCommunicator
         return LoginColoramaCommunicator(colorNameList)
 
     def createSummaryCommunicator(self):
@@ -74,7 +61,6 @@ class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
     
     def createDialogCommunicator(self):
         return DialogCommunicator()
-        ## Gijs@Jo: Ook hier graag aanpassen
 
 class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
     def createSummaryCommunicator(self):
@@ -84,10 +70,12 @@ class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
         return LogoutBubbleCommunicator()
     
     def createPlaintextCommunicator(self):
+        from .plaintextc import LogoutPlaintextCommunicator
         return LogoutPlaintextCommunicator()
     
-    def createColoramaCommunicator(self):
-        return LogoutColoramaCommunicator()
+    def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
+        from .coloramac import LogoutColoramaCommunicator
+        return LogoutColoramaCommunicator(colorNameList)
     
     def createCursesCommunicator(self):
         return LogoutCursesCommunicator()

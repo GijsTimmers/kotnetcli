@@ -15,13 +15,7 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-import re                               ## Basislib voor reguliere expressies
-import time                             ## Voor timeout om venster te sluiten
-import sys                              ## Basislib
-import os                               ## Basislib
-import platform                         ## Om onderscheid Lin/Mac te maken
 from quietc import QuietCommunicator
-import cursor
         
 ## Abstract super class (not intended to directly create), encapsulating 
 ## things common to a Login- and LogoutSummaryCommunicator

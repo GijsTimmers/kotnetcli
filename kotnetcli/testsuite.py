@@ -15,10 +15,9 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-from worker import DummyLoginWorker, DummyLogoutWorker, SuperWorker, EXIT_SUCCESS, EXIT_FAILURE
+from worker import DummyLoginWorker, SuperWorker, EXIT_SUCCESS, EXIT_FAILURE
 import browser
 
-from tools import log
 import logging
 logger = logging.getLogger(__name__)
 

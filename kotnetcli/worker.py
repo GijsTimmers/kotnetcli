@@ -22,8 +22,21 @@
 ##  - sends status updates to the communicator
 ##  - exits with the corresponding exit code
 
-import browser                          ## Doet het eigenlijke browserwerk
+
 import sys                              ## Basislib
+
+from .browser import (                  ## Doet het eigenlijke browserwerk
+    KotnetBrowser,
+    DummyBrowser,
+    
+    WrongCredentialsException,
+    InternalScriptErrorException,
+    InvalidInstitutionException,
+    MaxNumberIPException,
+    UnknownRCException,
+    
+    RC_LOGIN_SUCCESS                    ## Ndz voor de DummyBrowser    
+)      
 
 #from tools import pinger                ## Om te checken of we op Kotnet zitten
 #from tools import errorcodes as error   ## Om magic number errors te voorkomen
@@ -36,7 +49,7 @@ EXIT_SUCCESS = 0
 
 class SuperWorker(object):
     def __init__(self, institution):
-        self.browser = browser.KotnetBrowser(institution)
+        self.browser = KotnetBrowser(institution)
     
     def check_kotnet(self, co):
         co.eventKotnetVerbindingStart()
@@ -109,28 +122,28 @@ class LoginWorker(SuperWorker):
         try:
             tup = self.browser.login_parse_results()
             co.eventLoginGeslaagd(tup[0], tup[1])
-        except browser.WrongCredentialsException:
+        except WrongCredentialsException:
             co.beeindig_sessie(EXIT_FAILURE)
             logger.error("Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
             "--forget om deze te resetten.")
             sys.exit(EXIT_FAILURE)
-        except browser.MaxNumberIPException:
+        except MaxNumberIPException:
             co.beeindig_sessie(EXIT_FAILURE)
             logger.error("U bent al ingelogd op een ander IP-adres. Gebruik " + \
             "kotnetcli --force-login om u toch in te loggen.")
             sys.exit(EXIT_FAILURE)
-        except browser.InvalidInstitutionException, e:
+        except InvalidInstitutionException, e:
             co.beeindig_sessie(EXIT_FAILURE)
             #TODO we could use e.get_msg() here maybe?
             logger.error("Uw gekozen institutie '%s' klopt niet. Gebruik " + \
             "kotnetcli --institution om een andere institutie te kiezen.", e.get_inst())
             sys.exit(EXIT_FAILURE)
-        except browser.InternalScriptErrorException:
+        except InternalScriptErrorException:
             co.beeindig_sessie(EXIT_FAILURE)
             logger.error("De kotnet server rapporteert een 'internal script error'." \
                 " Probeer opnieuw in te loggen...")
             sys.exit(EXIT_FAILURE)
-        except browser.UnknownRCException, e:
+        except UnknownRCException, e:
             co.beeindig_sessie(EXIT_FAILURE)
             (rccode, html) = e.get_info()
             logger.debug("====== START HTML DUMP ======\n")
@@ -142,8 +155,8 @@ class LoginWorker(SuperWorker):
 
 class DummyLoginWorker(LoginWorker):
     def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
-        rccode=browser.RC_LOGIN_SUCCESS, downl=44, upl=85):
-        self.browser = browser.DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
+        rccode=RC_LOGIN_SUCCESS, downl=44, upl=85):
+        self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
 
 ## A worker class that either succesfull logs you off from kotnet
 ## or exits with failure, reporting events to the given communicator
@@ -182,7 +195,7 @@ class LogoutWorker(SuperWorker):
 
 class DummyLogoutWorker(LogoutWorker):
     def __init__(self):
-        self.browser = browser.DummyBrowser()
+        self.browser = DummyBrowser()
 
 '''
 class ForceerLoginWorker(LoginWorker, LogoutWorker):

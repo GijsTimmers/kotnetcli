@@ -256,7 +256,7 @@ class DummyBrowser(object):
     #def login_kies_kuleuven(self):
     #    time.sleep(0.1)
     
-    def login_input_credentials(self, creds):
+    def login_input_credentials(self, *args):
         time.sleep(self.dummy_timeout)
 
     def login_send_credentials(self):

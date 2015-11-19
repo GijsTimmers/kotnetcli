@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+    #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 ## Dependencies:    python-mechanize, python-keyring, curses
@@ -15,11 +15,7 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
-import os
-import sys
-import subprocess
 import netifaces
-
 
 def bevestig_kotnetverbinding():
     ## We kijken of we op Kotnet zitten door de standaardgateway op te vragen.

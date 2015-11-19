@@ -23,7 +23,7 @@ class ForgetCredsException(Exception):
 ## a credentials implementation saving the credentials in the OS keyring
 ## note: all user feedback should happen in the front-end (kotnetcli.py)
 ## "guest creds" are saved locally and thus forgot after object destruction
-class KeyRingCredentials():
+class KeyRingCredentials(object):
     def __init__(self):
         self.kr = keyring.get_keyring()
         self.guest_user = None
@@ -60,7 +60,7 @@ class KeyRingCredentials():
         except keyring.errors.PasswordDeleteError:
             raise ForgetCredsException()
 
-class DummyCredentials():
+class DummyCredentials(object):
     def __init__(self):
         self.user = "dummy_user"
         self.password = "dummy_password"

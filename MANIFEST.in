@@ -1,3 +1,4 @@
-#include *.py
-#recursive-include communicator *.py *.md
-#prune examples/sample?/build
+include kotnetcli/communicator/*.py
+include kotnetcli/tools/*.py
+include kotnetcli/logoutformuliertemplate.html
+global-exclude *pyc

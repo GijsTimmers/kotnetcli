@@ -22,24 +22,30 @@
 ##  - create the appropriate communicator instance
 ##  - create and start the appropriate worker instance
 
-#jo: zijn alle imports hieronder nog nodig?
-import subprocess                       ## Om systeemcommando's uit te voeren
 import argparse                         ## Parst argumenten
 import argcomplete                      ## Argumenten aanvullen met Tab
-import platform                         ## Om te kunnen compileren op Windows
 import sys                              ## Basislib
-import os                               ## Basislib
 import getpass                          ## Voor invoer wachtwoord zonder print
+import logging                          ## Voor uitvoer van debug-informatie
 
-from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
+from .communicator.fabriek import (     ## Voor output op maat
+    LoginCommunicatorFabriek, 
+    LogoutCommunicatorFabriek           
+)
 
-## Gijs: In de toekomst graag vervangen door fabriek
+from .credentials import (              ## Voor opvragen van s-nummer
+    KeyRingCredentials,                 ## en wachtwoord
+    ForgetCredsException
+)                                           
+from .worker import (                   ## Stuurt alle losse componenten aan
+    LoginWorker,
+    LogoutWorker,
+    EXIT_FAILURE,
+    EXIT_SUCCESS
+)
 
-from credentials import KeyRingCredentials, ForgetCredsException    ## Opvragen van nummer en wachtwoord
-from worker import LoginWorker, LogoutWorker, EXIT_FAILURE, EXIT_SUCCESS #, ForceerLoginWorker
+from .tools import log                  ## Custom logger
 
-from tools import log
-import logging
 logger = logging.getLogger(__name__)
 
 ## Hardcode the version. Development versions should be suffixed with -dev;
