@@ -1,4 +1,4 @@
 include kotnetcli/communicator/*.py
 include kotnetcli/tools/*.py
 include kotnetcli/logoutformuliertemplate.html
-global-exclude *pyc
+global-exclude *.pyc
