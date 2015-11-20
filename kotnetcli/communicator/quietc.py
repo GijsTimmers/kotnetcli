@@ -15,6 +15,8 @@
 ## send a letter to Creative Commons, PO Box 1866, Mountain View, 
 ## CA 94042, USA.
 
+import sys
+
 class QuietCommunicator():
     def __init__(self):
         pass
