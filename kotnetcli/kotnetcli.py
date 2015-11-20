@@ -163,9 +163,9 @@ class KotnetCLI(object):
         choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "bright", "normal"],
         nargs=4, default=False, metavar="COL")
         
-        #self.communicatorgroep.add_argument("-q", "--quiet",\
-        #help="Hides all output",\
-        #action="store_const", dest="communicator", const="quiet")
+        self.communicatorgroep.add_argument("-q", "--quiet",\
+        help="Hides all output",\
+        action="store_const", dest="communicator", const="quiet")
                 
         ## voorlopig andere communicators uitschakelen in de dev branch
         """        
@@ -262,9 +262,9 @@ class KotnetCLI(object):
     
     ## returns communicator
     def parseCommunicatorFlags(self, fabriek, argumenten):
-        #if argumenten.communicator == "quiet":
-        #    print "ik wil zwijgen"
-        #    return fabriek.createQuietCommunicator()
+        if argumenten.communicator == "quiet":
+            logger.info("ik wil zwijgen")
+            return fabriek.createQuietCommunicator()
         
         if argumenten.plaintext:
             logger.info("ik wil terug naar de basis")

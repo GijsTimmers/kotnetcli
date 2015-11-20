@@ -27,7 +27,7 @@
 
 ## The abstract factory specifying the interface and maybe returning 
 ## some defaults (or just passing)
-class SuperCommunicatorFabriek:
+class SuperCommunicatorFabriek(object):
     def createSummaryCommunicator(self):
         pass
 
@@ -40,7 +40,8 @@ DEFAULT_COLORAMA_COLORS= [ "green", "yellow", "red", "bright" ]
 
 class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
     def createQuietCommunicator(self):
-        return LoginQuietCommunicator()
+        from .quietc import QuietCommunicator
+        return QuietCommunicator()
     
     def createPlaintextCommunicator(self):
         from .plaintextc import LoginPlaintextCommunicator
@@ -63,6 +64,18 @@ class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
         return DialogCommunicator()
 
 class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
+    def createQuietCommunicator(self):
+        from .quietc import QuietCommunicator
+        return QuietCommunicator()
+    
+    def createPlaintextCommunicator(self):
+        from .plaintextc import LogoutPlaintextCommunicator
+        return LogoutPlaintextCommunicator()
+    
+    def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
+        from .coloramac import LogoutColoramaCommunicator
+        return LogoutColoramaCommunicator(colorNameList)
+
     def createSummaryCommunicator(self):
         return LogoutSummaryCommunicator()
      
