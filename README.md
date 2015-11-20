@@ -63,14 +63,14 @@ platform-specific instructions
 
         $ git clone https://github.com/GijsTimmers/kotnetcli.git
         $ cd kotnetcli
-        
-3. Mark kotnetcli.py as executable:
+                
+3. Run kotnetcli-runner.py:
 
-        $ chmod +x kotnetcli.py
-        
-4. Run kotnetcli.py:
+        $ ./kotnetcli-runner.py
+   
+   or install system-wide:
 
-        $ ./kotnetcli.py
+        $ sudo python setup.py install
 
 When run for the first time, kotnetcli will ask you to unlock your keyring. For
 maximum ease-of-use, just enter the password you use to login to your system. If

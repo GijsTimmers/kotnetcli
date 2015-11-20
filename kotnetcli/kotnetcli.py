@@ -22,10 +22,10 @@
 ##  - create the appropriate communicator instance
 ##  - create and start the appropriate worker instance
 
-import argparse                         ## Parst argumenten
-import argcomplete                      ## Argumenten aanvullen met Tab
 import sys                              ## Basislib
 import getpass                          ## Voor invoer wachtwoord zonder print
+import argparse                         ## Parst argumenten
+import argcomplete                      ## Argumenten aanvullen met Tab
 import logging                          ## Voor uitvoer van debug-informatie
 
 from .communicator.fabriek import (     ## Voor output op maat
@@ -338,13 +338,9 @@ class KotnetCLI(object):
         '''
 ## end class KotnetCLI
 
-## Losse main()-functie, zodat setup.py gemakkelijk een executable voor deze
-## methode kan aanleggen in /usr/bin.
+## main()-functie:
+## - aangrijpingspunt yamlradio-runner.py
+## - aangrijpingspunt console_script van setup.py
 def main():
     k = KotnetCLI()
     k.parseArgumenten()
-
-## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
-## command line (i.e. niet is geimporteerd vanuit een andere file)
-if __name__ == "__main__":
-    main()
