@@ -18,7 +18,7 @@
 import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
 import urlparse                         ## Diverse URL-manipulaties
-import mechanize                        ## Emuleert een browser
+import requests                         ## Invullen van HTTP POST-request
 import socket                           ## Voor ophalen IP
 import os                               ## Basislib
 
@@ -77,14 +77,18 @@ class KotnetBrowser(object):
     ## credentials object that is supplied when needed
     def __init__(self, inst):
         self.institution = inst
-        self.netlogin_url = (
+        self.language = "nl"
+        
+        ## What the user sees when using netlogin. We need this url to
+        ## find the password field name ("pwdXXXXX")
+        self.user_url = (
         "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst={}"
         "&lang=nl&submit=Ga+verder+%2F+Continue".format(self.institution)
         )
         
-        self.browser = mechanize.Browser()
-        self.browser.addheaders = [('User-agent', 'Firefox')]
-    
+        ## The backend: contains the to-be-submitted form.
+        self.form_url = "https://netlogin.kuleuven.be/cgi-bin/netlogin.pl"
+        
     ## returns True | False depending on whether or not the user seems to be on the
     ## kotnet network (connect to  netlogin.kuleuven.be)
     def bevestig_kotnetverbinding(self):
@@ -98,32 +102,35 @@ class KotnetBrowser(object):
             return False
     
     def login_open_netlogin(self):
-        self.browser.open(self.netlogin_url, \
-        timeout=BROWSER_TIMEOUT_SEC)
-        #html = response.read()
-
-    #def login_kies_kuleuven(self):
-    #    self.browser.select_form(nr=1)
-    #    self.browser.submit()
-    
+        ## Voorstel: vervangen door "Onderzoekt HTML..." (dwz zoekt wachtwoordvaknaam op)
+        ## of: verwijder in zijn geheel. Is alleen interessant om de legacy
+        ## kotnetcli-werkingen te tonen, heeft nauwelijks nog relevantie voor
+        ## de huidige codebase. Het opzoeken van het wachtwoordvak kan
+        ## haast net zo goed in login_input_credentials() worden gezet.
+        
+        r = requests.get(self.user_url)
+        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
+        
     def login_input_credentials(self, creds):
         (gebruikersnaam, wachtwoord) = creds.getCreds()
-        self.browser.select_form(nr=1)
-        self.browser.form["uid"] = gebruikersnaam
-        wachtwoordvaknaam = \
-        self.browser.form.find_control(type="password").name
-        self.browser.form[wachtwoordvaknaam] = wachtwoord
+        
+        self.payload = {
+            "inst": self.institution,
+            "lang": self.language,
+            "submit": "Login",
+            "uid": gebruikersnaam,
+            self.wachtwoordvak: wachtwoord        
+        }        
     
     def login_send_credentials(self):
-        self.browser.submit()
+        r = requests.post(self.form_url, data=self.payload)
+        self.html = r.text
 
     ## This method parses the server's response. On success, it returns a tuple of
     ## length 2: (downloadpercentage, uploadpercentage); else it raises an
     ## appropriate exception
     def login_parse_results(self):
-        html = self.browser.response().read()
-
-        soup = BeautifulSoup(html, "lxml")
+        soup = BeautifulSoup(self.html, "lxml")
 
         ## Zoek naar de rc-code in de comments van het html-bestand. Deze
         ## bevat de status.
