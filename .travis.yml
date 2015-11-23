@@ -46,7 +46,8 @@ before_install:
     
 ## Command to install pip dependencies
 install: 
-    - pip install keyring colorama python2-pythondialog beautifulsoup4
+    - pip install keyring colorama python2-pythondialog \
+      beautifulsoup4 argcomplete
 #    - pip install dbus-python
 
 ## command to run tests

@@ -25,6 +25,7 @@ setup(
     url = "https://github.com/GijsTimmers/kotnetcli",
     keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
     install_requires=[
+            "argcomplete",
             "cursor",
             "keyring",
             "notify2",
