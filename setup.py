@@ -29,6 +29,7 @@ setup(
             "cursor",
             "keyring",
             "notify2",
+            "requests",
             "colorama",
             "python2-pythondialog",
             "beautifulsoup4"
