@@ -26,7 +26,6 @@ setup(
     keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
     install_requires=[
             "cursor",
-            "mechanize",
             "keyring",
             "notify2",
             "colorama",
