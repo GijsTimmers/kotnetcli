@@ -51,7 +51,7 @@ install:
 #    - pip install dbus-python
 
 ## command to run tests
-script: nosetests
+script: python setup.py install
     
     #- ./kotnetcli.py -h
     #- ./kotnetcli.py -1 -c 
