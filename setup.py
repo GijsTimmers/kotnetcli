@@ -15,6 +15,24 @@
 ## CA 94042, USA.
 
 from setuptools import setup, find_packages
+import os
+
+ 
+dependencies = [
+		"argcomplete",
+		"cursor",
+		"keyring",
+		"notify2",
+		"requests",
+		"colorama",
+		"python2-pythondialog",
+		"beautifulsoup4"
+				  ]
+
+## notify2 can't be used on Windows.
+if os.name == "nt":
+    dependencies.remove("notify2")
+
 setup(
     name = "kotnetcli",
     packages = ["kotnetcli"],
@@ -24,16 +42,7 @@ setup(
     author_email = "gijs.timmers@student.kuleuven.be",
     url = "https://github.com/GijsTimmers/kotnetcli",
     keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
-    install_requires=[
-            "argcomplete",
-            "cursor",
-            "keyring",
-            "notify2",
-            "requests",
-            "colorama",
-            "python2-pythondialog",
-            "beautifulsoup4"
-                      ],
+    install_requires = dependencies,
   classifiers = [],
   entry_points = {
         "console_scripts": ["kotnetcli=kotnetcli:main"]},
