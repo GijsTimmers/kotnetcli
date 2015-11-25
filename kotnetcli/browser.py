@@ -130,8 +130,8 @@ class KotnetBrowser(object):
     ## length 2: (downloadpercentage, uploadpercentage); else it raises an
     ## appropriate exception
     def login_parse_results(self):
-        soup = BeautifulSoup(self.html, "lxml")
-
+        #soup = BeautifulSoup(self.html, "lxml")
+        soup = BeautifulSoup(self.html, "html.parser")   
         ## Zoek naar de rc-code in de comments van het html-bestand. Deze
         ## bevat de status.
         comments = soup.findAll(text=lambda text:isinstance(text, Comment))
