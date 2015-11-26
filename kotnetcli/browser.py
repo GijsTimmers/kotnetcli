@@ -194,20 +194,20 @@ class KotnetBrowser(object):
         gegevens = {"uitteloggenip" : self.uitteloggenip, 
                     "gebruikersnaam": self.gebruikersnaam}
         
-        with open("logoutformuliertemplate.html", "r") as logoutformulier_in:
+        with open("tools/logoutformuliertemplate.html", "r") as logoutformulier_in:
             data = logoutformulier_in.read()
             data = data.format(**gegevens) ## gegevens worden hier ingevuld
-        with open("logoutformulieringevuld.html", "w") as logoutformulier_out:
+        with open("tools/logoutformulieringevuld.html", "w") as logoutformulier_out:
             logoutformulier_out.write(data)
         
         self.url_logoutformulier = urlparse.urljoin("file:", \
-        os.path.abspath("logoutformulieringevuld.html"))
+        os.path.abspath("tools/logoutformulieringevuld.html"))
     
     def logout_send_credentials(self):
         self.browser.open(self.url_logoutformulier, timeout=1.8)
         self.browser.select_form(nr=0)
         self.browser.submit()
-        os.remove("logoutformulieringevuld.html")
+        os.remove("tools/logoutformulieringevuld.html")
     
     ## returns True if logout is succesful; False when it fails
     def logout_parse_results(self):
