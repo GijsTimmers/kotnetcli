@@ -92,7 +92,7 @@ This section lists the platform specific instructions to resolve the above depen
   - Ubuntu:
   
         $ sudo apt-get install python-pip
-        $ sudo pip install mechanize keyring notify2 \
+        $ sudo pip install requests keyring notify2 \
           colorama python2-pythondialog beautifulsoup4 \
           argcomplete cursor
 
@@ -100,7 +100,7 @@ This section lists the platform specific instructions to resolve the above depen
   - Arch:
 
         $ sudo pacman -S python2-pip
-        $ sudo pip install mechanize keyring notify2 \
+        $ sudo pip install requests keyring notify2 \
           colorama python2-pythondialog beautifulsoup4 \
           argcomplete cursor
 
@@ -109,14 +109,14 @@ This section lists the platform specific instructions to resolve the above depen
 
         $ brew install ncurses dialog \
           homebrew/python/python-dbus
-        $ sudo pip install mechanize keyring notify2 \
+        $ sudo pip install requests keyring notify2 \
           colorama python2-pythondialog beautifulsoup4 \
           argcomplete cursor
 
 
   - Pip:
 
-        $ sudo pip install mechanize keyring notify2 \
+        $ sudo pip install requests keyring notify2 \
           colorama python2-pythondialog beautifulsoup4 \
           argcomplete cursor
 

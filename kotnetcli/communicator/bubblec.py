@@ -45,17 +45,8 @@ class LoginBubbleCommunicator(SuperBubbleCommunicator):
             pass
         else:
             createAndShowNotification( "Login mislukt", "Errorcode: %s" % \
-            (error_code), "notification-network-ethernet-disconnected")
-        ## TODO: jo: communicator should never call sys.exit (!)
-        ## this is the responsibility of the worker (!); comm *only* visualises
-        ## see also software design page on the wiki for the idea
-        ##
-        ## Gijs: Yes, you're right. Forgot about that, thanks.
+            (error_code), "notification-network-ethernet-disconnected")   
         
-        #sys.exit(error_code)
-        
-        
-
 class LogoutBubbleCommunicator(SuperBubbleCommunicator):
     def eventLogoutGeslaagd(self):
         n = notify2.Notification("Logout geslaagd", "", \
