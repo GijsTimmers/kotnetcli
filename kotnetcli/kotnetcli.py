@@ -159,7 +159,7 @@ class KotnetCLI(object):
         ## nargs=3 to allow a user to supply optional colorname arguments
         ## default=False to get "store_true" semantics when option not specified
         self.communicatorgroep.add_argument("-c", "--color",\
-        help="Logs you in using colored text output (default); arguments = ok_color, wait_color, err_color, style",\
+        help="Logs you in using custom colors; sequence = ok_color, wait_color, err_color, style; choices = black, red, green, yelow, blue, magenta, cyan, white",\
         choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "bright", "normal"],
         nargs=4, default=False, metavar="COL")
         
