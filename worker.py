@@ -87,7 +87,7 @@ class Kotnetlogin():
     def tegoeden(self):
         html = self.browser.response().read()
         
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, "html.parser")
         
         ## Zoek naar de rc-code in de comments van het html-bestand. Deze
         ## bevat de status.
