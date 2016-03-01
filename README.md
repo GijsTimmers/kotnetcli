@@ -10,7 +10,9 @@ _  ,<  / /_/ / /_ _  / / /  __/ /_ / /__ _  / _  /
 *KotNet Command Line Interface* -- An easy automated way to log in to
 [KotNet](https://admin.kuleuven.be/icts/english/kotnet).
 
-## Purpose [![Build Status](https://travis-ci.org/GijsTimmers/kotnetcli.svg?branch=master)](https://travis-ci.org/GijsTimmers/kotnetcli) [![Code Health](https://landscape.io/github/GijsTimmers/kotnetcli/dev/landscape.svg?style=flat)](https://landscape.io/github/GijsTimmers/kotnetcli/dev) [![license](http://img.shields.io/:license-gpl3-orange.svg)](https://gnu.org/licenses/gpl.html)
+[![Build Status](https://travis-ci.org/GijsTimmers/kotnetcli.svg?branch=master)](https://travis-ci.org/GijsTimmers/kotnetcli) [![Code Health](https://landscape.io/github/GijsTimmers/kotnetcli/dev/landscape.svg?style=flat)](https://landscape.io/github/GijsTimmers/kotnetcli/dev) [![license](http://img.shields.io/:license-gpl3-orange.svg)](https://gnu.org/licenses/gpl.html)
+
+## Purpose
 
 Logging in on KotNet is a hassle. A method to autologin from within the
 browser
