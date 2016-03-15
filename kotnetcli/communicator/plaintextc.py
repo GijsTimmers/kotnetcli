@@ -100,7 +100,7 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     #    self.printerr("U bent al online.")
 
     def eventKotnetVerbindingStart(self):
-        self.print_wait("Kotnet verbinding testen... ")
+        self.print_wait("Kotnetverbinding testen.... ")
         
     def eventKotnetVerbindingSuccess(self):
         self.print_success()
