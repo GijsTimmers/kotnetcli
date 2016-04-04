@@ -21,38 +21,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from setuptools import setup, find_packages
-import os
+from kotnetcli.kotnetcli_test import dummy_main
 
- 
-dependencies = [
-		"argcomplete",
-		"cursor",
-		"keyring",
-		"notify2",
-		"requests",
-		"colorama",
-		"python2-pythondialog",
-		"beautifulsoup4"
-				  ]
-
-## notify2 can't be used on Windows.
-if os.name == "nt":
-    dependencies.remove("notify2")
-
-setup(
-    name = "kotnetcli",
-    packages = ["kotnetcli"],
-    version = "1.3.0",
-    description = "An easy automated way to log in on Kotnet",
-    author = "Gijs Timmers and Jo Van Bulck",
-    author_email = "gijs.timmers@student.kuleuven.be",
-    url = "https://github.com/GijsTimmers/kotnetcli",
-    keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
-    install_requires = dependencies,
-  classifiers = [],
-  entry_points = {
-        "console_scripts": ["kotnetcli=kotnetcli:main",
-                            "kotnetcli-dummy=kotnetcli.kotnetcli_test:dummy_main"]},
-  include_package_data = True
-)
+if __name__ == "__main__":
+    dummy_main()

@@ -350,7 +350,7 @@ class KotnetCLI(object):
 ## end class KotnetCLI
 
 ## main()-functie:
-## - aangrijpingspunt yamlradio-runner.py
+## - aangrijpingspunt kotnetcli-runner.py
 ## - aangrijpingspunt console_script van setup.py
 def main():
     k = KotnetCLI()

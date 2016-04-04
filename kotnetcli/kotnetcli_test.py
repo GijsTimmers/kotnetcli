@@ -20,12 +20,14 @@
 ##
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
+##
+## An extended KotnetCLI to allow dummy behavior for testing purposes
 
 import argparse
 from kotnetcli import KotnetCLI
 from worker import DummyLoginWorker, DummyLogoutWorker
-from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek    ## Voor output op maat
-from credentials import DummyCredentials     ## Opvragen van nummer en wachtwoord
+from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek
+from credentials import DummyCredentials
 from testsuite import LoginTestsuiteWorker
 
 import browser # for RC_CODES
@@ -40,7 +42,6 @@ def positive_float(string):
         raise argparse.ArgumentTypeError("%s is not a positive float value" % string)
     return value 
 
-## An extended KotnetCLI to allow dummy behavior for testing purposes
 class KotnetCLITester(KotnetCLI):
 
     def __init__(self):
@@ -88,6 +89,7 @@ class KotnetCLITester(KotnetCLI):
 
 ## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
 ## command line (i.e. niet is geimporteerd vanuit een andere file)
-if  __name__ =='__main__':
+#if  __name__ =='__main__':
+def dummy_main():
     k = KotnetCLITester()
     k.parseArgumenten()
