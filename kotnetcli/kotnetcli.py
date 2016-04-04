@@ -53,17 +53,20 @@ from .tools import log                  ## Custom logger
 
 logger = logging.getLogger(__name__)
 
+GITHUB_URL = "https://github.com/GijsTimmers/kotnetcli"
+
 ## Hardcode the version. Development versions should be suffixed with -dev;
 ## release versions should be followed with "Name" as well. Some examples:
 ## __version__ = '1.2.1 "American Craftsman"'   (A release)
 ## __version__ = '1.2.1-dev'                    (A development version)
 __version__ = '1.3.0-dev'
 
-## An argument parse action that prints license information
-## on stdout and exits
+## An argument parse action that prints license information on stdout and exits
 class PrintLicenceAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print "kotnetcli: An easy automated way to log in on KotNet\n"
+        print "kotnetcli: An easy automated way to log in to KotNet"
+        print "Copyright (C) 2014-2016 Kotnetcli Development Team "
+        print "<%s>\n" % GITHUB_URL
         print "This program is free software: you can redistribute it and/or modify"
         print "it under the terms of the GNU General Public License as published by"
         print "the Free Software Foundation, either version 3 of the License, or"
@@ -73,9 +76,20 @@ class PrintLicenceAction(argparse.Action):
         print "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
         print "GNU General Public License for more details.\n"
         print "You should have received a copy of the GNU General Public License"
-        print "along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.\n"
-        print "Visit the github page (https://github.com/GijsTimmers/kotnetcli) to"
-        print "view the full source code and to collaborate on the project."
+        print "along with kotnetcli.  If not, see <https://www.gnu.org/licenses/>."
+        exit(0)
+
+## An argument parse action that prints version info on stdout and exits
+class PrintVersionAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        print "\n   __"
+        print " __\ \                 kotnetcli v%s" % __version__
+        print " \ \\\_\___             Copyright (C) 2014-2016 Kotnetcli Development Team"
+        print "  \   V  / __          <%s>" % GITHUB_URL
+        print "   \  `\<</ /"
+        print "    \  _\_\<<          This program may be freely redistributed under"
+        print "     \_\ `_\_\         the terms of the GNU General Public License."
+        print "        \_\\\n"
         exit(0)
 
 def init_debug_level(log_level):
@@ -118,14 +132,12 @@ class KotnetCLI(object):
     
     def voegArgumentenToe(self, log_level_default):
         ########## general flags ##########
-        self.parser.add_argument("-v", "--version", action="version", \
-        version=__version__)
-        
-        ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if option 
-        ## not present; defaults to debug if option present but no level specified
+        self.parser.add_argument("-v", "--version", action=PrintVersionAction, \
+        help="show program's version number and exit", nargs=0)
         self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
         help="show license info and exit", nargs=0)
-        
+        ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if
+        ## option not present; defaults to debug if option present but no level specified
         self.parser.add_argument("--debug", help="specify the debug verbosity", \
             nargs="?", const="debug", metavar="LEVEL",
             choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
