@@ -79,6 +79,21 @@ Both will be stored safely in the keyring of your desktop environment.
 You can add kotnetcli to your autostart programs to log in to Kotnet
 at boot-time.
 
+[Additional instructions for Gnome users that want to use the Gnome keyring back-end with the latest version of `python-keyring`:]
+
+      $  sudo pip2 install keyrings.alt
+
+Create a `keyringrc.cfg` file with the following content:
+```
+[backend]
+default-keyring=keyrings.alt.Gnome.Keyring
+```
+
+To determine where the config file is stored, run the following:
+
+     $ python2 -c "import keyring.util.platform_; print(keyring.util.platform_.config_root())"
+
+
 ## Platform dependent instructions
 This section lists the platform specific instructions to resolve the above dependencies:
 
