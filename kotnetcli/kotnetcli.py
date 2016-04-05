@@ -92,9 +92,9 @@ class PrintVersionAction(argparse.Action):
         print "        \_\\\n"
         exit(0)
 
-def init_debug_level(log_level):
+def init_debug_level(log_level, include_time):
     try:
-        log.init_logging(log_level)
+        log.init_logging(log_level, include_time)
     except ValueError:
         print "kotnetcli: Invalid debug level: %s" % log_level
         sys.exit(1)
@@ -142,6 +142,9 @@ class KotnetCLI(object):
             nargs="?", const="debug", metavar="LEVEL",
             choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
             action="store", default=log_level_default)
+
+        self.parser.add_argument("--time", action="store_true", \
+            help="include fine-grained timing info in logger output")
         
         self.parser.add_argument("--institution", help="specify the instititution", \
             nargs="?", const="kuleuven", metavar="INST",
@@ -217,7 +220,7 @@ class KotnetCLI(object):
     def parseArgumenten(self):
         argumenten = self.parser.parse_args()
         ## 0. general flags
-        init_debug_level(argumenten.debug)
+        init_debug_level(argumenten.debug, argumenten.time)
         logger.debug("parse_args() is: %s", argumenten)
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)

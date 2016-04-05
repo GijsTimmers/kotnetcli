@@ -87,9 +87,6 @@ class KotnetCLITester(KotnetCLI):
         logger.info("ik wil credentials ophalen voor spek en bonen")
         return self.parseCredsFlags(argumenten, DummyCredentials())
 
-## Start de zaak asa deze file rechtstreeks aangeroepen is vanuit
-## command line (i.e. niet is geimporteerd vanuit een andere file)
-#if  __name__ =='__main__':
 def dummy_main():
     k = KotnetCLITester()
     k.parseArgumenten()
