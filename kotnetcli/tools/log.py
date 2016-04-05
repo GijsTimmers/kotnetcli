@@ -23,12 +23,16 @@
 
 import logging
 
-LOG_FORMAT = "%(levelname)s::%(module)s: %(message)s"
+LOG_FORMAT  = "{}%(levelname)s::%(module)s: %(message)s"
+TIME_FORMAT = "[%(asctime)s.%(msecs)03d] "
+DATE_FORMAT = "%H:%M:%S"
 
-def init_logging(level):
+def init_logging(level, include_time):
     ## extract the log level
     numeric_level = getattr(logging, level.upper(), None)
     if not isinstance(numeric_level, int):
         raise ValueError("Invalid log level: %s" % level)
     
-    logging.basicConfig(level=numeric_level, format=LOG_FORMAT)
+    timestr = TIME_FORMAT if include_time else ""
+    logging.basicConfig(level=numeric_level, format=LOG_FORMAT.format(timestr), \
+                                             datefmt=DATE_FORMAT)
