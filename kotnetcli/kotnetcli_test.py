@@ -30,7 +30,7 @@ from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFab
 from credentials import DummyCredentials
 from testsuite import LoginTestsuiteWorker
 
-import browser # for RC_CODES
+import server.rccodes # for RC_CODES
 
 import logging
 logger = logging.getLogger(__name__)
@@ -54,8 +54,8 @@ class KotnetCLITester(KotnetCLI):
         ## override the login option to allow a user-defined rccode to be passed
         self.workergroep.add_argument("-i", "--login",
             help="Simulates a login to KotNet with a given rccode result",
-            nargs="?", type=int, const=browser.RC_LOGIN_SUCCESS, metavar="RC_CODE",
-            action="store", default=browser.RC_LOGIN_SUCCESS)
+            nargs="?", type=int, const=server.rccodes.RC_LOGIN_SUCCESS, metavar="RC_CODE",
+            action="store", default=server.rccodes.RC_LOGIN_SUCCESS)
         
         self.workergroep.add_argument("-r", "--run-tests", \
         help="Runs a bunch of tests and assertions", action="store_true")

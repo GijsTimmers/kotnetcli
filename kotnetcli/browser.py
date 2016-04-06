@@ -30,19 +30,17 @@ import os                               ## Basislib
 
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
+## login rc codes contained in the response html page
+import server.rccodes
+
 import logging
 logger = logging.getLogger(__name__)
 
+NETLOGIN_HOST       = "netlogin.kuleuven.be"
+NETLOGIN_PORT       = 443
+
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
-
-## login rc codes contained in the response html page
-RC_LOGIN_SUCCESS            = 100
-RC_LOGIN_INVALID_USERNAME   = 201
-RC_LOGIN_INVALID_PASSWORD   = 202
-RC_LOGIN_MAX_IP             = 206
-RC_INVALID_INSTITUTION      = 211
-RC_INTERNAL_SCRIPT_ERR      = 301
 
 ## custom exceptions
 class WrongCredentialsException(Exception):
@@ -81,26 +79,28 @@ class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
-    def __init__(self, inst):
+    def __init__(self, inst, host=NETLOGIN_HOST, port=NETLOGIN_PORT):
         self.institution = inst
         self.language = "nl"
+        self.host = host
+        self.port = port
         
         ## What the user sees when using netlogin. We need this url to
         ## find the password field name ("pwdXXXXX")
-        self.user_url = (
-        "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst={}"
-        "&lang=nl&submit=Ga+verder+%2F+Continue".format(self.institution)
-        )
+        #FIXME ensure the actual connection is over SSL (https; also simulate
+        # this locally: http://www.piware.de/2011/01/creating-an-https-server-in-python/
+        self.html_get_url = "http://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga" \
+            "+verder+%2F+Continue".format(self.host, self.port, self.institution)
         
         ## The backend: contains the to-be-submitted form.
-        self.form_url = "https://netlogin.kuleuven.be/cgi-bin/netlogin.pl"
-        
+        self.html_post_url = "http://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
+
     ## returns True | False depending on whether or not the user seems to be on the
     ## kotnet network (connect to  netlogin.kuleuven.be)
     def bevestig_kotnetverbinding(self):
         ## try to open a TCP connection on port 443 with a maximum waiting time
         try:
-            sock = socket.create_connection(("netlogin.kuleuven.be", 443), BROWSER_TIMEOUT_SEC)
+            sock = socket.create_connection((self.host,self.port), BROWSER_TIMEOUT_SEC)
             sock.close()
             return True
         except socket.error:
@@ -113,9 +113,11 @@ class KotnetBrowser(object):
         ## kotnetcli-werkingen te tonen, heeft nauwelijks nog relevantie voor
         ## de huidige codebase. Het opzoeken van het wachtwoordvak kan
         ## haast net zo goed in login_input_credentials() worden gezet.
-        
-        r = requests.get(self.user_url)
-        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
+
+        r = requests.get(self.html_get_url,verify='kotnetcli/server/kotnetcli_server.pem')
+        logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
+        # search for something of the form name="pwd123" and extract the pwd123 part
+        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text).pop()
         
     def login_input_credentials(self, creds):
         (gebruikersnaam, wachtwoord) = creds.getCreds()
@@ -126,10 +128,11 @@ class KotnetBrowser(object):
             "submit": "Login",
             "uid": gebruikersnaam,
             self.wachtwoordvak: wachtwoord        
-        }        
+        }
     
     def login_send_credentials(self):
-        r = requests.post(self.form_url, data=self.payload)
+        r = requests.post(self.html_post_url, data=self.payload)
+        logger.debug("HTTP POST RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
         self.html = r.text
 
     ## This method parses the server's response. On success, it returns a tuple of
@@ -156,7 +159,7 @@ class KotnetBrowser(object):
 
         logger.debug("rccode is %s", rccode)
 
-        if rccode == RC_LOGIN_SUCCESS:
+        if rccode == server.rccodes.RC_LOGIN_SUCCESS:
             ## downloadpercentage parsen
             p = re.compile("\d+")
             m = p.findall(comments[6])
@@ -169,17 +172,17 @@ class KotnetBrowser(object):
 
             return (downloadpercentage, uploadpercentage)
 
-        elif (rccode == RC_LOGIN_INVALID_USERNAME) or \
-            (rccode == RC_LOGIN_INVALID_PASSWORD):
+        elif (rccode == server.rccodes.RC_LOGIN_INVALID_USERNAME) or \
+            (rccode == server.rccodes.RC_LOGIN_INVALID_PASSWORD):
             raise WrongCredentialsException()
             
-        elif rccode == RC_LOGIN_MAX_IP:
+        elif rccode == server.rccodes.RC_LOGIN_MAX_IP:
             raise MaxNumberIPException()
 
-        elif rccode == RC_INVALID_INSTITUTION:
+        elif rccode == server.rccodes.RC_INVALID_INSTITUTION:
             raise InvalidInstitutionException(self.institution)
         
-        elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
+        elif self.rccode == server.rccodes.RC_INTERNAL_SCRIPT_ERR:
             raise InternalScriptErrorException()
 
         else:

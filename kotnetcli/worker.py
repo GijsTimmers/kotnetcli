@@ -30,6 +30,7 @@
 
 
 import sys                              ## Basislib
+import traceback
 
 from .browser import (                  ## Doet het eigenlijke browserwerk
     KotnetBrowser,
@@ -40,9 +41,9 @@ from .browser import (                  ## Doet het eigenlijke browserwerk
     InvalidInstitutionException,
     MaxNumberIPException,
     UnknownRCException,
-    
-    RC_LOGIN_SUCCESS                    ## Ndz voor de DummyBrowser    
-)      
+)
+
+import server.rccodes
 
 #from tools import pinger                ## Om te checken of we op Kotnet zitten
 #from tools import errorcodes as error   ## Om magic number errors te voorkomen
@@ -64,7 +65,7 @@ class SuperWorker(object):
         else:
             co.eventKotnetVerbindingFailure()
             co.beeindig_sessie(EXIT_FAILURE)
-            logger.error("Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?")
+            logger.error("Connection attempt to {} timed out. Are you on the kotnet network?".format(self.browser.host))
             sys.exit(EXIT_FAILURE)
 
 ## A worker class that either succesfully logs you in to kotnet
@@ -89,9 +90,11 @@ class LoginWorker(SuperWorker):
         try:
             self.browser.login_open_netlogin()
             co.eventNetloginSuccess()
-        except:
+        except Exception, e:
             co.eventNetloginFailure()
             co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("fatal exception '%s' with traceback:" % e)
+            traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
 #    def kies_kuleuven(self, co):
@@ -109,9 +112,11 @@ class LoginWorker(SuperWorker):
         try:
             self.browser.login_input_credentials(creds)
             co.eventInvoerenSuccess()
-        except:
+        except Exception, e:
             co.eventInvoerenFailure()
             co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("fatal exception '%s' with traceback:" % e)
+            traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
     def login_gegevensopsturen(self, co):
@@ -119,9 +124,11 @@ class LoginWorker(SuperWorker):
         try:
             self.browser.login_send_credentials()
             co.eventOpsturenSuccess()
-        except:
+        except Exception, e:
             co.eventOpsturenFailure()
             co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("fatal exception '%s' with traceback:" % e)
+            traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
     def login_resultaten(self, co):
@@ -158,11 +165,17 @@ class LoginWorker(SuperWorker):
             logger.error("rc-code '%s' onbekend. Probeer opnieuw met de --debug optie en maak een issue aan " + \
             "(https://github.com/GijsTimmers/kotnetcli/issues/new) om ondersteuning te krijgen.", rccode)
             sys.exit(EXIT_FAILURE)
+        except Exception, e:
+            co.beeindig_sessie(EXIT_FAILURE)
+            logger.error("fatal exception '%s' with traceback:" % e)
+            traceback.print_exc()
+            sys.exit(EXIT_FAILURE)
 
 class DummyLoginWorker(LoginWorker):
     def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
-        rccode=RC_LOGIN_SUCCESS, downl=44, upl=85):
-        self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
+        rccode=server.rccodes.RC_LOGIN_SUCCESS, downl=44, upl=85):
+        #self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
+        self.browser = KotnetBrowser(inst, "localhost", "8000")
 
 ## A worker class that either succesfull logs you off from kotnet
 ## or exits with failure, reporting events to the given communicator
