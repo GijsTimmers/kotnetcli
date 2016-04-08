@@ -175,7 +175,7 @@ class DummyLoginWorker(LoginWorker):
     def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
         rccode=server.rccodes.RC_LOGIN_SUCCESS, downl=44, upl=85):
         #self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
-        self.browser = KotnetBrowser(inst, "localhost", "8000")
+        self.browser = KotnetBrowser(inst, "localhost", "4443")
 
 ## A worker class that either succesfull logs you off from kotnet
 ## or exits with failure, reporting events to the given communicator

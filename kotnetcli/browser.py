@@ -39,6 +39,9 @@ logger = logging.getLogger(__name__)
 NETLOGIN_HOST       = "netlogin.kuleuven.be"
 NETLOGIN_PORT       = 443
 
+#FIXME ensure the custom certificate is only used for the test server
+CERT_FILE           = 'kotnetcli/server/kotnetcli-localhost.pem'
+
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
 
@@ -87,13 +90,10 @@ class KotnetBrowser(object):
         
         ## What the user sees when using netlogin. We need this url to
         ## find the password field name ("pwdXXXXX")
-        #FIXME ensure the actual connection is over SSL (https; also simulate
-        # this locally: http://www.piware.de/2011/01/creating-an-https-server-in-python/
-        self.html_get_url = "http://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga" \
-            "+verder+%2F+Continue".format(self.host, self.port, self.institution)
+        self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga+verder+%2F+Continue".format(self.host, self.port, self.institution)
         
         ## The backend: contains the to-be-submitted form.
-        self.html_post_url = "http://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
+        self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
 
     ## returns True | False depending on whether or not the user seems to be on the
     ## kotnet network (connect to  netlogin.kuleuven.be)
@@ -114,7 +114,8 @@ class KotnetBrowser(object):
         ## de huidige codebase. Het opzoeken van het wachtwoordvak kan
         ## haast net zo goed in login_input_credentials() worden gezet.
 
-        r = requests.get(self.html_get_url,verify='kotnetcli/server/kotnetcli_server.pem')
+        #FIXME ensure the custom certificate is only used for the test server
+        r = requests.get(self.html_get_url,verify=CERT_FILE)
         logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
         # search for something of the form name="pwd123" and extract the pwd123 part
         self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text).pop()
@@ -131,7 +132,8 @@ class KotnetBrowser(object):
         }
     
     def login_send_credentials(self):
-        r = requests.post(self.html_post_url, data=self.payload)
+        #FIXME ensure the custom certificate is only used for the test server
+        r = requests.post(self.html_post_url, data=self.payload, verify=CERT_FILE)
         logger.debug("HTTP POST RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
         self.html = r.text
 
