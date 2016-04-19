@@ -28,10 +28,15 @@ import requests                         ## Invullen van HTTP POST-request
 import socket                           ## Voor ophalen IP
 import os                               ## Basislib
 
+import traceback
+
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 import logging
 logger = logging.getLogger(__name__)
+
+NETLOGIN_HOST       = "netlogin.kuleuven.be"
+NETLOGIN_PORT       = 443
 
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
@@ -45,6 +50,9 @@ RC_INVALID_INSTITUTION      = 211
 RC_INTERNAL_SCRIPT_ERR      = 301
 
 ## custom exceptions
+class NetworkCheckException(Exception):
+    pass
+
 class WrongCredentialsException(Exception):
     pass
 
@@ -84,52 +92,45 @@ class KotnetBrowser(object):
     def __init__(self, inst):
         self.institution = inst
         self.language = "nl"
+        self.host = NETLOGIN_HOST
+        self.port = NETLOGIN_PORT
         
         ## What the user sees when using netlogin. We need this url to
         ## find the password field name ("pwdXXXXX")
-        self.user_url = (
-        "https://netlogin.kuleuven.be/cgi-bin/wayf2.pl?inst={}"
-        "&lang=nl&submit=Ga+verder+%2F+Continue".format(self.institution)
-        )
+        self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga+verder+%2F+Continue".format(self.host, self.port, self.institution)
         
         ## The backend: contains the to-be-submitted form.
-        self.form_url = "https://netlogin.kuleuven.be/cgi-bin/netlogin.pl"
+        self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
         
     ## returns True | False depending on whether or not the user seems to be on the
     ## kotnet network (connect to  netlogin.kuleuven.be)
-    def bevestig_kotnetverbinding(self):
+    def check_connection(self):
         ## try to open a TCP connection on port 443 with a maximum waiting time
         try:
-            sock = socket.create_connection(("netlogin.kuleuven.be", 443), BROWSER_TIMEOUT_SEC)
+            sock = socket.create_connection((self.host,self.port), BROWSER_TIMEOUT_SEC)
             sock.close()
-            return True
         except socket.error:
             ## note: socket.timeout, socket.gaierror and socket.herror seem to be subclasses of socket.error
-            return False
+            raise NetworkCheckException
     
-    def login_open_netlogin(self):
-        ## Voorstel: vervangen door "Onderzoekt HTML..." (dwz zoekt wachtwoordvaknaam op)
-        ## of: verwijder in zijn geheel. Is alleen interessant om de legacy
-        ## kotnetcli-werkingen te tonen, heeft nauwelijks nog relevantie voor
-        ## de huidige codebase. Het opzoeken van het wachtwoordvak kan
-        ## haast net zo goed in login_input_credentials() worden gezet.
-        
-        r = requests.get(self.user_url)
+    def login_get_request(self):
+        r = requests.get(self.html_get_url)
+        #logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
+        # search for something of the form name="pwd123" and extract the pwd123 part
         self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
         
-    def login_input_credentials(self, creds):
+    def login_post_request(self, creds):
         (gebruikersnaam, wachtwoord) = creds.getCreds()
-        
         self.payload = {
             "inst": self.institution,
             "lang": self.language,
             "submit": "Login",
             "uid": gebruikersnaam,
             self.wachtwoordvak: wachtwoord        
-        }        
-    
-    def login_send_credentials(self):
-        r = requests.post(self.form_url, data=self.payload)
+        }
+
+        r = requests.post(self.html_post_url, data=self.payload)
+        #logger.debug("HTTP POST RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
         self.html = r.text
 
     ## This method parses the server's response. On success, it returns a tuple of
@@ -184,7 +185,13 @@ class KotnetBrowser(object):
 
         else:
             raise UnknownRCException(rccode, html)
-    
+
+
+
+
+
+########### logout things see issue #97 ################
+
     def logout_input_credentials(self):
         ## Lokale IP ophalen: lelijk, maar werkt goed en is snel. Is waar-
         ## schijnlijk de kortste code die crossplatform werkt, wat op zich
@@ -245,6 +252,7 @@ class KotnetBrowser(object):
         else:
             print html
 
+## deprecated (see dev-srv)
 class DummyBrowser(object):
     ## allow custom test behavior via params
     def __init__(self, inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
@@ -295,23 +303,3 @@ class DummyBrowser(object):
 
         else:
             raise UnknownRCException(self.rccode, "\n<html>\n<p>the dummy html page</p>\n</html>\n")
-
-
-"""
-## Deze klasse bevat functies voor de forceer-loginmethode. Gaan we nu nog
-## niet gebruiken. Deze klasse wordt later waarschijnlijk samengevoegd met
-## KotnetBrowser().
-class KotnetForceerBrowser(KotnetBrowser):
-    def __init__():
-        pass
-    
-    def uitteloggenipophalen(self):
-        html = self.browser.response().read()
-        soup = BeautifulSoup(html)
-
-        forms = soup.findAll("form")
-        form = forms[1]
-        uitteloggenip = form.contents[3]["value"]
-
-        return uitteloggenip    
-"""

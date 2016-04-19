@@ -29,6 +29,8 @@ import sys                              ## for advanced print functions
 from quietc import QuietCommunicator
 import cursor
 
+from .error_codes import *
+
 class SuperPlaintextCommunicator(QuietCommunicator):
     def __init__(self):
         cursor.hide()
@@ -93,21 +95,9 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     #### 2. communicator method implementations common for both login and logout ####
 
-    #def eventPingFailure(self):
-    #    self.printerr("Niet verbonden met het KU Leuven-netwerk.")
-    #    
-    #def eventPingAlreadyOnline(self):
-    #    self.printerr("U bent al online.")
-
     def eventKotnetVerbindingStart(self):
         self.print_wait("Kotnetverbinding testen.... ")
         
-    def eventKotnetVerbindingSuccess(self):
-        self.print_success()
-    
-    def eventKotnetVerbindingFailure(self):
-        self.print_fail()
-
     def eventNetloginSuccess(self):
         self.print_success()
     def eventNetloginFailure(self):
@@ -134,16 +124,20 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     def eventOpsturenFailure(self):
         self.print_fail()
     
+    def finalize(self, code):
+        self.print_fail()
+        self.beeindig_sessie(1)
+        if code is KOTNETCLI_OFFLINE:
+            print "Connection attempt to netlogin service failed. Are you on the kotnet network?"
+        elif code is KOTNETCLI_WRONG_CREDS:
+            print "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
+        else:
+            print "Internal kotnetcli exception: traceback below"
+    
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
     def eventNetloginStart(self):
-        ## TODO: jo : inloggen is al duidelijk door "netLOGIN" right?
-        ## Gijs: Zie noot bij LogoutPlaintextCommunicator.eventNetloginStart().
-        
-        #print "           Inloggen           "
-        #print "------------------------------"
-        
-        
-        self.print_wait("Netlogin openen............ ")
+        self.print_success()
+        self.print_wait("Gegevens ophalen........... ")
 
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         self.print_txt("Download:  ")

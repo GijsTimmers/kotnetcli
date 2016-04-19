@@ -185,37 +185,13 @@ class KotnetCLI(object):
         ## nargs=3 to allow a user to supply optional colorname arguments
         ## default=False to get "store_true" semantics when option not specified
         self.communicatorgroep.add_argument("-c", "--color",\
-        help="Logs you in using custom colors; sequence = ok_color, wait_color, err_color, style; choices = black, red, green, yelow, blue, magenta, cyan, white",\
-        choices= ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "bright", "normal"],
-        nargs=4, default=False, metavar="COL")
+        help="Logs you in using custom colors", \
+        action="store_true")
         
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
         action="store_const", dest="communicator", const="quiet")
                 
-        ## voorlopig andere communicators uitschakelen in de dev branch
-        """        
-        self.communicatorgroep.add_argument("-u", "--curses",\
-        help="Logs you in using curses output",\
-        action="store_const", dest="communicator", const="curses")
-        
-        self.communicatorgroep.add_argument("-d", "--dialog",\
-        help="Omits the curses interface by using dialog based output",\
-        action="store_const", dest="communicator", const="dialog")
-        
-        self.communicatorgroep.add_argument("-b", "--bubble",\
-        help="Hides all output except for a bubble notification",\
-        action="store_const", dest="communicator", const="bubble")
-        
-        self.communicatorgroep.add_argument("-s", "--summary",\
-        help="Hides all output except for a short summary",\
-        action="store_const", dest="communicator", const="summary")
-        
-        self.communicatorgroep.add_argument("-q", "--quiet",\
-        help="Hides all output",\
-        action="store_const", dest="communicator", const="quiet")
-        """
-    
     ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
         argumenten = self.parser.parse_args()
@@ -277,13 +253,7 @@ class KotnetCLI(object):
             logger.info("ik wil inloggen")
             worker = LoginWorker(argumenten.institution)
             fabriek = LoginCommunicatorFabriek()
-                
-        '''elif argumenten.worker == "force_login":
-            print "ik moet en zal inloggen"
-            worker = ForceLoginWorker()
-            fabriek = LoginCommunicatorFabriek()
-        '''
-        
+
         return (worker, fabriek)
     
     ## returns communicator
@@ -297,71 +267,14 @@ class KotnetCLI(object):
             return fabriek.createPlaintextCommunicator()
         
         elif argumenten.color:
-            logger.info("ik wil vrolijke custom kleuren: %s", argumenten.color)
-            return fabriek.createColoramaCommunicator(argumenten.color)
+            logger.info("ik wil vrolijke custom kleuren")
+            return fabriek.createColoramaCommunicator()
         
         else:
             ## default option: argumenten.color with default colors
             logger.info("ik ga mee met de stroom")
             return fabriek.createColoramaCommunicator()
         
-        '''
-        elif argumenten.communicator == "summary":
-            print "ik wil het mooie in de kleine dingen zien"
-            return fabriek.createSummaryCommunicator()
-        
-        elif argumenten.communicator == "quiet":
-            print "ik wil zwijgen"
-            return fabriek.createQuietCommunicator()
-        else:
-            print "we still have to fix the others...."
-        
-        if argumenten.communicator == "curses":
-            print "ik wil vloeken"
-            if os.name == "posix":
-                co = communicator.CursesCommunicator()
-            else:
-                co = communicator.ColoramaCommunicator()
-        
-        elif argumenten.communicator == "android":
-            print "ik wou dat ik een robot was"
-            co = communicator.AndroidCommunicator()
-        
-        elif argumenten.communicator == "colortext":
-            print "ik wil vrolijke kleuren"
-            ## jo: TODO changed next line in order to be able to test; should use fac here
-                    
-            fab = fabriek.LoginCommunicatorFabriek()
-            co = fab.createColoramaCommunicator()
-            ## Moet worden vervangen in de toekomst: fab moet al aangemaakt zijn
-            ## door de login/logout-switch.
-        
-        elif argumenten.communicator == "plaintext":
-            print "ik wil terug naar de basis"
-            co = communicator.LogoutPlaintextCommunicator()
-        
-        elif argumenten.communicator == "dialog":
-            print "ik wil fancy dialogs"
-            if os.name == "posix":
-                co = communicator.DialogCommunicator()
-            else:
-                co = communicator.ColoramaCommunicator()
-        
-        elif argumenten.communicator == "bubble":
-            print "ik wil bellen blazen"
-            if os.name == "posix":
-                co = communicator.BubbleCommunicator()
-            else:
-                co = communicator.ColoramaCommunicator()
-        
-        elif argumenten.communicator == "summary":
-            print "ik wil het mooie in de kleine dingen zien"
-            co = communicator.SummaryCommunicator()
-        
-        elif argumenten.communicator == "quiet":
-            print "ik wil zwijgen"
-            co = communicator.QuietCommunicator()
-        '''
 ## end class KotnetCLI
 
 ## main()-functie:

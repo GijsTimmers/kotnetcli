@@ -23,6 +23,9 @@
 
 import sys
 
+import logging
+logger = logging.getLogger(__name__)
+
 class QuietCommunicator():
     def __init__(self):
         pass
@@ -71,21 +74,12 @@ class QuietCommunicator():
 
     #### 2. communicator method implementations common for both login and logout ####
 
-    #def eventPingFailure(self):
-    #    self.printerr("Niet verbonden met het KU Leuven-netwerk.")
-    #    
-    #def eventPingAlreadyOnline(self):
-    #    self.printerr("U bent al online.")
-
     def eventKotnetVerbindingStart(self):
         pass
         
     def eventKotnetVerbindingSuccess(self):
         pass
     
-    def eventKotnetVerbindingFailure(self):
-        pass
-
     def eventNetloginStart(self):
         pass
     def eventNetloginSuccess(self):
@@ -114,6 +108,8 @@ class QuietCommunicator():
     def eventOpsturenFailure(self):
         pass
 
+    def finalize(self, code):
+        logger.error("finalize: heftige shit! code={}".format(code));
 
     def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
         pass

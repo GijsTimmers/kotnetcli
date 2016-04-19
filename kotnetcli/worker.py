@@ -31,21 +31,9 @@
 
 import sys                              ## Basislib
 
-from .browser import (                  ## Doet het eigenlijke browserwerk
-    KotnetBrowser,
-    DummyBrowser,
-    
-    WrongCredentialsException,
-    InternalScriptErrorException,
-    InvalidInstitutionException,
-    MaxNumberIPException,
-    UnknownRCException,
-    
-    RC_LOGIN_SUCCESS                    ## Ndz voor de DummyBrowser    
-)      
+from .browser import * 
 
-#from tools import pinger                ## Om te checken of we op Kotnet zitten
-#from tools import errorcodes as error   ## Om magic number errors te voorkomen
+from .communicator.error_codes import *
 
 import logging
 logger = logging.getLogger(__name__)
@@ -59,12 +47,14 @@ class SuperWorker(object):
     
     def check_kotnet(self, co):
         co.eventKotnetVerbindingStart()
-        if (self.browser.bevestig_kotnetverbinding()):
-            co.eventKotnetVerbindingSuccess()
-        else:
-            co.eventKotnetVerbindingFailure()
-            co.beeindig_sessie(EXIT_FAILURE)
-            logger.error("Connection attempt to netlogin.kuleuven.be timed out. Are you on the kotnet network?")
+        try:
+            self.browser.check_connection()
+        except NetworkCheckException, e:
+            co.finalize(KOTNETCLI_OFFLINE)
+            sys.exit(EXIT_FAILURE)
+        except Exception, e:
+            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
 ## A worker class that either succesfully logs you in to kotnet
@@ -74,54 +64,32 @@ class LoginWorker(SuperWorker):
         logger.debug("enter LoginWorker.go()")
         
         self.check_kotnet(co)
-        self.netlogin(co)
-        #self.kies_kuleuven(co)
-        self.login_gegevensinvoeren(co, creds)
-        self.login_gegevensopsturen(co)
+        self.login_gegevensinvoeren(co)
+        self.login_gegevensopsturen(co,creds)
         self.login_resultaten(co)
         
         co.beeindig_sessie()
         logger.debug("LoginWorker: exiting with success")
         sys.exit(EXIT_SUCCESS)        
         
-    def netlogin(self, co):
+    def login_gegevensinvoeren(self, co):
         co.eventNetloginStart()
         try:
-            self.browser.login_open_netlogin()
+            self.browser.login_get_request()
             co.eventNetloginSuccess()
-        except:
-            co.eventNetloginFailure()
-            co.beeindig_sessie(EXIT_FAILURE)
+        except Exception, e:
+            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
-#    def kies_kuleuven(self, co):
-#        co.eventKuleuvenStart()
-#        try:
-#            self.browser.login_kies_kuleuven()
-#            co.eventKuleuvenSuccess()
-#        except:
-#            co.eventKuleuvenFailure()
-#            co.beeindig_sessie(EXIT_FAILURE)
-#            sys.exit(EXIT_FAILURE)
-    
-    def login_gegevensinvoeren(self, co, creds):
-        co.eventInvoerenStart()
-        try:
-            self.browser.login_input_credentials(creds)
-            co.eventInvoerenSuccess()
-        except:
-            co.eventInvoerenFailure()
-            co.beeindig_sessie(EXIT_FAILURE)
-            sys.exit(EXIT_FAILURE)
-
-    def login_gegevensopsturen(self, co):
+    def login_gegevensopsturen(self, co, creds):
         co.eventOpsturenStart()
         try:
-            self.browser.login_send_credentials()
+            self.browser.login_post_request(creds)
             co.eventOpsturenSuccess()
-        except:
-            co.eventOpsturenFailure()
-            co.beeindig_sessie(EXIT_FAILURE)
+        except Exception, e:
+            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
     def login_resultaten(self, co):
@@ -129,9 +97,7 @@ class LoginWorker(SuperWorker):
             tup = self.browser.login_parse_results()
             co.eventLoginGeslaagd(tup[0], tup[1])
         except WrongCredentialsException:
-            co.beeindig_sessie(EXIT_FAILURE)
-            logger.error("Uw logingegevens kloppen niet. Gebruik kotnetcli " + \
-            "--forget om deze te resetten.")
+            co.finalize(KOTNETCLI_WRONG_CREDS)
             sys.exit(EXIT_FAILURE)
         except MaxNumberIPException:
             co.beeindig_sessie(EXIT_FAILURE)
@@ -158,6 +124,10 @@ class LoginWorker(SuperWorker):
             logger.error("rc-code '%s' onbekend. Probeer opnieuw met de --debug optie en maak een issue aan " + \
             "(https://github.com/GijsTimmers/kotnetcli/issues/new) om ondersteuning te krijgen.", rccode)
             sys.exit(EXIT_FAILURE)
+        except Exception, e:
+            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            traceback.print_exc()
+            sys.exit(EXIT_FAILURE)        
 
 class DummyLoginWorker(LoginWorker):
     def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
@@ -202,32 +172,3 @@ class LogoutWorker(SuperWorker):
 class DummyLogoutWorker(LogoutWorker):
     def __init__(self):
         self.browser = DummyBrowser()
-
-'''
-class ForceerLoginWorker(LoginWorker, LogoutWorker):
-    def go(self, co, creds):
-        ## IP van uit te loggen apparaat opzoeken
-        self.netlogin(co)
-        self.kies_kuleuven(co)
-        self.login_gegevensinvoeren(co, creds)
-        self.login_gegevensopsturen(co)
-        self.oudipophalen(co)
-        ## Uitloggen
-        self.logout_formulieraanmaken(co, creds)
-        self.logout_formulieropsturen(co)
-        self.logout_resultaten(co)
-        ## re-login
-        self.netlogin(co)
-        self.kies_kuleuven(co)
-        self.login_gegevensinvoeren(co, creds)
-        self.login_gegevensopsturen(co)
-        self.login_resultaten(co)
-    
-    def oudipophalen(self, co):
-        try:
-            self.browser.uitteloggenipophalen()
-            co.ipophalenSucces() ## te implementeren
-        except:
-            co.ipophalenFailure()
-            sys.exit(EXIT_FAILURE)
-'''

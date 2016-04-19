@@ -67,7 +67,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ## en multiple inheritance van de juiste subplaintext in de subs
     ## Gijs: Merci!
     
-    def __init__(self, colorNameList):
+    def __init__(self, colorNameList=[ "green", "yellow", "red", "bright" ]):
         """
         from colorama import (                  ## Om de tekst kleur te geven
             Fore,                               ## 

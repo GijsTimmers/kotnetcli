@@ -29,22 +29,13 @@
 ## eventNetloginStart(), worden deze nu onderdeel van co. Dat wil zeggen dat
 ## de worker de juiste event kan aanroepen: bvb co.eventNetloginStart(), zonder
 ## te weten welke communicator dat nu precies is.
-
-
-## The abstract factory specifying the interface and maybe returning 
-## some defaults (or just passing)
-class SuperCommunicatorFabriek(object):
-    def createSummaryCommunicator(self):
-        pass
-
+##
 ## LoginCommunicatorFabriek: functies als volgt aanroepen:
 ## co = LoginCommunicatorFabriek()       
 ## co = co.createColoramaCommunicator() 
 ## co.eventNetloginStart()               ## geeft de juiste output
 
-DEFAULT_COLORAMA_COLORS= [ "green", "yellow", "red", "bright" ]
-
-class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
+class LoginCommunicatorFabriek():
     def createQuietCommunicator(self):
         from .quietc import QuietCommunicator
         return QuietCommunicator()
@@ -53,52 +44,17 @@ class LoginCommunicatorFabriek(SuperCommunicatorFabriek):
         from .plaintextc import LoginPlaintextCommunicator
         return LoginPlaintextCommunicator()
     
-    def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
+    def createColoramaCommunicator(self):
         from .coloramac import LoginColoramaCommunicator
-        return LoginColoramaCommunicator(colorNameList)
+        return LoginColoramaCommunicator()
 
-    def createSummaryCommunicator(self):
-        return LoginSummaryCommunicator()
-    
-    def createBubbleCommunicator(self):
-        return LoginBubbleCommunicator()
-    
-    def createCursesCommunicator(self):
-        return LoginCursesCommunicator()
-    
-    def createDialogCommunicator(self):
-        return DialogCommunicator()
 
-class LogoutCommunicatorFabriek(SuperCommunicatorFabriek):
+class LogoutCommunicatorFabriek():
     def createQuietCommunicator(self):
-        from .quietc import QuietCommunicator
-        return QuietCommunicator()
+        raise Exception("logout not yet supported in beta")
     
     def createPlaintextCommunicator(self):
-        from .plaintextc import LogoutPlaintextCommunicator
-        return LogoutPlaintextCommunicator()
+        raise Exception("logout not yet supported in beta")
     
-    def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
-        from .coloramac import LogoutColoramaCommunicator
-        return LogoutColoramaCommunicator(colorNameList)
-
-    def createSummaryCommunicator(self):
-        return LogoutSummaryCommunicator()
-     
-    def createBubbleCommunicator(self):
-        return LogoutBubbleCommunicator()
-    
-    def createPlaintextCommunicator(self):
-        from .plaintextc import LogoutPlaintextCommunicator
-        return LogoutPlaintextCommunicator()
-    
-    def createColoramaCommunicator(self, colorNameList=DEFAULT_COLORAMA_COLORS):
-        from .coloramac import LogoutColoramaCommunicator
-        return LogoutColoramaCommunicator(colorNameList)
-    
-    def createCursesCommunicator(self):
-        return LogoutCursesCommunicator()
-    
-    def createDialogCommunicator(self):
-        return DialogCommunicator()
-        ## Gijs@Jo: Ook hier graag aanpassen
+    def createColoramaCommunicator(self):
+        raise Exception("logout not yet supported in beta")
