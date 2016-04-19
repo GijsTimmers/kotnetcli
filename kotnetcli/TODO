@@ -1,0 +1,33 @@
+[ ] #9: Better exception handling
+[ ] #59 Verkeerde credentials moeten in de communicator, zodat ze altijd
+    worden geprint en niet alleen bij een bep. `logging`-level
+[ ]   : ERROR_CODES bedenken om in speciale situaties meer details weer
+    te geven:
+    --> communicator.beeindig_sessie --> communicator.panic()
+    --> communicator.
+    --> communicator.talk()
+    --> communicator.panic(): heftige shit
+
+    Stacktrace wordt alleen geprint bij onverwachte exceptions.
+    Wordt geprint in STDOUT ná de communicator, wat die ook zijn moge.
+
+[ ] Minder communicatorstappen:
+    Netlogin openen... --> Gegevens ophalen...
+    Gegevens invoeren WEG
+
+[ ] Migratie naar Engels als taal in code
+
+
+[ ] Vanavond: features:
+    - Enkel login, geen logout of forceerlogin
+    - Communicators: hoogstens plaintext/colorama, rest later
+    - Nu geen configuratiebestanden.
+
+[ ] Setuptools: pas het script aan:
+    sudo ./setup.py install kotnetcli: 
+    - kotnetcli
+   
+    sudo ./setup.py install kotnetcli --development:
+    - kotnetcli
+    - kotnetcli-dev
+    - kotnetcli-srv
