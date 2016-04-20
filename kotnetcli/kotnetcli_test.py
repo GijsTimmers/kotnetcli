@@ -25,7 +25,7 @@
 
 import argparse
 from kotnetcli import KotnetCLI
-from worker import DummyLoginWorker, DummyLogoutWorker
+from worker import DummyLoginWorker
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek
 from credentials import DummyCredentials
 from testsuite import LoginTestsuiteWorker

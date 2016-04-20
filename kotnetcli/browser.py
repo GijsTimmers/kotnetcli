@@ -49,8 +49,8 @@ RC_LOGIN_MAX_IP             = 206
 RC_INVALID_INSTITUTION      = 211
 RC_INTERNAL_SCRIPT_ERR      = 301
 
-## custom exceptions
-class NetworkCheckException(Exception):
+## custom exceptions to be caught by worker
+class KotnetOfflineException(Exception):
     pass
 
 class WrongCredentialsException(Exception):
@@ -95,28 +95,25 @@ class KotnetBrowser(object):
         self.host = NETLOGIN_HOST
         self.port = NETLOGIN_PORT
         
-        ## What the user sees when using netlogin. We need this url to
-        ## find the password field name ("pwdXXXXX")
+        ## What the user sees when using netlogin. We need this url to find the
+        ## password field name ("pwdXXXXX")
         self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga+verder+%2F+Continue".format(self.host, self.port, self.institution)
         
         ## The backend: contains the to-be-submitted form.
         self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
         
-    ## returns True | False depending on whether or not the user seems to be on the
-    ## kotnet network (connect to  netlogin.kuleuven.be)
     def check_connection(self):
-        ## try to open a TCP connection on port 443 with a maximum waiting time
+        ## open a connection with the netlogin server using a maximum waiting time
         try:
             sock = socket.create_connection((self.host,self.port), BROWSER_TIMEOUT_SEC)
             sock.close()
         except socket.error:
-            ## note: socket.timeout, socket.gaierror and socket.herror seem to be subclasses of socket.error
-            raise NetworkCheckException
+            raise KotnetOfflineException
     
     def login_get_request(self):
         r = requests.get(self.html_get_url)
         #logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
-        # search for something of the form name="pwd123" and extract the pwd123 part
+        ## search for something of the form name="pwd123" and extract the pwd123 part
         self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
         
     def login_post_request(self, creds):
@@ -186,72 +183,6 @@ class KotnetBrowser(object):
         else:
             raise UnknownRCException(rccode, html)
 
-
-
-
-
-########### logout things see issue #97 ################
-
-    def logout_input_credentials(self):
-        ## Lokale IP ophalen: lelijk, maar werkt goed en is snel. Is waar-
-        ## schijnlijk de kortste code die crossplatform werkt, wat op zich
-        ## wel vreemd is. Meer informatie:        
-        ## http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("gmail.com", 80))
-        self.uitteloggenip = s.getsockname()[0]
-        s.close()
-        
-        ## Logoutformulier aanmaken, dan lokatie omvormen tot file://-URL zodat
-        ## het browserobject hem kan gebruiken als lokatie.
-        gegevens = {"uitteloggenip" : self.uitteloggenip, 
-                    "gebruikersnaam": self.gebruikersnaam}
-        
-        with open("tools/logoutformuliertemplate.html", "r") as logoutformulier_in:
-            data = logoutformulier_in.read()
-            data = data.format(**gegevens) ## gegevens worden hier ingevuld
-        with open("tools/logoutformulieringevuld.html", "w") as logoutformulier_out:
-            logoutformulier_out.write(data)
-        
-        self.url_logoutformulier = urlparse.urljoin("file:", \
-        os.path.abspath("tools/logoutformulieringevuld.html"))
-    
-    def logout_send_credentials(self):
-        self.browser.open(self.url_logoutformulier, timeout=1.8)
-        self.browser.select_form(nr=0)
-        self.browser.submit()
-        os.remove("tools/logoutformulieringevuld.html")
-    
-    ## returns True if logout is succesful; False when it fails
-    def logout_parse_results(self):
-        html = self.browser.response().read()
-        soup = BeautifulSoup(html)
-
-        ## Zoek naar de rc-code in de comments van het html-bestand. Deze
-        ## bevat de status.
-        comments = soup.findAll(text=lambda text:isinstance(text, Comment))
-        p = re.compile("weblogout: rc=\d+")
-
-        rccode = 100
-        ## if not error codes appear, assume that everything went OK.
-        for c in comments:
-            m = p.search(c)
-            #m = p.findall(c)
-            #print m
-            if m:
-                rccode = int(m.group().strip("weblogout: rc="))
-
-        if rccode == 100:
-            ## succesvolle logout
-            return True
-
-        elif rccode == 207:
-            ## al uitgelogd
-            print "U had uzelf reeds succesvol uitgelogd."
-            return False
-        else:
-            print html
-
 ## deprecated (see dev-srv)
 class DummyBrowser(object):
     ## allow custom test behavior via params
@@ -264,22 +195,16 @@ class DummyBrowser(object):
         self.download = abs(downl) %101
         self.upload = abs(upl) %101
     
-    def bevestig_kotnetverbinding(self):
+    def check_connection(self):
         return self.kotnet_online
 
-    def login_open_netlogin(self):
+    def login_get_request(self):
         if (not self.netlogin_unavailable):
             time.sleep(self.dummy_timeout)
         else:
             raise Exception
 
-    #def login_kies_kuleuven(self):
-    #    time.sleep(0.1)
-    
-    def login_input_credentials(self, *args):
-        time.sleep(self.dummy_timeout)
-
-    def login_send_credentials(self):
+    def login_post_request(self, creds):
         time.sleep(self.dummy_timeout)
 
     def login_parse_results(self):

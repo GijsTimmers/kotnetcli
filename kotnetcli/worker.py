@@ -46,14 +46,14 @@ class SuperWorker(object):
         self.browser = KotnetBrowser(institution)
     
     def check_kotnet(self, co):
-        co.eventKotnetVerbindingStart()
+        co.eventCheckNetworkConnection()
         try:
             self.browser.check_connection()
         except NetworkCheckException, e:
-            co.finalize(KOTNETCLI_OFFLINE)
+            co.eventFailure(KOTNETCLI_SERVER_OFFLINE)
             sys.exit(EXIT_FAILURE)
         except Exception, e:
-            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
             traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
@@ -68,107 +68,61 @@ class LoginWorker(SuperWorker):
         self.login_gegevensopsturen(co,creds)
         self.login_resultaten(co)
         
-        co.beeindig_sessie()
         logger.debug("LoginWorker: exiting with success")
-        sys.exit(EXIT_SUCCESS)        
+        sys.exit(EXIT_SUCCESS)
         
     def login_gegevensinvoeren(self, co):
-        co.eventNetloginStart()
+        co.eventGetData()
         try:
             self.browser.login_get_request()
-            co.eventNetloginSuccess()
         except Exception, e:
-            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
             traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
     def login_gegevensopsturen(self, co, creds):
-        co.eventOpsturenStart()
+        co.eventPostData()
         try:
             self.browser.login_post_request(creds)
-            co.eventOpsturenSuccess()
         except Exception, e:
-            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
             traceback.print_exc()
             sys.exit(EXIT_FAILURE)
 
+    ##TODO overwegen om meer info dan alleen maar de rccode door te geven aan
+    ## eventFailure --> soort van FailureInfo object met dan bv IP address, of
+    ## institution, of rccode/html dump, of stacktrace string, ...
     def login_resultaten(self, co):
+        co.eventProcessData()
         try:
             tup = self.browser.login_parse_results()
-            co.eventLoginGeslaagd(tup[0], tup[1])
+            co.eventLoginSuccess(tup[0], tup[1])
         except WrongCredentialsException:
-            co.finalize(KOTNETCLI_WRONG_CREDS)
+            co.eventFailure(KOTNETCLI_SERVER_WRONG_CREDS)
             sys.exit(EXIT_FAILURE)
         except MaxNumberIPException:
-            co.beeindig_sessie(EXIT_FAILURE)
-            logger.error("U bent al ingelogd op een ander IP-adres. Gebruik " + \
-            "kotnetcli --force-login om u toch in te loggen.")
+            co.eventFailure(KOTNETCLI_SERVER_MAX_IP)
             sys.exit(EXIT_FAILURE)
         except InvalidInstitutionException, e:
-            co.beeindig_sessie(EXIT_FAILURE)
-            #TODO we could use e.get_msg() here maybe?
-            logger.error("Uw gekozen institutie '%s' klopt niet. Gebruik " + \
-            "kotnetcli --institution om een andere institutie te kiezen.", e.get_inst())
+            co.eventFailure(KOTNETCLI_SERVER_INVALID_INSTITUTION)
             sys.exit(EXIT_FAILURE)
         except InternalScriptErrorException:
-            co.beeindig_sessie(EXIT_FAILURE)
-            logger.error("De kotnet server rapporteert een 'internal script error'." \
-                " Probeer opnieuw in te loggen...")
+            co.eventFailure(KOTNETCLI_SERVER_SCRIPT_ERROR)
             sys.exit(EXIT_FAILURE)
         except UnknownRCException, e:
-            co.beeindig_sessie(EXIT_FAILURE)
+            co.eventFailure(KOTNETCLI_SERVER_UNKNOWN_RC)
             (rccode, html) = e.get_info()
+            logger.debug("unknown rc code: {}".format(rccode))
             logger.debug("====== START HTML DUMP ======\n")
             logger.debug(html)
             logger.debug("====== END HTML DUMP ======\n")
-            logger.error("rc-code '%s' onbekend. Probeer opnieuw met de --debug optie en maak een issue aan " + \
-            "(https://github.com/GijsTimmers/kotnetcli/issues/new) om ondersteuning te krijgen.", rccode)
             sys.exit(EXIT_FAILURE)
         except Exception, e:
-            co.finalize(KOTNETCLI_INTERNAL_ERROR)
+            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
             traceback.print_exc()
-            sys.exit(EXIT_FAILURE)        
+            sys.exit(EXIT_FAILURE)
 
 class DummyLoginWorker(LoginWorker):
     def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
         rccode=RC_LOGIN_SUCCESS, downl=44, upl=85):
         self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
-
-## A worker class that either succesfull logs you off from kotnet
-## or exits with failure, reporting events to the given communicator
-## Do not use Kotnetlogout for integration in a forced-login method. We have
-## KotnetForceLogin() for this purpose.
-class LogoutWorker(SuperWorker):
-    def go(self, co, creds):
-        self.logout_formulieraanmaken(co, creds)
-        self.logout_formulieropsturen(co)
-        self.logout_resultaten(co)
-    
-    def logout_formulieraanmaken(self, co, creds):
-        co.eventFormulierAanmakenStart()
-        try:
-            self.browser.logout_input_credentials(creds)
-            co.eventFormulierAanmakenSuccess()
-        except:
-            co.eventFormulierAanmakenFailure()
-            sys.exit(EXIT_FAILURE)
-    
-    def logout_formulieropsturen(self, co):
-        co.eventFormulierOpsturenStart()
-        try:
-            self.browser.logout_send_credentials()
-            co.eventFormulierOpsturenSuccess()
-        except:
-            co.eventFormulierOpsturenFailure()
-            sys.exit(EXIT_FAILURE)
-
-    def logout_resultaten(self, co):
-        if logout_parse_results():
-            print "success!"
-        else:
-            print "outch!"
-        co.beeindig_sessie()
-
-class DummyLogoutWorker(LogoutWorker):
-    def __init__(self):
-        self.browser = DummyBrowser()

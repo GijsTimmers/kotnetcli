@@ -44,7 +44,6 @@ from .credentials import (              ## Voor opvragen van s-nummer
 )                                           
 from .worker import (                   ## Stuurt alle losse componenten aan
     LoginWorker,
-    LogoutWorker,
     EXIT_FAILURE,
     EXIT_SUCCESS
 )
