@@ -50,6 +50,8 @@ from .worker import (                   ## Stuurt alle losse componenten aan
 )
 
 from .tools import log                  ## Custom logger
+from .tools import logo
+from .tools import license
 
 logger = logging.getLogger(__name__)
 
@@ -64,32 +66,13 @@ __version__ = '1.3.0-dev'
 ## An argument parse action that prints license information on stdout and exits
 class PrintLicenceAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print "kotnetcli: An easy automated way to log in to KotNet"
-        print "Copyright (C) 2014-2016 Kotnetcli Development Team "
-        print "<%s>\n" % GITHUB_URL
-        print "This program is free software: you can redistribute it and/or modify"
-        print "it under the terms of the GNU General Public License as published by"
-        print "the Free Software Foundation, either version 3 of the License, or"
-        print "(at your option) any later version.\n"
-        print "This program is distributed in the hope that it will be useful,"
-        print "but WITHOUT ANY WARRANTY; without even the implied warranty of"
-        print "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the"
-        print "GNU General Public License for more details.\n"
-        print "You should have received a copy of the GNU General Public License"
-        print "along with kotnetcli.  If not, see <https://www.gnu.org/licenses/>."
+        print(license.license.format(github_url=GITHUB_URL))
         exit(0)
 
 ## An argument parse action that prints version info on stdout and exits
 class PrintVersionAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print "\n   __"
-        print " __\ \                 kotnetcli v%s" % __version__
-        print " \ \\\_\___             Copyright (C) 2014-2016 Kotnetcli Development Team"
-        print "  \   V  / __          <%s>" % GITHUB_URL
-        print "   \  `\<</ /"
-        print "    \  _\_\<<          This program may be freely redistributed under"
-        print "     \_\ `_\_\         the terms of the GNU General Public License."
-        print "        \_\\\n"
+        print(logo.logo.format(version=__version__, github_url=GITHUB_URL))
         exit(0)
 
 def init_debug_level(log_level, include_time):
