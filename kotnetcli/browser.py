@@ -101,7 +101,10 @@ class KotnetBrowser(object):
         
         ## The backend: contains the to-be-submitted form.
         self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
-        
+
+    def get_server_url(self):
+        return "{}:{}".format(self.host, self.port)
+
     def check_connection(self):
         ## open a connection with the netlogin server using a maximum waiting time
         try:
@@ -184,7 +187,7 @@ class KotnetBrowser(object):
             raise UnknownRCException(rccode, html)
 
 ## deprecated (see dev-srv)
-class DummyBrowser(object):
+class DummyBrowser(KotnetBrowser):
     ## allow custom test behavior via params
     def __init__(self, inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
         self.institution = inst
@@ -194,15 +197,18 @@ class DummyBrowser(object):
         self.rccode = rccode
         self.download = abs(downl) %101
         self.upload = abs(upl) %101
+        self.host = "dummynetlogin"
+        self.port = NETLOGIN_PORT
     
     def check_connection(self):
-        return self.kotnet_online
+        if not self.kotnet_online:
+            raise KotnetOfflineException
 
     def login_get_request(self):
         if (not self.netlogin_unavailable):
             time.sleep(self.dummy_timeout)
         else:
-            raise Exception
+            raise KotnetOfflineException
 
     def login_post_request(self, creds):
         time.sleep(self.dummy_timeout)

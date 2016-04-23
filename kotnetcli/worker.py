@@ -33,8 +33,6 @@ import sys                              ## Basislib
 
 from .browser import * 
 
-from .communicator.error_codes import *
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -49,12 +47,11 @@ class SuperWorker(object):
         co.eventCheckNetworkConnection()
         try:
             self.browser.check_connection()
-        except NetworkCheckException, e:
-            co.eventFailure(KOTNETCLI_SERVER_OFFLINE)
+        except KotnetOfflineException, e:
+            co.eventFailureOffline(self.browser.get_server_url())
             sys.exit(EXIT_FAILURE)
         except Exception, e:
-            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
-            traceback.print_exc()
+            co.eventFailureInternalError(traceback)
             sys.exit(EXIT_FAILURE)
 
 ## A worker class that either succesfully logs you in to kotnet
@@ -76,8 +73,7 @@ class LoginWorker(SuperWorker):
         try:
             self.browser.login_get_request()
         except Exception, e:
-            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
-            traceback.print_exc()
+            co.eventFailureInternalError(traceback)
             sys.exit(EXIT_FAILURE)
 
     def login_gegevensopsturen(self, co, creds):
@@ -85,8 +81,7 @@ class LoginWorker(SuperWorker):
         try:
             self.browser.login_post_request(creds)
         except Exception, e:
-            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
-            traceback.print_exc()
+            co.eventFailureInternalError(traceback)
             sys.exit(EXIT_FAILURE)
 
     ##TODO overwegen om meer info dan alleen maar de rccode door te geven aan
@@ -98,28 +93,23 @@ class LoginWorker(SuperWorker):
             tup = self.browser.login_parse_results()
             co.eventLoginSuccess(tup[0], tup[1])
         except WrongCredentialsException:
-            co.eventFailure(KOTNETCLI_SERVER_WRONG_CREDS)
+            co.eventFailureCredentials()
             sys.exit(EXIT_FAILURE)
         except MaxNumberIPException:
-            co.eventFailure(KOTNETCLI_SERVER_MAX_IP)
+            co.eventFailureMaxIP()
             sys.exit(EXIT_FAILURE)
         except InvalidInstitutionException, e:
-            co.eventFailure(KOTNETCLI_SERVER_INVALID_INSTITUTION)
+            co.eventFailureInstitution(self.browser.institution)
             sys.exit(EXIT_FAILURE)
         except InternalScriptErrorException:
-            co.eventFailure(KOTNETCLI_SERVER_SCRIPT_ERROR)
+            co.eventFailureServerScriptError()
             sys.exit(EXIT_FAILURE)
         except UnknownRCException, e:
-            co.eventFailure(KOTNETCLI_SERVER_UNKNOWN_RC)
             (rccode, html) = e.get_info()
-            logger.debug("unknown rc code: {}".format(rccode))
-            logger.debug("====== START HTML DUMP ======\n")
-            logger.debug(html)
-            logger.debug("====== END HTML DUMP ======\n")
+            co.eventFailureUnknownRC(rccode, html)
             sys.exit(EXIT_FAILURE)
         except Exception, e:
-            co.eventFailure(KOTNETCLI_INTERNAL_ERROR)
-            traceback.print_exc()
+            co.eventFailureInternalError(traceback)
             sys.exit(EXIT_FAILURE)
 
 class DummyLoginWorker(LoginWorker):

@@ -25,17 +25,10 @@ import sys
 import cursor
 
 from quietc import QuietCommunicator
-from .error_codes import *
 
 class SuperPlaintextCommunicator(QuietCommunicator):
+
     def __init__(self):
-        self.offline_msg = "Connection attempt to netlogin service failed. Are you on the kotnet network?"
-        self.creds_msg   = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
-        self.max_ip_msg  = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
-        self.inst_msg    = "Uw gekozen institutie klopt niet. Gebruik kotnetcli --institution om een andere institutie te kiezen."
-        self.script_msg  = "De kotnet server rapporteert een 'internal script error'. Probeer opnieuw in te loggen..."
-        self.rc_msg      = "De kotnet server geeft een onbekende rc-code terug. Contacteer de kotnetcli developers om ondersteuning te krijgen."
-        self.panic_msg   = "Internal kotnetcli exception: traceback below."
         cursor.hide()
 
     ################## APPEARANCE HELPER METHODS ##################
@@ -82,6 +75,11 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     def finalize_session(self, success):
         cursor.show()
+    
+    def do_failure(self, err_str):
+        self.print_fail()
+        self.finalize_session(False)
+        self.printerr(err_str)
 
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
 
@@ -104,25 +102,37 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         self.print_txt("Gegevens verwerken......... ")
         self.print_wait()
 
-    def eventFailure(self, code):
-        self.print_fail()
-        ## fail gracefully
-        self.finalize_session(False)
-        ## provide the user with an appropriate error message
-        if code == KOTNETCLI_SERVER_OFFLINE:
-            self.printerr(self.offline_msg)
-        elif code == KOTNETCLI_SERVER_WRONG_CREDS:
-            self.printerr(self.creds_msg)
-        elif code == KOTNETCLI_SERVER_MAX_IP:
-            self.printerr(self.max_ip_msg)
-        elif code == KOTNETCLI_SERVER_INVALID_INSTITUTION:
-            self.printerr(self.inst_msg)
-        elif code == KOTNETCLI_SERVER_SCRIPT_ERROR:
-            self.printerr(self.script_msg)
-        elif code == KOTNETCLI_SERVER_UNKNOWN_RC:
-            self.printerr(self.rc_msg)
-        else:
-            self.printerr(self.panic_msg)
+    def eventFailureOffline(self, srv):
+        err_str = "Connection attempt to netlogin service '{}' failed. Are you on the kotnet network?".format(srv)
+        self.do_failure(err_str)
+
+    def eventFailureCredentials(self):
+        err_str = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
+        self.do_failure(err_str)
+
+    def eventFailureMaxIP(self):
+        err_str = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
+        self.do_failure(err_str)
+    
+    def eventFailureInstitution(self, inst):
+        err_str = "Uw gekozen institutie '{}' klopt niet. Gebruik kotnetcli --institution om een andere institutie te kiezen.".format(inst)
+        self.do_failure(err_str)
+        
+    def eventFailureServerScriptError(self):
+        err_str = "De netlogin server rapporteert een 'internal script error'. Probeer opnieuw in te loggen..."
+        self.do_failure(err_str)
+    
+    def eventFailureUnknownRC(self, rccode, html):
+        err_str = "De netlogin server geeft een onbekende rc-code '{}' terug. Contacteer de kotnetcli developers om ondersteuning te krijgen.".format(rccode)
+        self.do_failure(err_str)
+        self.print_txt("====== START HTML DUMP ======\n")
+        self.print_txt(html)
+        self.print_txt("====== END HTML DUMP ======\n")
+    
+    def eventFailureInternalError(self, traceback):
+        err_str = "Internal kotnetcli exception: traceback below."
+        self.do_failure(err_str)
+        self.print_txt(traceback.format_exc())
 
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
     

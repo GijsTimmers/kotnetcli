@@ -43,5 +43,24 @@ class QuietCommunicator(object):
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         pass
     
-    def eventFailure(self, code):
-        logger.info("Quietly failing with error code {}".format(code))
+    def eventFailureOffline(self, srv):
+        pass
+    
+    def eventFailureCredentials(self):
+        pass
+    
+    def eventFailureMaxIP(self):
+        pass
+    
+    def eventFailureInstitution(self, inst):
+        pass
+        
+    def eventFailureServerScriptError(self):
+        pass
+    
+    def eventFailureUnknownRC(self, rccode, html):
+        pass
+    
+    def eventFailureInternalError(self, traceback):
+        logger.info("Quietly panicking: internal kotnetcli error")
+        logger.debug(traceback.format_exc())
