@@ -28,8 +28,6 @@ import requests                         ## Invullen van HTTP POST-request
 import socket                           ## Voor ophalen IP
 import os                               ## Basislib
 
-import traceback
-
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 import logging
@@ -66,7 +64,6 @@ class InvalidInstitutionException(Exception):
     def get_inst(self):
         return self.inst
 
-##TODO hier het ip address in opslaan (~ hieronder de rccode)
 class MaxNumberIPException(Exception):
     pass
     
@@ -78,13 +75,11 @@ class UnknownRCException(Exception):
     def get_info(self):
         return (self.rccode, self.html)
 
-## The class doing the actual browser emulation work. One can extend this
-## class to add specific behavior (e.g. communicating; err catching; etc).
+## The class doing the actual browser emulation work.
 ## KotnetBrowser() is like an API: it contains all possible Browser operations.
 ## So, we don't create a LoginBrowser(), LogoutBrowser(), etc. Instead, the
 ## proper Worker() is instantiated by kotnetcli.py, and this instance calls
 ## only the Browser() methods that it needs.
-## Some 
 class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
@@ -97,7 +92,7 @@ class KotnetBrowser(object):
         
         ## What the user sees when using netlogin. We need this url to find the
         ## password field name ("pwdXXXXX")
-        self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga+verder+%2F+Continue".format(self.host, self.port, self.institution)
+        self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl".format(self.host, self.port)
         
         ## The backend: contains the to-be-submitted form.
         self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
@@ -114,22 +109,32 @@ class KotnetBrowser(object):
             raise KotnetOfflineException
     
     def login_get_request(self):
-        r = requests.get(self.html_get_url)
+        payload = {
+            "inst"      : self.institution,
+            "lang"      : self.language,
+            "submit"    : "Ga verder / Continue",
+        }
+        try:
+            r = requests.get(self.html_get_url, params=payload, timeout=BROWSER_TIMEOUT_SEC)
+        except requests.exceptions.Timeout:
+            raise KotnetOfflineException
         #logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
         ## search for something of the form name="pwd123" and extract the pwd123 part
         self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
         
     def login_post_request(self, creds):
         (gebruikersnaam, wachtwoord) = creds.getCreds()
-        self.payload = {
-            "inst": self.institution,
-            "lang": self.language,
-            "submit": "Login",
-            "uid": gebruikersnaam,
-            self.wachtwoordvak: wachtwoord        
+        payload = {
+            "inst"              : self.institution,
+            "lang"              : self.language,
+            "submit"            : "Login",
+            "uid"               : gebruikersnaam,
+            self.wachtwoordvak  : wachtwoord
         }
-
-        r = requests.post(self.html_post_url, data=self.payload)
+        try:
+            r = requests.post(self.html_post_url, data=payload, timeout=BROWSER_TIMEOUT_SEC)
+        except requests.exceptions.Timeout:
+            raise KotnetOfflineException
         #logger.debug("HTTP POST RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
         self.html = r.text
 

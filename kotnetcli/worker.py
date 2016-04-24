@@ -31,7 +31,8 @@
 
 import sys                              ## Basislib
 
-from .browser import * 
+from .browser import *
+import traceback
 
 import logging
 logger = logging.getLogger(__name__)
@@ -47,46 +48,45 @@ class SuperWorker(object):
         co.eventCheckNetworkConnection()
         try:
             self.browser.check_connection()
-        except KotnetOfflineException, e:
+        except KotnetOfflineException:
             co.eventFailureOffline(self.browser.get_server_url())
-            sys.exit(EXIT_FAILURE)
-        except Exception, e:
-            co.eventFailureInternalError(traceback)
             sys.exit(EXIT_FAILURE)
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
 class LoginWorker(SuperWorker):
     def go(self, co, creds):
-        logger.debug("enter LoginWorker.go()")
-        
-        self.check_kotnet(co)
-        self.login_gegevensinvoeren(co)
-        self.login_gegevensopsturen(co,creds)
-        self.login_resultaten(co)
-        
-        logger.debug("LoginWorker: exiting with success")
-        sys.exit(EXIT_SUCCESS)
+        try:
+            logger.debug("enter LoginWorker.go()")
+            self.check_kotnet(co)
+            self.login_gegevensinvoeren(co)
+            self.login_gegevensopsturen(co,creds)
+            self.login_resultaten(co)
+            
+            logger.debug("LoginWorker: exiting with success")
+            sys.exit(EXIT_SUCCESS)
+        ## fail gracefully when encountering an unexpected error
+        except Exception:
+            logger.debug("LoginWorker: caught exception; exiting with failure")
+            co.eventFailureInternalError(traceback)
+            sys.exit(EXIT_FAILURE)
         
     def login_gegevensinvoeren(self, co):
         co.eventGetData()
         try:
             self.browser.login_get_request()
-        except Exception, e:
-            co.eventFailureInternalError(traceback)
+        except KotnetOfflineException:
+            co.eventFailureOffline(self.browser.get_server_url())
             sys.exit(EXIT_FAILURE)
 
     def login_gegevensopsturen(self, co, creds):
         co.eventPostData()
         try:
             self.browser.login_post_request(creds)
-        except Exception, e:
-            co.eventFailureInternalError(traceback)
+        except KotnetOfflineException:
+            co.eventFailureOffline(self.browser.get_server_url())
             sys.exit(EXIT_FAILURE)
 
-    ##TODO overwegen om meer info dan alleen maar de rccode door te geven aan
-    ## eventFailure --> soort van FailureInfo object met dan bv IP address, of
-    ## institution, of rccode/html dump, of stacktrace string, ...
     def login_resultaten(self, co):
         co.eventProcessData()
         try:
@@ -99,7 +99,7 @@ class LoginWorker(SuperWorker):
             co.eventFailureMaxIP()
             sys.exit(EXIT_FAILURE)
         except InvalidInstitutionException, e:
-            co.eventFailureInstitution(self.browser.institution)
+            co.eventFailureInstitution(e.get_inst())
             sys.exit(EXIT_FAILURE)
         except InternalScriptErrorException:
             co.eventFailureServerScriptError()
@@ -107,9 +107,6 @@ class LoginWorker(SuperWorker):
         except UnknownRCException, e:
             (rccode, html) = e.get_info()
             co.eventFailureUnknownRC(rccode, html)
-            sys.exit(EXIT_FAILURE)
-        except Exception, e:
-            co.eventFailureInternalError(traceback)
             sys.exit(EXIT_FAILURE)
 
 class DummyLoginWorker(LoginWorker):

@@ -30,6 +30,9 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     def __init__(self):
         cursor.hide()
+    
+    def eventExit(self):
+        cursor.show()
 
     ################## APPEARANCE HELPER METHODS ##################
     ## override these to change appearance of subclass terminal-based communicators
@@ -74,8 +77,8 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         self.print_generic_bar(percentage, "", "", "", "")
 
     def finalize_session(self, success):
-        cursor.show()
-    
+        pass
+
     def do_failure(self, err_str):
         self.print_fail()
         self.finalize_session(False)
@@ -103,7 +106,7 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         self.print_wait()
 
     def eventFailureOffline(self, srv):
-        err_str = "Connection attempt to netlogin service '{}' failed. Are you on the kotnet network?".format(srv)
+        err_str = "Connection attempt to netlogin service '{}' timed out. Are you on the kotnet network?".format(srv)
         self.do_failure(err_str)
 
     def eventFailureCredentials(self):
@@ -152,4 +155,3 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
             self.print_done()
         else:
             self.print_fail()
-        super(LoginPlaintextCommunicator, self).finalize_session(success)

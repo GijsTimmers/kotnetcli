@@ -27,6 +27,9 @@ logger = logging.getLogger(__name__)
 class QuietCommunicator(object):
     def __init__(self):
         pass
+    
+    def eventExit(self):
+        pass
 
     def eventCheckNetworkConnection(self):
         pass

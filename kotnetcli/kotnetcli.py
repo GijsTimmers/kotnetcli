@@ -263,5 +263,9 @@ class KotnetCLI(object):
 ## - aangrijpingspunt kotnetcli-runner.py
 ## - aangrijpingspunt console_script van setup.py
 def main():
-    k = KotnetCLI()
-    k.parseArgumenten()
+    try:
+        k = KotnetCLI()
+        k.parseArgumenten()
+    except KeyboardInterrupt:
+        logger.info("Keyboard interrupt received")
+        sys.exit(EXIT_FAILURE)

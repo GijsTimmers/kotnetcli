@@ -44,8 +44,8 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         err_color = getattr(Fore, colorNameList.pop())
         wait_color = getattr(Fore, colorNameList.pop())        
         ok_color = getattr(Fore, colorNameList.pop())
-        self.ERR_COLOR = err_color
-        self.ERR_STYLE = style
+        self.ERR_COLOR = Fore.RED
+        self.ERR_STYLE = Style.NORMAL
         self.WAIT_STYLE = style
         self.WAIT_COLOR = wait_color
         self.SUCCESS_STYLE = style
@@ -60,9 +60,9 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
     ################## OVERRIDE PLAINTEXT APPEARANCE METHODS ##################
 
     def printerr(self, msg):
-        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR),
-        super(SuperColoramaCommunicator,self).printerr(msg),
-        sys.stderr.write(Style.RESET_ALL),
+        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
+        super(SuperColoramaCommunicator,self).printerr(msg)
+        sys.stderr.write(Style.RESET_ALL)
         sys.stderr.flush()
 
     def print_wait(self):
@@ -82,7 +82,6 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         print self.FAIL_STYLE + "[" + self.FAIL_COLOR + "FAIL" + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    ## Overrides the printing of a "balk" string on stdout
     def print_bar(self, percentage):
         if percentage <= 10:
             color = self.CRITICAL_PERC_COLOR
@@ -94,8 +93,4 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         self.print_generic_bar(percentage, self.PERC_STYLE, color, Fore.RESET, Style.RESET_ALL)
 
 class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
-
-    ## no specific login colorama behavior for now
-    def dummy(self):
-        pass
-
+    pass
