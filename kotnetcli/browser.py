@@ -23,10 +23,8 @@
 
 import re                               ## Basislib voor reguliere expressies
 import time                             ## Voor timeout om venster te sluiten
-import urlparse                         ## Diverse URL-manipulaties
 import requests                         ## Invullen van HTTP POST-request
 import socket                           ## Voor ophalen IP
-import os                               ## Basislib
 
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
@@ -189,7 +187,7 @@ class KotnetBrowser(object):
             raise InternalScriptErrorException()
 
         else:
-            raise UnknownRCException(rccode, html)
+            raise UnknownRCException(rccode, self.html)
 
 ## deprecated (see dev-srv)
 class DummyBrowser(KotnetBrowser):

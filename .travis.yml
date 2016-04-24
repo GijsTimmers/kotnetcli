@@ -52,13 +52,14 @@ before_install:
     
 ## Command to install pip dependencies
 install: 
-    - pip install keyring colorama beautifulsoup4 argcomplete requests
+    - pip install keyring colorama beautifulsoup4 argcomplete requests cursor
     #python2-pythondialog
 #    - pip install dbus-python
 
 ## command to run tests
-script: python setup.py install
-        ./kotnetcli-dummy --run-tests
+script:
+#    - python setup.py install
+    - ./kotnetcli-dummy.py --run-tests
     
     #- ./kotnetcli.py -h
     #- ./kotnetcli.py -1 -c 
