@@ -41,16 +41,19 @@ EXIT_FAILURE = 1 ## Tijdelijke exitcode, moet nog worden geïmplementeerd.
 EXIT_SUCCESS = 0
 
 class SuperWorker(object):
-    def __init__(self, institution):
-        self.browser = KotnetBrowser(institution)
+    def __init__(self, institution, host=NETLOGIN_HOST, port=NETLOGIN_PORT, verify=True):
+        self.browser = KotnetBrowser(institution, host, port, verify)
     
-    def check_kotnet(self, co):
-        co.eventCheckNetworkConnection()
+    def contact_server(self, co, fct, *args):
         try:
-            self.browser.check_connection()
+            fct(*args)
         except KotnetOfflineException:
             co.eventFailureOffline(self.browser.get_server_url())
             sys.exit(EXIT_FAILURE)
+    
+    def check_kotnet(self, co):
+        co.eventCheckNetworkConnection()
+        self.contact_server(co, self.browser.check_connection)
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
@@ -73,19 +76,11 @@ class LoginWorker(SuperWorker):
         
     def login_gegevensinvoeren(self, co):
         co.eventGetData()
-        try:
-            self.browser.login_get_request()
-        except KotnetOfflineException:
-            co.eventFailureOffline(self.browser.get_server_url())
-            sys.exit(EXIT_FAILURE)
+        self.contact_server(co, self.browser.login_get_request)
 
     def login_gegevensopsturen(self, co, creds):
         co.eventPostData()
-        try:
-            self.browser.login_post_request(creds)
-        except KotnetOfflineException:
-            co.eventFailureOffline(self.browser.get_server_url())
-            sys.exit(EXIT_FAILURE)
+        self.contact_server(co, self.browser.login_post_request, creds)
 
     def login_resultaten(self, co):
         co.eventProcessData()
@@ -109,7 +104,5 @@ class LoginWorker(SuperWorker):
             co.eventFailureUnknownRC(rccode, html)
             sys.exit(EXIT_FAILURE)
 
-class DummyLoginWorker(LoginWorker):
-    def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
-        rccode=100, downl=44, upl=85):
-        self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
+class LogoutWorker(SuperWorker):
+    pass

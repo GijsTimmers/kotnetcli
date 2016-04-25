@@ -64,9 +64,11 @@ elif not (pwd == dummy_db[uid]['pwd']):
     rccode = rccodes.RC_LOGIN_INVALID_PASSWORD
 else:
     rccode = rccodes.RC_LOGIN_SUCCESS
+    download = dummy_db[uid]['download']
+    upload   = dummy_db[uid]['upload']
 
-download = dummy_db[uid]['download']
-upload   = dummy_db[uid]['upload']
+#import time
+#time.sleep(10)
 
 print "Content-type: text/html"
 print
@@ -82,6 +84,7 @@ print '<p><!-- another comment --></p>'.format(rccode)
 print '<p><!-- another comment --></p>'.format(rccode)
 print '<p><!-- another comment --></p>'.format(rccode)
 print '<p><!-- another comment --></p>'.format(rccode)
-print '<p><!-- download percentage is {} 100 --></p>'.format(download)
-print '<p><!-- upload percentage is {} 100 --></p>'.format(upload)
+if rccode == rccodes.RC_LOGIN_SUCCESS:
+    print '<p><!-- download percentage is {} 100 --></p>'.format(download)
+    print '<p><!-- upload percentage is {} 100 --></p>'.format(upload)
 print "</body>"

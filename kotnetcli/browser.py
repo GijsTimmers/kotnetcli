@@ -37,9 +37,6 @@ logger = logging.getLogger(__name__)
 NETLOGIN_HOST       = "netlogin.kuleuven.be"
 NETLOGIN_PORT       = 443
 
-#FIXME ensure the custom certificate is only used for the test server
-CERT_FILE           = 'kotnetcli/server/kotnetcli-localhost.pem'
-
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
 
@@ -80,29 +77,34 @@ class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
-    def __init__(self, inst, host=NETLOGIN_HOST, port=NETLOGIN_PORT):
+    def __init__(self, inst, host=NETLOGIN_HOST, port=NETLOGIN_PORT, verify=True):
         self.institution = inst
         self.language = "nl"
         self.host = host
         self.port = port
+        self.verify = verify
+        if (verify is not True):
+            logger.warning("using custom SSL certificate '{}'".format(verify))
         
-        ## What the user sees when using netlogin. We need this url to
-        ## find the password field name ("pwdXXXXX")
-        self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl?inst={}&lang=nl&submit=Ga+verder+%2F+Continue".format(self.host, self.port, self.institution)
-        
-        ## The backend: contains the to-be-submitted form.
-        self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
-
     def get_server_url(self):
         return "{}:{}".format(self.host, self.port)
 
     def check_connection(self):
-        ## open a connection with the netlogin server using a maximum waiting time
         try:
             sock = socket.create_connection((self.host,self.port), BROWSER_TIMEOUT_SEC)
             sock.close()
         except socket.error:
             raise KotnetOfflineException
+    
+    def do_server_request(self, method, cgi_script, params=None, data=None):
+        url = "https://{}:{}/cgi-bin/{}".format(self.host, self.port, cgi_script)
+        assert(self.verify)
+        try:
+            r = requests.request(method, url, verify=self.verify, params=params, data=data, timeout=BROWSER_TIMEOUT_SEC)
+        except requests.exceptions.Timeout:
+            raise KotnetOfflineException
+        logger.debug("server HTTP '{}' response status code is {}".format(method, r.status_code))
+        return r.text
     
     def login_get_request(self):
         payload = {
@@ -110,13 +112,9 @@ class KotnetBrowser(object):
             "lang"      : self.language,
             "submit"    : "Ga verder / Continue",
         }
-        try:
-            r = requests.get(self.html_get_url, params=payload, timeout=BROWSER_TIMEOUT_SEC)
-        except requests.exceptions.Timeout:
-            raise KotnetOfflineException
-        #logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
+        html = self.do_server_request('GET', 'wayf2.pl', params=payload)
         ## search for something of the form name="pwd123" and extract the pwd123 part
-        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
+        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", html)[0]
         
     def login_post_request(self, creds):
         (gebruikersnaam, wachtwoord) = creds.getCreds()
@@ -127,12 +125,7 @@ class KotnetBrowser(object):
             "uid"               : gebruikersnaam,
             self.wachtwoordvak  : wachtwoord
         }
-        try:
-            r = requests.post(self.html_post_url, data=payload, timeout=BROWSER_TIMEOUT_SEC)
-        except requests.exceptions.Timeout:
-            raise KotnetOfflineException
-        #logger.debug("HTTP POST RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
-        self.html = r.text
+        self.html = self.do_server_request('POST', 'netlogin.pl', data=payload)
 
     ## This method parses the server's response. On success, it returns a tuple of
     ## length 2: (downloadpercentage, uploadpercentage); else it raises an
@@ -158,7 +151,7 @@ class KotnetBrowser(object):
 
         logger.debug("rccode is %s", rccode)
 
-        if rccode == server.rccodes.RC_LOGIN_SUCCESS:
+        if rccode == RC_LOGIN_SUCCESS:
             ## downloadpercentage parsen
             p = re.compile("\d+")
             m = p.findall(comments[6])
@@ -171,23 +164,23 @@ class KotnetBrowser(object):
 
             return (downloadpercentage, uploadpercentage)
 
-        elif (rccode == server.rccodes.RC_LOGIN_INVALID_USERNAME) or \
-            (rccode == server.rccodes.RC_LOGIN_INVALID_PASSWORD):
+        elif (rccode == RC_LOGIN_INVALID_USERNAME) or \
+            (rccode == RC_LOGIN_INVALID_PASSWORD):
             raise WrongCredentialsException()
             
-        elif rccode == server.rccodes.RC_LOGIN_MAX_IP:
+        elif rccode == RC_LOGIN_MAX_IP:
             raise MaxNumberIPException()
 
-        elif rccode == server.rccodes.RC_INVALID_INSTITUTION:
+        elif rccode == RC_INVALID_INSTITUTION:
             raise InvalidInstitutionException(self.institution)
         
-        elif self.rccode == server.rccodes.RC_INTERNAL_SCRIPT_ERR:
+        elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
             raise InternalScriptErrorException()
 
         else:
             raise UnknownRCException(rccode, self.html)
 
-## deprecated (see dev-srv)
+## deprecated: delete
 class DummyBrowser(KotnetBrowser):
     ## allow custom test behavior via params
     def __init__(self, inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):

@@ -26,10 +26,9 @@
 import sys
 import argparse
 from kotnetcli import KotnetCLI
-from worker import DummyLoginWorker, EXIT_FAILURE
+from worker import LoginWorker
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek
 from credentials import DummyCredentials
-from testsuite import LoginTestsuiteWorker
 
 import server.rccodes # for RC_CODES
 
@@ -47,16 +46,10 @@ class KotnetCLITester(KotnetCLI):
 
     def __init__(self):
         super(KotnetCLITester, self).__init__("dummy script " + \
-        "om in- of uit te loggen op KotNet", log_level_default="info")
+        "om in- of uit te loggen op KotNet", log_level_default="warning")
         
     def voegArgumentenToe(self, log_level_default):
         super(KotnetCLITester, self).voegArgumentenToe(log_level_default)
-        
-        ## override the login option to allow a user-defined rccode to be passed
-        self.workergroep.add_argument("-i", "--login",
-            help="Simulates a login to KotNet with a given rccode result",
-            nargs="?", type=int, const=server.rccodes.RC_LOGIN_SUCCESS, metavar="RC_CODE",
-            action="store", default=server.rccodes.RC_LOGIN_SUCCESS)
         
         self.workergroep.add_argument("-r", "--run-tests", \
         help="Runs a bunch of tests and assertions", action="store_true")
@@ -78,11 +71,13 @@ class KotnetCLITester(KotnetCLI):
             
         else:
             ## default option: argumenten.login
-            logger.info("ik wil inloggen voor spek en bonen met RC_CODE %s",
-                argumenten.login)
-            return (DummyLoginWorker(argumenten.institution, argumenten.timeout, \
-                True, False, argumenten.login), \
-                LoginCommunicatorFabriek())
+            logger.info("ik wil inloggen voor spek en bonen")
+            ##TODO host, port, verify from cmd line args
+            return (LoginWorker(argumenten.institution,
+                                "localhost",
+                                4443,
+                                "kotnetcli/server/kotnetcli-localhost.pem"),
+                    LoginCommunicatorFabriek())
         
     def parseCredentialFlags(self, argumenten):
         logger.info("ik wil credentials ophalen voor spek en bonen")

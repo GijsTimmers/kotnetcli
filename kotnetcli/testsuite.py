@@ -27,6 +27,7 @@ import browser
 import logging
 logger = logging.getLogger(__name__)
 
+##TODO deprecated: remove
 class LoginTestsuiteWorker(SuperWorker):
 
     def __init__(self, inst, dummy_browser_timeout):
