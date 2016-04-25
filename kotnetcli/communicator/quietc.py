@@ -21,104 +21,49 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
+import logging
+logger = logging.getLogger(__name__)
 
-class QuietCommunicator():
+class QuietCommunicator(object):
     def __init__(self):
         pass
-
-    #### 1. appearance printing methods ####
-
-    ## Encapsulates the printing of an error string on stderr
-    ## Override this method to change the appearance of the printed string.
-    def printerr(self, msg):
-        sys.stderr.write(msg),
-        sys.stderr.flush()
-
-    ## Encapsulates the printing of a "text" string on stdout, *without* a trailing newline
-    ## Override this method to change the appearance of the printed string.
-    def print_txt(self, msg):
-        sys.stdout.write(msg)
-
-    ## Encapsulates the printing of a "wait" event on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_wait(self, msg):
+    
+    def eventExit(self):
         pass
 
-    ## Encapsulates the printing of a "succes" string on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_success(self):
-        pass
-
-    ## Encapsulates the printing of a "done" string on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_done(self):
-        pass
-
-    ## Encapsulates the printing of a "fail" string on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_fail(self):
-        pass
-
-    ## generic print_balk method (not meant to be overriden)
-    def print_generic_balk(self, percentage, style, color, stop_color, stop_style):
-        pass
-
-    ## Encapsulates the printing of a "balk" string on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_balk(self, percentage):
-        pass
-
-    #### 2. communicator method implementations common for both login and logout ####
-
-    #def eventPingFailure(self):
-    #    self.printerr("Niet verbonden met het KU Leuven-netwerk.")
-    #    
-    #def eventPingAlreadyOnline(self):
-    #    self.printerr("U bent al online.")
-
-    def eventKotnetVerbindingStart(self):
-        pass
-        
-    def eventKotnetVerbindingSuccess(self):
+    def eventCheckNetworkConnection(self):
         pass
     
-    def eventKotnetVerbindingFailure(self):
+    def eventGetData(self):
+        pass
+    
+    def eventPostData(self):
+        pass
+    
+    def eventProcessData(self):
         pass
 
-    def eventNetloginStart(self):
+    def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         pass
-    def eventNetloginSuccess(self):
+    
+    def eventFailureOffline(self, srv):
         pass
-    def eventNetloginFailure(self):
+    
+    def eventFailureCredentials(self):
+        pass
+    
+    def eventFailureMaxIP(self):
+        pass
+    
+    def eventFailureInstitution(self, inst):
         pass
         
-    def eventKuleuvenStart(self):
+    def eventFailureServerScriptError(self):
         pass
-    def eventKuleuvenSuccess(self):
+    
+    def eventFailureUnknownRC(self, rccode, html):
         pass
-    def eventKuleuvenFailure(self):
-        pass
-
-    def eventInvoerenStart(self):
-        pass
-    def eventInvoerenSuccess(self):
-        pass
-    def eventInvoerenFailure(self):
-        pass
-
-    def eventOpsturenStart(self):
-        pass
-    def eventOpsturenSuccess(self):
-        pass
-    def eventOpsturenFailure(self):
-        pass
-
-
-    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        pass
-    def eventLogoutGeslaagd(self):
-        pass
-        
-    def beeindig_sessie(self, error_code=0):
-        pass
+    
+    def eventFailureInternalError(self, traceback):
+        logger.info("Quietly panicking: internal kotnetcli error")
+        logger.debug(traceback.format_exc())
