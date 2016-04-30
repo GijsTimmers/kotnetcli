@@ -168,7 +168,11 @@ class KotnetCLI(object):
         ## default=False to get "store_true" semantics when option not specified
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using custom colors", \
-        action="store_const", dest="communicator", const="colorama")
+        action="store_const", dest="communicator", const="colorama" )
+        
+        self.communicatorgroep.add_argument("-d", "--dialog",\
+        help="Omits the curses interface by using dialog based output",\
+        action="store_const", dest="communicator", const="dialog")
         
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
@@ -255,6 +259,10 @@ class KotnetCLI(object):
         if argumenten.communicator == "plaintext":
             logger.info("ik wil terug naar de basis")
             return fabriek.createPlaintextCommunicator()
+        
+        if argumenten.communicator == "dialog":
+            logger.info("ik wil praten")
+            return fabriek.createDialogCommunicator()
         
         else:
             ## default option: argumenten.color with default colors

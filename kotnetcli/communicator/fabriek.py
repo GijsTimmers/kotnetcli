@@ -58,6 +58,10 @@ class LoginCommunicatorFabriek():
     def createColoramaCommunicator(self):
         from .coloramac import LoginColoramaCommunicator
         return wrap(LoginColoramaCommunicator())
+    
+    def createDialogCommunicator(self):
+        from .dialogc import LoginDialogCommunicator
+        return wrap(LoginDialogCommunicator())
 
 class LogoutCommunicatorFabriek():
     def createQuietCommunicator(self):

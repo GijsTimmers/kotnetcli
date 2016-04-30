@@ -31,9 +31,6 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     def __init__(self):
         cursor.hide()
     
-    def eventExit(self):
-        cursor.show()
-
     ################## APPEARANCE HELPER METHODS ##################
     ## override these to change appearance of subclass terminal-based communicators
 
@@ -86,6 +83,9 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
 
+    def eventExit(self):
+        cursor.show()
+
     def eventCheckNetworkConnection(self):
         self.print_txt("Kotnetverbinding testen.... ")
         self.print_wait()
@@ -112,10 +112,6 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     def eventFailureCredentials(self):
         err_str = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
         self.do_failure(err_str)
-
-    def eventFailureMaxIP(self):
-        err_str = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
-        self.do_failure(err_str)
     
     def eventFailureInstitution(self, inst):
         err_str = "Uw gekozen institutie '{}' klopt niet. Gebruik kotnetcli --institution om een andere institutie te kiezen.".format(inst)
@@ -140,6 +136,13 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
     
     ################## LOGIN COMMUNICATOR INTERFACE ##################
+
+    def finalize_session(self, success):
+        self.print_txt("Inloggen................... "),
+        if success:
+            self.print_done()
+        else:
+            self.print_fail()
     
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.print_success()
@@ -148,10 +151,7 @@ class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
         self.print_txt("Upload:    ")
         self.print_bar(uploadpercentage)
         self.finalize_session(True)
-        
-    def finalize_session(self, success):
-        self.print_txt("Inloggen................... "),
-        if success:
-            self.print_done()
-        else:
-            self.print_fail()
+
+    def eventFailureMaxIP(self):
+        err_str = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
+        self.do_failure(err_str)
