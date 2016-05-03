@@ -80,7 +80,11 @@ def init_debug_level(log_level, include_time):
     except ValueError:
         print "kotnetcli: Invalid debug level: %s" % log_level
         sys.exit(1)
-        
+
+## TODO create an AbstractKotnetCLI class for common CLI arguments (eg version,
+## license, debug level, ...) --> shared between all binaries in the kotnetcli
+## distribution: kotnetcli, kotnetcli-dev, kotnetgui, kotnetcli-srv
+##
 ## A class encapsulating the argument parsing behavior
 ## Note: directly inherit from "object" in order to be able to use super() in child classes
 class KotnetCLI(object):
@@ -173,6 +177,10 @@ class KotnetCLI(object):
         self.communicatorgroep.add_argument("-d", "--dialog",\
         help="Omits the curses interface by using dialog based output",\
         action="store_const", dest="communicator", const="dialog")
+
+        self.communicatorgroep.add_argument("-l", "--logger",\
+        help="Reports progress through the logging module",\
+        action="store_const", dest="communicator", const="logger")
         
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
@@ -206,6 +214,7 @@ class KotnetCLI(object):
         logger.info("ik haal de credentials uit de keyring")
         return self.parseCredsFlags(argumenten, KeyRingCredentials())
     
+    ## TODO ForgetCredsWorker: front-end should not be coupled to creds; issue #49
     ## a helper method with a default credentials object argument
     def parseCredsFlags(self, argumenten, cr):
         if argumenten.forget:
@@ -230,7 +239,8 @@ class KotnetCLI(object):
                 (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
                 cr.saveCreds(gebruikersnaam, wachtwoord)
             return cr
-            
+
+    ## TODO worker should ask communicator for creds, if necessary; issue #49
     def prompt_user_creds(self):
         gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
         wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
@@ -263,6 +273,10 @@ class KotnetCLI(object):
         if argumenten.communicator == "dialog":
             logger.info("ik wil praten")
             return fabriek.createDialogCommunicator()
+        
+        if argumenten.communicator == "logger":
+            logger.info("ik wil loggen")
+            return fabriek.createLoggerCommunicator()
         
         else:
             ## default option: argumenten.color with default colors

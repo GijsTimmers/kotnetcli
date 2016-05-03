@@ -30,31 +30,40 @@ class SuperPlaintextCommunicator(QuietCommunicator):
 
     def __init__(self):
         cursor.hide()
+        self.hasFailed = False
     
     ################## APPEARANCE HELPER METHODS ##################
-    ## override these to change appearance of subclass terminal-based communicators
 
-    def printerr(self, msg):
-        sys.stderr.write("ERROR::" + msg + "\n"),
-        sys.stderr.flush()
+    def print_info(self, str):
+        sys.stdout.write(str)
+        ## print no trailing newline to be able to update WAIT/OK line status
+        #if (self.hasFailed):
+        #    sys.stdout.write("\n")
+        sys.stdout.flush()
+    
+    def print_err(self, str):
+        self.hasFailed = True
+        self.fmt_fail()
+        self.finalize_session()
+        self.fmt_err(str)
 
-    def print_txt(self, msg):
-        sys.stdout.write(msg)
+    def fmt_er(self, str):
+        print "ERROR::" + str
 
-    def print_wait(self):
+    def fmt_wait(self):
         print "[WAIT]" + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
 
-    def print_success(self):
+    def fmt_success(self):
         print "[ OK ]"
 
-    def print_done(self):
+    def fmt_done(self):
         print "[DONE]"
 
-    def print_fail(self):
-        print "[ FAIL ]"
+    def fmt_fail(self):
+        print "[FAIL]"
 
-    def print_generic_bar(self, percentage, style, color, stop_color, stop_style):
+    def fmt_generic_bar(self, percentage, style, color, stop_color, stop_style):
         percentagefloat = float(percentage)
         percentagestring = str(percentage)
         lengteVanBalkfloat = 15.0
@@ -70,16 +79,11 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         color + percentagestring + "%" + \
         stop_color + "]" + stop_style
 
-    def print_bar(self, percentage):
-        self.print_generic_bar(percentage, "", "", "", "")
+    def fmt_bar(self, percentage):
+        self.fmt_generic_bar(percentage, "", "", "", "")
 
     def finalize_session(self, success):
         pass
-
-    def do_failure(self, err_str):
-        self.print_fail()
-        self.finalize_session(False)
-        self.printerr(err_str)
 
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
 
@@ -87,71 +91,41 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         cursor.show()
 
     def eventCheckNetworkConnection(self):
-        self.print_txt("Kotnetverbinding testen.... ")
-        self.print_wait()
+        super(SuperPlaintextCommunicator, self).eventCheckNetworkConnection()
+        self.fmt_wait()
     
     def eventGetData(self):
-        self.print_success()
-        self.print_txt("Gegevens ophalen........... ")
-        self.print_wait()
+        self.fmt_success()
+        super(SuperPlaintextCommunicator, self).eventGetData()
+        self.fmt_wait()
     
     def eventPostData(self):
-        self.print_success()
-        self.print_txt("Gegevens opsturen.......... ")
-        self.print_wait()
+        self.fmt_success()
+        super(SuperPlaintextCommunicator, self).eventPostData()
+        self.fmt_wait()
         
     def eventProcessData(self):
-        self.print_success()
-        self.print_txt("Gegevens verwerken......... ")
-        self.print_wait()
+        self.fmt_success()
+        super(SuperPlaintextCommunicator, self).eventProcessData()
+        self.fmt_wait()
 
-    def eventFailureOffline(self, srv):
-        err_str = "Connection attempt to netlogin service '{}' timed out. Are you on the kotnet network?".format(srv)
-        self.do_failure(err_str)
-
-    def eventFailureCredentials(self):
-        err_str = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
-        self.do_failure(err_str)
-    
-    def eventFailureInstitution(self, inst):
-        err_str = "Uw gekozen institutie '{}' klopt niet. Gebruik kotnetcli --institution om een andere institutie te kiezen.".format(inst)
-        self.do_failure(err_str)
-        
-    def eventFailureServerScriptError(self):
-        err_str = "De netlogin server rapporteert een 'internal script error'. Probeer opnieuw in te loggen..."
-        self.do_failure(err_str)
-    
-    def eventFailureUnknownRC(self, rccode, html):
-        err_str = "De netlogin server geeft een onbekende rc-code '{}' terug. Contacteer de kotnetcli developers om ondersteuning te krijgen.".format(rccode)
-        self.do_failure(err_str)
-        self.print_txt("====== START HTML DUMP ======\n")
-        self.print_txt(html)
-        self.print_txt("====== END HTML DUMP ======\n")
-    
-    def eventFailureInternalError(self, traceback):
-        err_str = "Internal kotnetcli exception: traceback below."
-        self.do_failure(err_str)
-        self.print_txt(traceback.format_exc())
+## end class SuperPlaintextCommunicator
 
 class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
     
-    ################## LOGIN COMMUNICATOR INTERFACE ##################
-
-    def finalize_session(self, success):
-        self.print_txt("Inloggen................... "),
-        if success:
-            self.print_done()
+    def finalize_session(self):
+        self.print_info("Inloggen.................. "),
+        if self.hasFailed:
+            self.fmt_fail()
         else:
-            self.print_fail()
+            self.fmt_done()
     
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
-        self.print_success()
-        self.print_txt("Download:  ")
-        self.print_bar(downloadpercentage)
-        self.print_txt("Upload:    ")
-        self.print_bar(uploadpercentage)
-        self.finalize_session(True)
+        self.fmt_success()
+        self.print_info("Download: ")
+        self.fmt_bar(downloadpercentage)
+        self.print_info("Upload:   ")
+        self.fmt_bar(uploadpercentage)
+        self.finalize_session()
 
-    def eventFailureMaxIP(self):
-        err_str = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
-        self.do_failure(err_str)
+## end class LoginPlaintextCommunicator

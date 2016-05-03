@@ -236,4 +236,4 @@ class DummyBrowser(KotnetBrowser):
             raise InternalScriptErrorException()
 
         else:
-            raise UnknownRCException(self.rccode, "\n<html>\n<p>the dummy html page</p>\n</html>\n")
+            raise UnknownRCException(self.rccode, "<html>\n<p>the dummy html page</p>\n</html>\n")

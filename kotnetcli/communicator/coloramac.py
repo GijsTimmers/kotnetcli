@@ -22,7 +22,7 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-from plaintextc import *
+from plaintextc import SuperPlaintextCommunicator, LoginPlaintextCommunicator
 
 from colorama import (
                       Fore,
@@ -59,30 +59,30 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         
     ################## OVERRIDE PLAINTEXT APPEARANCE METHODS ##################
 
-    def printerr(self, msg):
+    def fmt_err(self, str):
         sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
-        super(SuperColoramaCommunicator,self).printerr(msg)
+        sys.stderr.write("ERROR::" + str + "\n")
         sys.stderr.write(Style.RESET_ALL)
         sys.stderr.flush()
 
-    def print_wait(self):
+    def fmt_wait(self):
         print self.WAIT_STYLE + "[" + self.WAIT_COLOR + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
 
-    def print_success(self):
+    def fmt_success(self):
         print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + " OK " + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    def print_done(self):
+    def fmt_done(self):
         print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + "DONE" + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    def print_fail(self):
+    def fmt_fail(self):
         print self.FAIL_STYLE + "[" + self.FAIL_COLOR + "FAIL" + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    def print_bar(self, percentage):
+    def fmt_bar(self, percentage):
         if percentage <= 10:
             color = self.CRITICAL_PERC_COLOR
         elif 10 < percentage < 60:
@@ -90,7 +90,7 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         else:
             color = self.OK_PERC_COLOR
         
-        self.print_generic_bar(percentage, self.PERC_STYLE, color, Fore.RESET, Style.RESET_ALL)
+        self.fmt_generic_bar(percentage, self.PERC_STYLE, color, Fore.RESET, Style.RESET_ALL)
 
 class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
     pass
