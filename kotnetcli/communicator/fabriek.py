@@ -37,19 +37,21 @@
 
 import atexit
 
-## This method is always called, even on asynchronous exit (e.g. keyboard interrupt).
+## co.eventExit is always called, even on asynchronous exit (e.g. keyboard interrupt)
 ## --> allow the communicator to restore user interface state (e.g. show cursor)
-def notify_communicator_exit(co):
-    co.eventExit()
-
 def wrap(co):
-    atexit.register(notify_communicator_exit, co)
+    atexit.register(co.eventExit)
     return co
 
 class LoginCommunicatorFabriek():
+    
     def createQuietCommunicator(self):
         from .quietc import QuietCommunicator
         return wrap(QuietCommunicator())
+    
+    def createLoggerCommunicator(self):
+        from .loggerc import LoginLoggerCommunicator
+        return wrap(LoginLoggerCommunicator())
     
     def createPlaintextCommunicator(self):
         from .plaintextc import LoginPlaintextCommunicator
@@ -58,13 +60,20 @@ class LoginCommunicatorFabriek():
     def createColoramaCommunicator(self):
         from .coloramac import LoginColoramaCommunicator
         return wrap(LoginColoramaCommunicator())
+    
+    def createDialogCommunicator(self):
+        from .dialogc import LoginDialogCommunicator
+        return wrap(LoginDialogCommunicator())
+
+    def createSummaryCommunicator(self):
+        from .summaryc import LoginSummaryCommunicator
+        return wrap(LoginSummaryCommunicator())
+
+## end class LoginCommunicatorFabriek
 
 class LogoutCommunicatorFabriek():
-    def createQuietCommunicator(self):
-        raise Exception("logout not yet supported in beta")
     
-    def createPlaintextCommunicator(self):
-        raise Exception("logout not yet supported in beta")
+    def __init__(self):
+        raise NotImplementedError
     
-    def createColoramaCommunicator(self):
-        raise Exception("logout not yet supported in beta")
+## end class LogoutCommunicatorFabriek
