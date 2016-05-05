@@ -162,13 +162,13 @@ class KotnetCLI(object):
         ########## communicator flags ##########
         self.communicatorgroep.add_argument("-t", "--plaintext",\
         help="Logs you in using plaintext output",\
-        action="store_true")
+        action="store_const", dest="communicator", const="plaintext")
 
         ## nargs=3 to allow a user to supply optional colorname arguments
         ## default=False to get "store_true" semantics when option not specified
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using custom colors", \
-        action="store_true")
+        action="store_const", dest="communicator", const="colorama")
         
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
@@ -185,7 +185,15 @@ class KotnetCLI(object):
         ## 2. login-type flags
         (worker, fabriek) = self.parseActionFlags(argumenten)
         ## 3. communicator-related flags
-        co = self.parseCommunicatorFlags(fabriek, argumenten)
+        try:
+            co = self.parseCommunicatorFlags(fabriek, argumenten)
+        except ImportError, e:
+            logger.error(
+                "import error when trying to create '{com}' communicator: "     \
+                "{exc}\nHave you installed all the dependencies for the {com} " \
+                "communicator?\nSee also <{gh}/wiki/Dependencies-overview>"     \
+                .format(com=argumenten.communicator, exc=e, gh=GITHUB_URL))
+            sys.exit(EXIT_FAILURE)
         ## 4. start the process
         worker.go(co, creds)
 
@@ -244,17 +252,14 @@ class KotnetCLI(object):
             logger.info("ik wil zwijgen")
             return fabriek.createQuietCommunicator()
         
-        if argumenten.plaintext:
+        if argumenten.communicator == "plaintext":
             logger.info("ik wil terug naar de basis")
             return fabriek.createPlaintextCommunicator()
-        
-        elif argumenten.color:
-            logger.info("ik wil vrolijke custom kleuren")
-            return fabriek.createColoramaCommunicator()
         
         else:
             ## default option: argumenten.color with default colors
             logger.info("ik ga mee met de stroom")
+            argumenten.communicator = "colorama"
             return fabriek.createColoramaCommunicator()
         
 ## end class KotnetCLI
@@ -267,5 +272,5 @@ def main():
         k = KotnetCLI()
         k.parseArgumenten()
     except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received")
+        logger.warning("Keyboard interrupt received")
         sys.exit(EXIT_FAILURE)

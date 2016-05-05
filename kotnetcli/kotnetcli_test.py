@@ -88,5 +88,5 @@ def dummy_main():
         k = KotnetCLITester()
         k.parseArgumenten()
     except KeyboardInterrupt:
-        logger.info("Keyboard interrupt received")
+        logger.warning("Keyboard interrupt received")
         sys.exit(EXIT_FAILURE)
