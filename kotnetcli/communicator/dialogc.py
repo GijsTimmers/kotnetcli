@@ -27,12 +27,10 @@
 from __future__ import unicode_literals
 
 from dialog import Dialog
-from plaintextc import SuperPlaintextCommunicator, LoginPlaintextCommunicator
+from loggerc import LoggerCommunicator
+import quietc
 
-import logging
-logger = logging.getLogger(__name__)
-
-class SuperDialogCommunicator(SuperPlaintextCommunicator):
+class SuperDialogCommunicator(LoggerCommunicator):
 
     def __init__(self):
         self.d = Dialog()
@@ -56,22 +54,19 @@ class SuperDialogCommunicator(SuperPlaintextCommunicator):
     
     ################## APPEARANCE HELPER METHODS ##################
     
-    ## will be called by eventFailure methods inherited from PlaintextCommunicator
-    def do_failure(self, str):
-        self.info = str
-        ## fail the current item and cancel all following ones
-        self.elements[self.iter.next()]      = self.FAIL
-        for x in self.iter: self.elements[x] = self.CANCEL
-        self.update()
-    
-    def print_txt(self, str):
-        logger.info("\n" + str)
-    
     def update(self):
         self.d.mixedgauge(title    = self.title,
                           text     = self.info,
                           percent  = self.overal,
                           elements = self.getProgressElements())
+
+    ## will be called by eventFailure methods inherited from QuietCommunicator
+    def print_err(self, str):
+        self.info = str
+        ## fail the current item and cancel all following ones
+        self.elements[self.iter.next()]      = self.FAIL
+        for x in self.iter: self.elements[x] = self.CANCEL
+        self.update()
     
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
     
@@ -97,7 +92,9 @@ class SuperDialogCommunicator(SuperPlaintextCommunicator):
         self.overal = 80
         self.update()
 
-class LoginDialogCommunicator(SuperDialogCommunicator, LoginPlaintextCommunicator):
+## end class SuperDialogCommunicator
+
+class LoginDialogCommunicator(SuperDialogCommunicator):
 
     def __init__(self):
         super(LoginDialogCommunicator,self).__init__()
@@ -112,13 +109,13 @@ class LoginDialogCommunicator(SuperDialogCommunicator, LoginPlaintextCommunicato
     ################## APPEARANCE HELPER METHODS ##################
 
     def getProgressElements(self):
-        return [ ("Kotnetverbinding testen", self.elements["check"]),
-                 ("Gegevens ophalen",        self.elements["get"]),
-                 ("Gegevens opsturen",       self.elements["post"]),
-                 ("Gegevens verwerken",      self.elements["process"]),                                   
+        return [ (quietc.STD_MSG_TEST,      self.elements["check"]),
+                 (quietc.STD_MSG_GET,       self.elements["get"]),
+                 (quietc.STD_MSG_POST,      self.elements["post"]),
+                 (quietc.STD_MSG_PROCESS,   self.elements["process"]),                   
                  ("", ""),
-                 ("Download",                self.elements["download"]),
-                 ("Upload",                  self.elements["upload"])
+                 ("Download",               self.elements["download"]),
+                 ("Upload",                 self.elements["upload"])
                ]
 
     ################## LOGIN COMMUNICATOR INTERFACE ##################
@@ -130,3 +127,5 @@ class LoginDialogCommunicator(SuperDialogCommunicator, LoginPlaintextCommunicato
         self.elements["upload"]   = -uploadpercentage
         self.overal = 100
         self.update()
+
+## end class LoginDialogCommunicator
