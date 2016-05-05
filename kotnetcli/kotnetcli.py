@@ -182,6 +182,10 @@ class KotnetCLI(object):
         help="Reports progress through the logging module",\
         action="store_const", dest="communicator", const="logger")
         
+        self.communicatorgroep.add_argument("-s", "--summary",\
+        help="Hides all output except for a short summary",\
+        action="store_const", dest="communicator", const="summary")
+        
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
         action="store_const", dest="communicator", const="quiet")
@@ -277,6 +281,10 @@ class KotnetCLI(object):
         if argumenten.communicator == "logger":
             logger.info("ik wil loggen")
             return fabriek.createLoggerCommunicator()
+        
+        if argumenten.communicator == "summary":
+            logger.info("ik wil het mooie in de kleine dingen zien")
+            return fabriek.createSummaryCommunicator()
         
         else:
             ## default option: argumenten.color with default colors

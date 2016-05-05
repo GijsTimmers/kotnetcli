@@ -26,43 +26,51 @@ import cursor
 
 from quietc import QuietCommunicator
 
-class SuperPlaintextCommunicator(QuietCommunicator):
+class AbstractPlaintextCommunicator(QuietCommunicator):
 
-    def __init__(self):
+    def __init__(self, title):
+        super(AbstractPlaintextCommunicator, self).__init__()
         cursor.hide()
-        self.hasFailed = False
+        
+        self.OK_STR     = " OK "
+        self.WAIT_STR   = "WAIT"
+        self.FAIL_STR   = "FAIL"
+        self.ERR_STR    = "ERROR::{err_msg}"
+        self.DONE_STR   = "DONE"
+        self.FINAL_STR  = self.ljust_msg(title)
     
     ################## APPEARANCE HELPER METHODS ##################
 
     def print_info(self, str):
-        sys.stdout.write(str)
         ## print no trailing newline to be able to update WAIT/OK line status
-        #if (self.hasFailed):
-        #    sys.stdout.write("\n")
+        sys.stdout.write(str + " ")
         sys.stdout.flush()
     
     def print_err(self, str):
-        self.hasFailed = True
         self.fmt_fail()
-        self.finalize_session()
+        self.finalizeSession(fail=True)
         self.fmt_err(str)
 
-    def fmt_er(self, str):
-        print "ERROR::" + str
+    def print_err_info(self, str):
+        print(str)
+
+    def fmt_err(self, str):
+        print(self.ERR_STR.format(err_msg=str))
 
     def fmt_wait(self):
-        print "[WAIT]" + "\b\b\b\b\b\b\b",
+        sys.stdout.write("[" + self.WAIT_STR + "]" + "\b" * (2+len(self.WAIT_STR)))
         sys.stdout.flush()
 
     def fmt_success(self):
-        print "[ OK ]"
+        print("[" + self.OK_STR + "]")
 
     def fmt_done(self):
-        print "[DONE]"
+        print("[" + self.DONE_STR + "]")
 
     def fmt_fail(self):
-        print "[FAIL]"
+        print("[" + self.FAIL_STR + "]")
 
+    # TODO this should be cleaned up
     def fmt_generic_bar(self, percentage, style, color, stop_color, stop_style):
         percentagefloat = float(percentage)
         percentagestring = str(percentage)
@@ -82,50 +90,47 @@ class SuperPlaintextCommunicator(QuietCommunicator):
     def fmt_bar(self, percentage):
         self.fmt_generic_bar(percentage, "", "", "", "")
 
-    def finalize_session(self, success):
-        pass
-
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
 
     def eventExit(self):
         cursor.show()
 
     def eventCheckNetworkConnection(self):
-        super(SuperPlaintextCommunicator, self).eventCheckNetworkConnection()
+        super(AbstractPlaintextCommunicator, self).eventCheckNetworkConnection()
         self.fmt_wait()
     
     def eventGetData(self):
         self.fmt_success()
-        super(SuperPlaintextCommunicator, self).eventGetData()
+        super(AbstractPlaintextCommunicator, self).eventGetData()
         self.fmt_wait()
     
     def eventPostData(self):
         self.fmt_success()
-        super(SuperPlaintextCommunicator, self).eventPostData()
+        super(AbstractPlaintextCommunicator, self).eventPostData()
         self.fmt_wait()
         
     def eventProcessData(self):
         self.fmt_success()
-        super(SuperPlaintextCommunicator, self).eventProcessData()
+        super(AbstractPlaintextCommunicator, self).eventProcessData()
         self.fmt_wait()
 
-## end class SuperPlaintextCommunicator
+    def finalizeSession(self, fail=False):
+        self.print_info(self.FINAL_STR),
+        self.fmt_fail() if fail else self.fmt_done()
 
-class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
+## end class AbstractPlaintextCommunicator
+
+class LoginPlaintextCommunicator(AbstractPlaintextCommunicator):
     
-    def finalize_session(self):
-        self.print_info("Inloggen.................. "),
-        if self.hasFailed:
-            self.fmt_fail()
-        else:
-            self.fmt_done()
+    def __init__(self):
+        super(LoginPlaintextCommunicator, self).__init__("Inloggen")
     
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.fmt_success()
-        self.print_info("Download: ")
+        self.print_info("Download:")
         self.fmt_bar(downloadpercentage)
-        self.print_info("Upload:   ")
+        self.print_info("Upload:  ")
         self.fmt_bar(uploadpercentage)
-        self.finalize_session()
+        self.finalizeSession()
 
 ## end class LoginPlaintextCommunicator
