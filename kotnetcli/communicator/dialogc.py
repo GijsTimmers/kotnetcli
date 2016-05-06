@@ -27,12 +27,13 @@
 from __future__ import unicode_literals
 
 from dialog import Dialog
-from loggerc import LoggerCommunicator
+from loggerc import AbstractLoggerCommunicator, LoginLoggerCommunicator
 import quietc
 
-class SuperDialogCommunicator(LoggerCommunicator):
+class AbstractDialogCommunicator(AbstractLoggerCommunicator):
 
-    def __init__(self):
+    def __init__(self, title):
+        super(AbstractDialogCommunicator, self).__init__()
         self.d = Dialog()
         self.d.set_background_title("kotnetcli")
         
@@ -42,6 +43,7 @@ class SuperDialogCommunicator(LoggerCommunicator):
         self.CANCEL   = "Geskipt"
         self.NA       = "nvt"
 
+        self.title    = title
         self.info     = ""
         self.overal   = 0
         ## we use a non-ordered dictionary here; event order is encapsulated in the
@@ -92,14 +94,13 @@ class SuperDialogCommunicator(LoggerCommunicator):
         self.overal = 80
         self.update()
 
-## end class SuperDialogCommunicator
+## end class AbstractDialogCommunicator
 
-class LoginDialogCommunicator(SuperDialogCommunicator):
+class LoginDialogCommunicator(AbstractDialogCommunicator, LoginLoggerCommunicator):
 
     def __init__(self):
-        super(LoginDialogCommunicator,self).__init__()
+        super(LoginDialogCommunicator,self).__init__("kotnetcli network login")
 
-        self.title = "kotnetcli network login"
         self.elements["upload"]   = self.NA
         self.elements["download"] = self.NA
         
@@ -109,13 +110,13 @@ class LoginDialogCommunicator(SuperDialogCommunicator):
     ################## APPEARANCE HELPER METHODS ##################
 
     def getProgressElements(self):
-        return [ (quietc.STD_MSG_TEST,      self.elements["check"]),
-                 (quietc.STD_MSG_GET,       self.elements["get"]),
-                 (quietc.STD_MSG_POST,      self.elements["post"]),
-                 (quietc.STD_MSG_PROCESS,   self.elements["process"]),                   
+        return [ (self.msg_test,    self.elements["check"]),
+                 (self.msg_get,     self.elements["get"]),
+                 (self.msg_post,    self.elements["post"]),
+                 (self.msg_process, self.elements["process"]),
                  ("", ""),
-                 ("Download",               self.elements["download"]),
-                 ("Upload",                 self.elements["upload"])
+                 ("Download",       self.elements["download"]),
+                 ("Upload",         self.elements["upload"])
                ]
 
     ################## LOGIN COMMUNICATOR INTERFACE ##################

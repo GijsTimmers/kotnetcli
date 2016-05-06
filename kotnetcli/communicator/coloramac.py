@@ -22,7 +22,7 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-from plaintextc import SuperPlaintextCommunicator, LoginPlaintextCommunicator
+from plaintextc import AbstractPlaintextCommunicator, LoginPlaintextCommunicator
 
 from colorama import (
                       Fore,
@@ -30,14 +30,14 @@ from colorama import (
                       init as colorama_init
                      )
 
-class SuperColoramaCommunicator(SuperPlaintextCommunicator):
+class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
 
     ################## INITIALIZATION ##################
 
     def __init__(self):
         self.init_colors(map(lambda x:x.upper(),[ "green", "yellow", "red", "bright" ]))
         colorama_init()
-        super(SuperColoramaCommunicator,self).__init__()
+        super(AbstractColoramaCommunicator,self).__init__()
     
     def init_colors(self, colorNameList):
         style = getattr(Style, colorNameList.pop())
@@ -61,26 +61,26 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
 
     def fmt_err(self, str):
         sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
-        sys.stderr.write("ERROR::" + str + "\n")
+        super(AbstractColoramaCommunicator, self).fmt_err(str)
         sys.stderr.write(Style.RESET_ALL)
         sys.stderr.flush()
 
     def fmt_wait(self):
-        print self.WAIT_STYLE + "[" + self.WAIT_COLOR + \
-        "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
+        sys.stdout.write(self.WAIT_STYLE + "[" + self.WAIT_COLOR + self.WAIT_STR + \
+            Fore.RESET + "]" + Style.RESET_ALL + "\b" * (2+len(self.WAIT_STR)))
         sys.stdout.flush()
 
     def fmt_success(self):
-        print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + " OK " + \
-        Fore.RESET + "]" + Style.RESET_ALL
+        print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + self.OK_STR + \
+            Fore.RESET + "]" + Style.RESET_ALL
 
     def fmt_done(self):
         print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + "DONE" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+            Fore.RESET + "]" + Style.RESET_ALL
 
     def fmt_fail(self):
         print self.FAIL_STYLE + "[" + self.FAIL_COLOR + "FAIL" + \
-        Fore.RESET + "]" + Style.RESET_ALL
+            Fore.RESET + "]" + Style.RESET_ALL
 
     def fmt_bar(self, percentage):
         if percentage <= 10:
@@ -92,5 +92,5 @@ class SuperColoramaCommunicator(SuperPlaintextCommunicator):
         
         self.fmt_generic_bar(percentage, self.PERC_STYLE, color, Fore.RESET, Style.RESET_ALL)
 
-class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
+class LoginColoramaCommunicator(AbstractColoramaCommunicator, LoginPlaintextCommunicator):
     pass

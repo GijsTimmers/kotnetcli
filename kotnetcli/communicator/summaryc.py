@@ -21,24 +21,16 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from quietc import QuietCommunicator
+from loggerc import AbstractLoggerCommunicator, LoginLoggerCommunicator
 
-import logging
-logger = logging.getLogger(__name__)
-
-class AbstractLoggerCommunicator(QuietCommunicator):
-
-    def __init__(self):
-        super(AbstractLoggerCommunicator, self).__init__(msg_width=0)
-
-    def print_info(self, str):
-        logger.info(str)
+class AbstractSummaryCommunicator(AbstractLoggerCommunicator):
     
     def print_err(self, str):
-        logger.error(str)
+        print("ERROR::" + str)
+    
+class LoginSummaryCommunicator(AbstractSummaryCommunicator, LoginLoggerCommunicator):
 
-    def print_err_info(self, str):
-        logger.info(str)
-        
-class LoginLoggerCommunicator(AbstractLoggerCommunicator):
-    pass
+    def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
+        print "Login geslaagd."
+        print "Download: " + str(downloadpercentage) + "%" + ",",
+        print "Upload: " + str(uploadpercentage) + "%"

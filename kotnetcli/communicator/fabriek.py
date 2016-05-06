@@ -65,6 +65,10 @@ class LoginCommunicatorFabriek():
         from .dialogc import LoginDialogCommunicator
         return wrap(LoginDialogCommunicator())
 
+    def createSummaryCommunicator(self):
+        from .summaryc import LoginSummaryCommunicator
+        return wrap(LoginSummaryCommunicator())
+
 ## end class LoginCommunicatorFabriek
 
 class LogoutCommunicatorFabriek():
