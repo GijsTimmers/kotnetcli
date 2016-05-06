@@ -27,9 +27,13 @@ import logging
 from PyQt4 import QtGui, QtCore
 from Queue import Queue
 
-from .communicator.quietc import QuietCommunicator
+from .communicator.loggerc import AbstractLoggerCommunicator
 from .credentials import KeyRingCredentials
-from .worker import DummyLoginWorker
+from .worker import (
+    DummyLoginWorker,
+    EXIT_FAILURE,
+    EXIT_SUCCESS
+)
 from .tools import log
 
 ## we use a queue to synchronize the background netlogin thread, requesting the
@@ -86,14 +90,22 @@ class KotnetGUI(QtGui.QWidget):
         self.setWindowTitle(title)    
         self.show()
 
+    def finalize(self):
+        self.okButton.setEnabled(True)
+        self.cancelButton.setEnabled(False)
+
     def updateText(self, msg):
         self.text.append(msg)
 
+    def updateError(self, err):
+        self.text.setTextColor(QtCore.Qt.red)
+        self.text.append(err)
+        self.finalize()
+
     def updatePercentages(self, download, upload):
-        self.okButton.setEnabled(True)
-        self.cancelButton.setEnabled(False)
         self.downloadbar.setValue(download)
         self.uploadbar.setValue(upload)
+        self.finalize()
 
     def queryCredentials(self):
         logger.debug("spawning GUICredentialsDialog")
@@ -163,12 +175,10 @@ class GUIOptionDialog(QtGui.QDialog):
         vbox.addWidget(self.rbIn)
         self.rbOut = QtGui.QRadioButton("KotNet Logout")
         vbox.addWidget(self.rbOut)
-        #self.rbForce = QtGui.QRadioButton("KotNet Force Login")
-        #vbox.addWidget(self.rbForce)
         grid.addLayout(vbox, 0, 0)
         
         lblLogo = QtGui.QLabel()
-        logo = QtGui.QPixmap("kotnetcli/tools/logo.jpg")
+        logo = QtGui.QPixmap("kotnetcli/tools/logo_small.jpg")
         scaledLogo = logo.scaled(QtCore.QSize(120,120), QtCore.Qt.KeepAspectRatio)
         lblLogo.setPixmap(scaledLogo)
         grid.addWidget(lblLogo, 0, 1)
@@ -185,17 +195,25 @@ class GUIOptionDialog(QtGui.QDialog):
         self.setWindowTitle("Welcome to kotnetcli")    
         self.show()
     
+    def getChoice(self):
+        return "login" if self.rbIn.isChecked() else "logout"
+    
+    
 ## end class GUIOptionDialog
 
 ## Custom communicator translating netlogin progress to Qt signals for the GUI thread
-## TODO no hardcoding of default strings: standard strings in quietco (?)
-class LoginGUICommunicator(QuietCommunicator):
+class LoginGUICommunicator(AbstractLoggerCommunicator):
 
-    def __init__(self, textSignal, percentagesSignal, credsSignal):
+    GUI_TEXT_LJUST_WIDTH = 26
+
+    def __init__(self, textSignal, errorSignal, percentagesSignal, credsSignal):
+        super(LoginGUICommunicator, self).__init__(self.GUI_TEXT_LJUST_WIDTH)
         self.updateGUIText = textSignal
+        self.updateGUIError = errorSignal
         self.updateGUIPercentages = percentagesSignal
         self.credsSignal = credsSignal
 
+    #TODO worker should request creds from communicator if none in creds object
     def eventAskCredentials(self):
         self.updateGUIText.emit("Credentials opvragen.... ")
         self.credsSignal.emit()
@@ -204,24 +222,14 @@ class LoginGUICommunicator(QuietCommunicator):
         logger.debug("got credentials for user '{}'".format(u))
         return (u,p)
 
-    def eventCheckNetworkConnection(self):
-        self.updateGUIText.emit("Kotnetverbinding testen.... ")
+    def print_info(self, str):
+        self.updateGUIText.emit(str)
     
-    def eventGetData(self):
-        self.updateGUIText.emit("Gegevens ophalen........... ")
-    
-    def eventPostData(self):
-        self.updateGUIText.emit("Gegevens opsturen.......... ")
-    
-    def eventProcessData(self):
-        self.updateGUIText.emit("Gegevens verwerken......... ")
+    def print_err(self, str):
+        self.updateGUIError.emit("ERROR::" + str)
 
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.updateGUIPercentages.emit(downloadpercentage, uploadpercentage)
-
-    def eventFailureOffline(self, srv):
-        err_str = "\n[ERROR] Connection attempt to netlogin service '{}' timed out. Are you on the kotnet network?".format(srv)
-        self.updateGUIText.emit(err_str)
 
 ## end class LoginGUICommunicator
 
@@ -231,16 +239,17 @@ class KotnetcliRunner(QtCore.QObject):
     ## Qt signals used to link communicator with GUI thread
     ## note: must be a class attribute of a QObject class
     updateGUIText = QtCore.pyqtSignal(str)
+    updateGUIError = QtCore.pyqtSignal(str)
     updateGUIPercentages = QtCore.pyqtSignal(int,int)
     GUIQueryCredentials = QtCore.pyqtSignal()
 
     def do_netlogin(self):
-        logger.debug("creating kotnetcli objects")
-        co = LoginGUICommunicator(self.updateGUIText, self.updateGUIPercentages, self.GUIQueryCredentials)
-        #TODO worker should request creds from communicator if none in creds object
+        logger.debug("creating netlogin kotnetcli objects")
+        co = LoginGUICommunicator(self.updateGUIText, self.updateGUIError,
+                                 self.updateGUIPercentages, self.GUIQueryCredentials)
         creds = KeyRingCredentials()
         worker = DummyLoginWorker("kuleuven", 1, True, False, 100)
-        #co.eventAskCredentials()
+        co.eventAskCredentials()
         worker.go(co, creds)
 
 ## end class KotnetcliRunner
@@ -254,13 +263,16 @@ def main():
     logger.debug("spawning GUIOptionDialog")
     d = GUIOptionDialog()
     d.exec_()
-    #TODO query the dialog to decide login/logout objects:
-    # KotnetLoginGUI / KotnetcliLoginRunner.__init__(gui) connects signals (?)
-
+    choice = d.getChoice()
+    if (choice != "login"):
+        logger.error("'{}' currently not supported in kotnetgui beta".format(choice))
+        sys.exit(EXIT_FAILURE)    
+    
     logger.debug("creating GUI objects")
     gui = KotnetGUI("kotnetcli network login")
     runner = KotnetcliRunner()
     runner.updateGUIText.connect(gui.updateText)
+    runner.updateGUIError.connect(gui.updateError)
     runner.updateGUIPercentages.connect(gui.updatePercentages)
     runner.GUIQueryCredentials.connect(gui.queryCredentials)
 
@@ -271,4 +283,7 @@ def main():
     kotnetcliThread.start()
     
     logger.info("starting GUI main thread")
-    sys.exit(app.exec_())
+    app.exec_()
+    logger.info("GUI main thread returned; exiting")
+    sys.exit(EXIT_SUCCESS)
+    
