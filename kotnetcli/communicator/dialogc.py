@@ -27,10 +27,10 @@
 from __future__ import unicode_literals
 
 from dialog import Dialog
-from loggerc import AbstractLoggerCommunicator, LoginLoggerCommunicator
+from loggerc import LoggerCommunicator
 import quietc
 
-class AbstractDialogCommunicator(AbstractLoggerCommunicator):
+class AbstractDialogCommunicator(LoggerCommunicator):
 
     def __init__(self, title):
         super(AbstractDialogCommunicator, self).__init__()
@@ -96,7 +96,7 @@ class AbstractDialogCommunicator(AbstractLoggerCommunicator):
 
 ## end class AbstractDialogCommunicator
 
-class LoginDialogCommunicator(AbstractDialogCommunicator, LoginLoggerCommunicator):
+class LoginDialogCommunicator(AbstractDialogCommunicator):
 
     def __init__(self):
         super(LoginDialogCommunicator,self).__init__("kotnetcli network login")

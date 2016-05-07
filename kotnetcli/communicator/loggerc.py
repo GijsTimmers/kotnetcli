@@ -26,10 +26,10 @@ from quietc import QuietCommunicator
 import logging
 logger = logging.getLogger(__name__)
 
-class AbstractLoggerCommunicator(QuietCommunicator):
+class LoggerCommunicator(QuietCommunicator):
 
     def __init__(self):
-        super(AbstractLoggerCommunicator, self).__init__(msg_width=0)
+        super(LoggerCommunicator, self).__init__(msg_width=0)
 
     def print_info(self, str):
         logger.info(str)
@@ -39,6 +39,3 @@ class AbstractLoggerCommunicator(QuietCommunicator):
 
     def print_err_info(self, str):
         logger.info(str)
-        
-class LoginLoggerCommunicator(AbstractLoggerCommunicator):
-    pass
