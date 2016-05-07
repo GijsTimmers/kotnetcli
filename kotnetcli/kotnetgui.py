@@ -27,7 +27,7 @@ import logging
 from PyQt4 import QtGui, QtCore
 from Queue import Queue
 
-from .communicator.loggerc import AbstractLoggerCommunicator
+from .communicator.summaryc import AbstractSummaryCommunicator
 from .credentials import KeyRingCredentials
 from .worker import (
     DummyLoginWorker,
@@ -86,7 +86,7 @@ class KotnetGUI(QtGui.QWidget):
         vbox.addLayout(hbox)
         self.setLayout(vbox)    
         
-        self.resize(350, 250)
+        self.resize(375, 250)
         self.setWindowTitle(title)    
         self.show()
 
@@ -202,12 +202,13 @@ class GUIOptionDialog(QtGui.QDialog):
 ## end class GUIOptionDialog
 
 ## Custom communicator translating netlogin progress to Qt signals for the GUI thread
-class LoginGUICommunicator(AbstractLoggerCommunicator):
+class LoginGUICommunicator(AbstractSummaryCommunicator):
 
     GUI_TEXT_LJUST_WIDTH = 26
 
     def __init__(self, textSignal, errorSignal, percentagesSignal, credsSignal):
-        super(LoginGUICommunicator, self).__init__(self.GUI_TEXT_LJUST_WIDTH)
+        super(LoginGUICommunicator, self).__init__()
+        self.msg_width = self.GUI_TEXT_LJUST_WIDTH
         self.updateGUIText = textSignal
         self.updateGUIError = errorSignal
         self.updateGUIPercentages = percentagesSignal
@@ -249,7 +250,7 @@ class KotnetcliRunner(QtCore.QObject):
                                  self.updateGUIPercentages, self.GUIQueryCredentials)
         creds = KeyRingCredentials()
         worker = DummyLoginWorker("kuleuven", 1, True, False, 100)
-        co.eventAskCredentials()
+        #co.eventAskCredentials()
         worker.go(co, creds)
 
 ## end class KotnetcliRunner

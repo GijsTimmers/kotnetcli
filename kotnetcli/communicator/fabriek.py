@@ -50,8 +50,8 @@ class LoginCommunicatorFabriek():
         return wrap(QuietCommunicator())
     
     def createLoggerCommunicator(self):
-        from .loggerc import LoginLoggerCommunicator
-        return wrap(LoginLoggerCommunicator())
+        from .loggerc import LoggerCommunicator
+        return wrap(LoggerCommunicator())
     
     def createPlaintextCommunicator(self):
         from .plaintextc import LoginPlaintextCommunicator

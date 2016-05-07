@@ -45,10 +45,10 @@ class QuietCommunicator(object):
     def __init__(self, msg_width=STD_MSG_WIDTH):
         self.msg_width = msg_width
         
-        self.msg_test       = self.ljust_msg(STD_MSG_TEST)
-        self.msg_get        = self.ljust_msg(STD_MSG_GET)
-        self.msg_post       = self.ljust_msg(STD_MSG_POST)
-        self.msg_process    = self.ljust_msg(STD_MSG_PROCESS)
+        self.msg_test       = STD_MSG_TEST
+        self.msg_get        = STD_MSG_GET
+        self.msg_post       = STD_MSG_POST
+        self.msg_process    = STD_MSG_PROCESS
         self.msg_download   = STD_MSG_DOWNLOAD
         self.msg_upload     = STD_MSG_UPLOAD
         
@@ -83,16 +83,16 @@ class QuietCommunicator(object):
         pass
 
     def eventCheckNetworkConnection(self):
-        self.print_info(self.msg_test)
+        self.print_info(self.ljust_msg(self.msg_test))
     
     def eventGetData(self):
-        self.print_info(self.msg_get)
+        self.print_info(self.ljust_msg(self.msg_get))
     
     def eventPostData(self):
-        self.print_info(self.msg_post)
+        self.print_info(self.ljust_msg(self.msg_post))
     
     def eventProcessData(self):
-        self.print_info(self.msg_process)
+        self.print_info(self.ljust_msg(self.msg_process))
 
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.print_info(self.msg_download.format(down=downloadpercentage))
