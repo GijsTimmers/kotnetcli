@@ -23,12 +23,14 @@
 ##
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 
+## TODO this file is pretty much depricated with dev-srv branch
+
 import sys
 import argparse
 from kotnetcli import KotnetCLI
-from worker import DummyLoginWorker, EXIT_FAILURE
-from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek
-from credentials import DummyCredentials
+from worker import DummyLoginWorker, ForgetCredsWorker, EXIT_FAILURE
+from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek, ForgetCommunicatorFabriek
+from credentials import DummyCredentials, GuestCredentials
 from testsuite import LoginTestsuiteWorker
 
 import browser # for RC_CODES
@@ -75,6 +77,10 @@ class KotnetCLITester(KotnetCLI):
             logger.info("ik wil testen")
             return (LoginTestsuiteWorker(argumenten.institution, argumenten.timeout), \
                 LoginCommunicatorFabriek())
+        
+        if argumenten.forget:
+            logger.info("ik wil vergeten")
+            return(ForgetCredsWorker(), ForgetCommunicatorFabriek())
             
         else:
             ## default option: argumenten.login
@@ -85,8 +91,12 @@ class KotnetCLITester(KotnetCLI):
                 LoginCommunicatorFabriek())
         
     def parseCredentialFlags(self, argumenten):
-        logger.info("ik wil credentials ophalen voor spek en bonen")
-        return self.parseCredsFlags(argumenten, DummyCredentials())
+        if argumenten.guest_mode:
+            logger.info("ik wil me anders voordoen dan ik ben")
+            return GuestCredentials()
+        else:
+            logger.info("ik wil credentials ophalen voor spek en bonen")
+            return DummyCredentials()
 
 def dummy_main():
     try:

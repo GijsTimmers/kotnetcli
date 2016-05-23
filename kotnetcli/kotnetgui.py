@@ -28,7 +28,7 @@ from PyQt4 import QtGui, QtCore
 from Queue import Queue
 
 from .communicator.summaryc import AbstractSummaryCommunicator
-from .credentials import KeyRingCredentials
+from .credentials import KeyRingCredentials, GuestCredentials
 from .worker import (
     DummyLoginWorker,
     EXIT_FAILURE,
@@ -168,13 +168,16 @@ class GUIOptionDialog(QtGui.QDialog):
         grid = QtGui.QGridLayout()
         
         vbox = QtGui.QVBoxLayout()
+        vbox.addStretch(1)
         lblWhat = QtGui.QLabel("<b>What do you want to do?  </b>")
         vbox.addWidget(lblWhat)
-        self.rbIn = QtGui.QRadioButton("KotNet Login")
-        self.rbIn.setChecked(True)
-        vbox.addWidget(self.rbIn)
-        self.rbOut = QtGui.QRadioButton("KotNet Logout")
-        vbox.addWidget(self.rbOut)
+        vbox.addStretch(1)
+        self.rbKeyring = QtGui.QRadioButton("Keyring mode")
+        self.rbKeyring.setChecked(True)
+        vbox.addWidget(self.rbKeyring)
+        self.rbGuest = QtGui.QRadioButton("Guest mode")
+        vbox.addWidget(self.rbGuest)
+        vbox.addStretch(1)
         grid.addLayout(vbox, 0, 0)
         
         lblLogo = QtGui.QLabel()
@@ -185,9 +188,10 @@ class GUIOptionDialog(QtGui.QDialog):
 
         hbox = QtGui.QHBoxLayout()
         hbox.addStretch(1)
-        okButton = QtGui.QPushButton("OK")
+        okButton = QtGui.QPushButton("Login")
         okButton.clicked.connect(self.accept)
         hbox.addWidget(okButton)
+        hbox.addWidget(QtGui.QPushButton("Logout"))
         grid.addLayout(hbox, 1, 0)
         
         self.setLayout(grid)
@@ -196,7 +200,7 @@ class GUIOptionDialog(QtGui.QDialog):
         self.show()
     
     def getChoice(self):
-        return "login" if self.rbIn.isChecked() else "logout"
+        return "guest" if self.rbGuest.isChecked() else "keyring"
     
     
 ## end class GUIOptionDialog
@@ -214,9 +218,8 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
         self.updateGUIPercentages = percentagesSignal
         self.credsSignal = credsSignal
 
-    #TODO worker should request creds from communicator if none in creds object
-    def eventAskCredentials(self):
-        self.updateGUIText.emit("Credentials opvragen.... ")
+    def promptCredentials(self):
+        self.updateGUIText.emit(self.ljust_msg("Credentials opvragen"))
         self.credsSignal.emit()
         logger.debug("block waiting on credentialsDialog queue")
         (u,p) = queue.get()
@@ -244,13 +247,13 @@ class KotnetcliRunner(QtCore.QObject):
     updateGUIPercentages = QtCore.pyqtSignal(int,int)
     GUIQueryCredentials = QtCore.pyqtSignal()
 
-    def do_netlogin(self):
+    def do_netlogin(self, choice):
         logger.debug("creating netlogin kotnetcli objects")
         co = LoginGUICommunicator(self.updateGUIText, self.updateGUIError,
                                  self.updateGUIPercentages, self.GUIQueryCredentials)
-        creds = KeyRingCredentials()
+        creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
+        
         worker = DummyLoginWorker("kuleuven", 1, True, False, 100)
-        #co.eventAskCredentials()
         worker.go(co, creds)
 
 ## end class KotnetcliRunner
@@ -265,10 +268,8 @@ def main():
     d = GUIOptionDialog()
     d.exec_()
     choice = d.getChoice()
-    if (choice != "login"):
-        logger.error("'{}' currently not supported in kotnetgui beta".format(choice))
-        sys.exit(EXIT_FAILURE)    
-    
+    logger.debug("choice is '%s'" % choice)
+        
     logger.debug("creating GUI objects")
     gui = KotnetGUI("kotnetcli network login")
     runner = KotnetcliRunner()
@@ -278,7 +279,7 @@ def main():
     runner.GUIQueryCredentials.connect(gui.queryCredentials)
 
     logger.info("starting netlogin thread")
-    kotnetcliThread = threading.Thread(target=runner.do_netlogin)
+    kotnetcliThread = threading.Thread(target=runner.do_netlogin, args=(choice,))
     ## any running daemon threads are killed automatically on program exit
     kotnetcliThread.daemon = True
     kotnetcliThread.start()

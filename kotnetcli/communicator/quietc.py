@@ -21,7 +21,12 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
+import getpass
+
 STD_MSG_WIDTH       = 26
+
+STD_USERNAME_PROMPT = "Voer uw s-nummer/r-nummer in"
+STD_PWD_PROMPT      = "Voer uw wachtwoord in"
 
 STD_MSG_TEST        = "Kotnetverbinding testen"
 STD_MSG_GET         = "Gegevens ophalen"
@@ -29,6 +34,7 @@ STD_MSG_POST        = "Gegevens opsturen"
 STD_MSG_PROCESS     = "Gegevens verwerken"
 STD_MSG_DOWNLOAD    = "Download: {down}%"
 STD_MSG_UPLOAD      = "Upload:   {upl}%"
+STD_MSG_FORGET      = "Credentials verwijderen"
 
 STD_ERR_OFFLINE     = "Connection attempt to netlogin service '{srv}' timed out. Are you on the kotnet network?"
 STD_ERR_CREDS       = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
@@ -37,13 +43,17 @@ STD_ERR_MAX_IP      = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetc
 STD_ERR_RC          = "De netlogin server geeft een onbekende rc-code '{rc}' terug. Contacteer de kotnetcli developers om ondersteuning te krijgen."
 STD_ERR_INFO_RC     = "====== START HTML DUMP ======\n{html}====== END HTML DUMP ======"
 STD_ERR_SRV         = "De netlogin server rapporteert een 'internal script error'. Probeer opnieuw in te loggen..."
+STD_ERR_FORGET      = "You have already removed your kotnetcli credentials."
 STD_ERR_PANIC       = "Internal kotnetcli exception. Contacteer de kotnetcli developers om ondersteuning te krijgen."
 STD_ERR_INFO_PANIC  = "====== TRACEBACK BELOW ======\n{trace_str}====== END OF TRACEBACK ======"
 
 class QuietCommunicator(object):
     
     def __init__(self, msg_width=STD_MSG_WIDTH):
-        self.msg_width = msg_width
+        self.msg_width      = msg_width
+        
+        self.user_prompt    = STD_USERNAME_PROMPT
+        self.pwd_prompt     = STD_PWD_PROMPT
         
         self.msg_test       = STD_MSG_TEST
         self.msg_get        = STD_MSG_GET
@@ -51,6 +61,7 @@ class QuietCommunicator(object):
         self.msg_process    = STD_MSG_PROCESS
         self.msg_download   = STD_MSG_DOWNLOAD
         self.msg_upload     = STD_MSG_UPLOAD
+        self.msg_forget     = STD_MSG_FORGET
         
         self.err_offline    = STD_ERR_OFFLINE
         self.err_creds      = STD_ERR_CREDS
@@ -59,11 +70,15 @@ class QuietCommunicator(object):
         self.err_rc         = STD_ERR_RC
         self.err_info_rc    = STD_ERR_INFO_RC
         self.err_srv        = STD_ERR_SRV
+        self.err_forget     = STD_ERR_FORGET
         self.err_panic      = STD_ERR_PANIC
         self.err_info_panic = STD_ERR_INFO_PANIC
 
     ################## APPEARANCE HELPER METHODS ##################
     ## these can be overridden to easily change appearance of subclass communicators
+    
+    def get_prompt(self, str):
+        return str + " > "
     
     def print_info(self, str):
         pass
@@ -78,6 +93,20 @@ class QuietCommunicator(object):
         return str.ljust(self.msg_width, '.')
     
     ################## COMMUNICATOR INTERFACE ##################
+    
+    def promptCredentials(self):
+        gebruikersnaam = raw_input(self.get_prompt(self.user_prompt))
+        wachtwoord = getpass.getpass(prompt=self.get_prompt(self.pwd_prompt))
+        return (gebruikersnaam, wachtwoord)
+    
+    def eventForgetCreds(self):
+        self.print_info(self.ljust_msg(self.msg_forget))
+    
+    def eventForgetCredsSuccess(self):
+        pass
+
+    def eventFailureForget(self):
+        self.print_err(self.err_forget)    
     
     def eventExit(self):
         pass

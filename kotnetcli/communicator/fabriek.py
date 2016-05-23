@@ -71,6 +71,26 @@ class LoginCommunicatorFabriek():
 
 ## end class LoginCommunicatorFabriek
 
+class ForgetCommunicatorFabriek(LoginCommunicatorFabriek):
+    
+    def createPlaintextCommunicator(self):
+        from .plaintextc import ForgetPlaintextCommunicator
+        return wrap(ForgetPlaintextCommunicator())
+    
+    def createColoramaCommunicator(self):
+        from .coloramac import ForgetColoramaCommunicator
+        return wrap(ForgetColoramaCommunicator())
+
+    def createDialogCommunicator(self):
+        from .dialogc import ForgetDialogCommunicator
+        return wrap(ForgetDialogCommunicator())
+
+    def createSummaryCommunicator(self):
+        from .summaryc import ForgetSummaryCommunicator
+        return wrap(ForgetSummaryCommunicator())
+
+## end class ForgetCommunicatorFabriek
+
 class LogoutCommunicatorFabriek():
     
     def __init__(self):

@@ -30,12 +30,36 @@ from dialog import Dialog
 from loggerc import LoggerCommunicator
 import quietc
 
+DIALOG_MSG_LOGIN_SUCCESS    = "Je bent successvol ingelogd."
+DIALOG_MSG_FORGET_SUCCESS   = "You have succesfully removed your kotnetcli credentials."
+
 class AbstractDialogCommunicator(LoggerCommunicator):
 
-    def __init__(self, title):
+    def __init__(self):
         super(AbstractDialogCommunicator, self).__init__()
         self.d = Dialog()
         self.d.set_background_title("kotnetcli")
+
+    def eventExit(self):
+        ## print newline to clean prompt under dialog
+        print("")
+
+## end class AbstractDialogCommunicator
+
+class ForgetDialogCommunicator(AbstractDialogCommunicator):
+    
+    def eventForgetCredsSuccess(self):
+        self.d.msgbox(DIALOG_MSG_FORGET_SUCCESS)
+   
+    def eventFailureForget(self):
+        self.d.msgbox(self.err_forget)
+   
+## end class ForgetDialogCommunicator
+
+class SuperNetDialogCommunicator(AbstractDialogCommunicator):
+
+    def __init__(self, title):
+        super(SuperNetDialogCommunicator, self).__init__()
         
         self.WAIT     = "Wachten"
         self.DONE     = "In Orde"
@@ -72,9 +96,14 @@ class AbstractDialogCommunicator(LoggerCommunicator):
     
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
     
-    def eventExit(self):
-        ## print newline to clean prompt under dialog
-        print("")
+    def promptCredentials(self):
+        (code, username) = self.d.inputbox(self.user_prompt)
+        if code == Dialog.OK:
+            ## echo an asterisk for each character entered by the user
+            (code, pwd) = self.d.passwordbox(self.pwd_prompt, insecure=True)
+        if code != Dialog.OK:
+            raise Exception
+        return (username, pwd)
     
     def eventCheckNetworkConnection(self):
         self.update()
@@ -94,9 +123,9 @@ class AbstractDialogCommunicator(LoggerCommunicator):
         self.overal = 80
         self.update()
 
-## end class AbstractDialogCommunicator
+## end class SuperNetworkCommunicator
 
-class LoginDialogCommunicator(AbstractDialogCommunicator):
+class LoginDialogCommunicator(SuperNetDialogCommunicator):
 
     def __init__(self):
         super(LoginDialogCommunicator,self).__init__("kotnetcli network login")
@@ -122,7 +151,7 @@ class LoginDialogCommunicator(AbstractDialogCommunicator):
     ################## LOGIN COMMUNICATOR INTERFACE ##################
 
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
-        self.info = "Je bent successvol ingelogd."
+        self.info = DIALOG_MSG_LOGIN_SUCCESS
         self.elements["process"]  = self.DONE
         self.elements["download"] = -downloadpercentage
         self.elements["upload"]   = -uploadpercentage
