@@ -50,8 +50,8 @@ class LoginCommunicatorFabriek():
         return wrap(QuietCommunicator())
     
     def createLoggerCommunicator(self):
-        from .loggerc import LoginLoggerCommunicator
-        return wrap(LoginLoggerCommunicator())
+        from .loggerc import LoggerCommunicator
+        return wrap(LoggerCommunicator())
     
     def createPlaintextCommunicator(self):
         from .plaintextc import LoginPlaintextCommunicator
@@ -70,6 +70,26 @@ class LoginCommunicatorFabriek():
         return wrap(LoginSummaryCommunicator())
 
 ## end class LoginCommunicatorFabriek
+
+class ForgetCommunicatorFabriek(LoginCommunicatorFabriek):
+    
+    def createPlaintextCommunicator(self):
+        from .plaintextc import ForgetPlaintextCommunicator
+        return wrap(ForgetPlaintextCommunicator())
+    
+    def createColoramaCommunicator(self):
+        from .coloramac import ForgetColoramaCommunicator
+        return wrap(ForgetColoramaCommunicator())
+
+    def createDialogCommunicator(self):
+        from .dialogc import ForgetDialogCommunicator
+        return wrap(ForgetDialogCommunicator())
+
+    def createSummaryCommunicator(self):
+        from .summaryc import ForgetSummaryCommunicator
+        return wrap(ForgetSummaryCommunicator())
+
+## end class ForgetCommunicatorFabriek
 
 class LogoutCommunicatorFabriek():
     

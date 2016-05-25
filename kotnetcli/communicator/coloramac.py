@@ -22,7 +22,7 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-from plaintextc import AbstractPlaintextCommunicator, LoginPlaintextCommunicator
+from plaintextc import AbstractPlaintextCommunicator, LoginPlaintextCommunicator, ForgetPlaintextCommunicator
 
 from colorama import (
                       Fore,
@@ -59,6 +59,9 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
         
     ################## OVERRIDE PLAINTEXT APPEARANCE METHODS ##################
 
+    def get_prompt(self, str):
+        return Style.BRIGHT + str + Style.NORMAL + " > "
+
     def fmt_err(self, str):
         sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
         super(AbstractColoramaCommunicator, self).fmt_err(str)
@@ -93,4 +96,7 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
         self.fmt_generic_bar(percentage, self.PERC_STYLE, color, Fore.RESET, Style.RESET_ALL)
 
 class LoginColoramaCommunicator(AbstractColoramaCommunicator, LoginPlaintextCommunicator):
+    pass
+
+class ForgetColoramaCommunicator(AbstractColoramaCommunicator, ForgetPlaintextCommunicator):
     pass

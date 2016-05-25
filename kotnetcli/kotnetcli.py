@@ -28,22 +28,23 @@
 ##  - create and start the appropriate worker instance
 
 import sys                              ## Basislib
-import getpass                          ## Voor invoer wachtwoord zonder print
 import argparse                         ## Parst argumenten
 import argcomplete                      ## Argumenten aanvullen met Tab
 import logging                          ## Voor uitvoer van debug-informatie
 
 from .communicator.fabriek import (     ## Voor output op maat
     LoginCommunicatorFabriek, 
-    LogoutCommunicatorFabriek           
+    LogoutCommunicatorFabriek,
+    ForgetCommunicatorFabriek
 )
 
 from .credentials import (              ## Voor opvragen van s-nummer
     KeyRingCredentials,                 ## en wachtwoord
-    ForgetCredsException
+    GuestCredentials
 )                                           
 from .worker import (                   ## Stuurt alle losse componenten aan
     LoginWorker,
+    ForgetCredsWorker,
     EXIT_FAILURE,
     EXIT_SUCCESS
 )
@@ -144,19 +145,13 @@ class KotnetCLI(object):
         self.workergroep.add_argument("-o", "--logout",\
         help="Logs you out off KotNet", action="store_true")
         
-        '''
-        self.workergroep.add_argument("-!", "--force-login",\
-        help="Logs you out on other IP's, and then in on this one",\
-        action="store_const", dest="worker", const="force_login")
-        '''
+        self.workergroep.add_argument("-f", "--forget",\
+        help="Makes kotnetcli forget your credentials",\
+        action="store_true")
         
         ########## credentials type flags ##########
         self.credentialsgroep.add_argument("-k", "--keyring",\
         help="Makes kotnetcli pick up your credentials from the keyring (default)",\
-        action="store_true")
-        
-        self.credentialsgroep.add_argument("-f", "--forget",\
-        help="Makes kotnetcli forget your credentials",\
         action="store_true")
         
         self.credentialsgroep.add_argument("-g", "--guest-mode",\
@@ -215,44 +210,20 @@ class KotnetCLI(object):
 
     ## returns newly created credentials obj
     def parseCredentialFlags(self, argumenten):
-        logger.info("ik haal de credentials uit de keyring")
-        return self.parseCredsFlags(argumenten, KeyRingCredentials())
-    
-    ## TODO ForgetCredsWorker: front-end should not be coupled to creds; issue #49
-    ## a helper method with a default credentials object argument
-    def parseCredsFlags(self, argumenten, cr):
-        if argumenten.forget:
-            logger.info("ik wil vergeten")
-            try:
-                cr.forgetCreds()
-                print "You have succesfully removed your kotnetcli credentials."
-                sys.exit(0)
-            except ForgetCredsException:
-                print "You have already removed your kotnetcli credentials."
-                sys.exit(1)
-        
-        elif argumenten.guest_mode:
+        if argumenten.guest_mode:
             logger.info("ik wil me anders voordoen dan ik ben")
-            (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
-            cr.saveGuestCreds(gebruikersnaam, wachtwoord)
-            return cr
-            
+            return GuestCredentials()
         else:
-            ## default option: argumenten.keyring
-            if (not cr.hasCreds()):
-                (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
-                cr.saveCreds(gebruikersnaam, wachtwoord)
-            return cr
-
-    ## TODO worker should ask communicator for creds, if necessary; issue #49
-    def prompt_user_creds(self):
-        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
-        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
-        return (gebruikersnaam, wachtwoord)
+            logger.info("ik haal de credentials uit de keyring")
+            return KeyRingCredentials()
 
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):
-        if argumenten.logout:
+        if argumenten.forget:
+            logger.info("ik wil vergeten")
+            worker = ForgetCredsWorker()
+            fabriek = ForgetCommunicatorFabriek()
+        elif argumenten.logout:
             logger.info("ik wil uitloggen")
             worker = LogoutWorker(argumenten.institution)
             fabriek = LogoutCommunicatorFabriek()

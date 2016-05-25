@@ -21,22 +21,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from quietc import QuietCommunicator
+from kotnetcli.kotnetgui import main
 
-import logging
-logger = logging.getLogger(__name__)
-
-class LoggerCommunicator(QuietCommunicator):
-
-    def __init__(self):
-        super(LoggerCommunicator, self).__init__()
-        self.msg_width = 0
-
-    def print_info(self, str):
-        logger.info(str)
-    
-    def print_err(self, str):
-        logger.error(str)
-
-    def print_err_info(self, str):
-        logger.info(str)
+if __name__ == "__main__":
+    main()

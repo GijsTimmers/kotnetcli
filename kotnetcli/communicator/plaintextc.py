@@ -92,6 +92,12 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
 
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
 
+    def promptCredentials(self):
+        cursor.show()
+        (u, pwd) = super(AbstractPlaintextCommunicator, self).promptCredentials()
+        cursor.hide()
+        return (u, pwd)
+
     def eventExit(self):
         cursor.show()
 
@@ -134,3 +140,18 @@ class LoginPlaintextCommunicator(AbstractPlaintextCommunicator):
         self.finalizeSession()
 
 ## end class LoginPlaintextCommunicator
+
+class ForgetPlaintextCommunicator(AbstractPlaintextCommunicator):
+    
+    def __init__(self):
+        super(ForgetPlaintextCommunicator, self).__init__("Vergeten")
+    
+    def eventForgetCreds(self):
+        super(ForgetPlaintextCommunicator, self).eventForgetCreds()
+        self.fmt_wait()
+    
+    def eventForgetCredsSuccess(self):
+        self.fmt_success()
+        self.finalizeSession()
+   
+## end class ForgetPlaintextCommunicator
