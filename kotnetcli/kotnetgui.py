@@ -30,7 +30,7 @@ from Queue import Queue
 from .communicator.summaryc import AbstractSummaryCommunicator
 from .credentials import KeyRingCredentials, GuestCredentials
 from .worker import (
-    DummyLoginWorker,
+    LoginWorker,
     EXIT_FAILURE,
     EXIT_SUCCESS
 )
@@ -153,7 +153,7 @@ class GUICredentialsDialog(QtGui.QDialog):
         self.show()
     
     def getCreds(self):
-        return (self.user.text(), self.pwd.text())
+        return (str(self.user.text()), str(self.pwd.text()))
    
 ## end class GUICredentialsDialog
 
@@ -253,7 +253,10 @@ class KotnetcliRunner(QtCore.QObject):
                                  self.updateGUIPercentages, self.GUIQueryCredentials)
         creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
         
-        worker = DummyLoginWorker("kuleuven", 1, True, False, 100)
+        worker = LoginWorker("kuleuven",
+                             "localhost",
+                             4443,
+                             "kotnetcli/server/kotnetcli-localhost.pem")
         worker.go(co, creds)
 
 ## end class KotnetcliRunner

@@ -126,6 +126,7 @@ class KotnetBrowser(object):
             self.wachtwoordvak  : wachtwoord
         }
         self.html = self.do_server_request('POST', 'netlogin.pl', data=payload)
+        logger.debug("Server reply for HTML POST is:\n" + self.html)
 
     ## This method parses the server's response. On success, it returns a tuple of
     ## length 2: (downloadpercentage, uploadpercentage); else it raises an
