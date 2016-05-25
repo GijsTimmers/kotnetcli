@@ -153,7 +153,7 @@ class GUICredentialsDialog(QtGui.QDialog):
         self.show()
     
     def getCreds(self):
-        return (self.user.text(), self.pwd.text())
+        return (str(self.user.text()), str(self.pwd.text()))
    
 ## end class GUICredentialsDialog
 
