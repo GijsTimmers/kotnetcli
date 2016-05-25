@@ -77,20 +77,20 @@ class QuietCommunicator(object):
     ################## APPEARANCE HELPER METHODS ##################
     ## these can be overridden to easily change appearance of subclass communicators
     
-    def get_prompt(self, str):
-        return str + " > "
+    def get_prompt(self, string):
+        return string + " > "
     
-    def print_info(self, str):
+    def print_info(self, string):
         pass
     
-    def print_err(self, str):
+    def print_err(self, string):
         pass
     
-    def print_err_info(self, str):
+    def print_err_info(self, string):
         pass
     
-    def ljust_msg(self, str):
-        return str.ljust(self.msg_width, '.')
+    def ljust_msg(self, string):
+        return string.ljust(self.msg_width, '.')
     
     ################## COMMUNICATOR INTERFACE ##################
     

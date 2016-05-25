@@ -71,7 +71,7 @@ class KotnetCLITester(KotnetCLI):
     def parseActionFlags(self, argumenten):
         if argumenten.logout:
             logger.info("ik wil uitloggen voor spek en bonen")
-            return (DummyLogoutWorker(), LogoutCommunicatorFabriek())
+            raise NotImplementedError
         
         elif argumenten.run_tests:
             logger.info("ik wil testen")

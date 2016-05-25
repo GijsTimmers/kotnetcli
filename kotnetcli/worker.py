@@ -72,7 +72,7 @@ class SuperNetworkWorker(AbstractWorker):
             logger.info("querying for user credentials")
             try:
                 (username, pwd) = co.promptCredentials()
-            except:
+            except Exception:
                 logger.debug("communicator prompt exception; exiting with failure")
                 sys.exit(EXIT_FAILURE)
             creds.saveCreds(username, pwd)

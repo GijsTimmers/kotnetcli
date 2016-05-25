@@ -41,21 +41,21 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
     
     ################## APPEARANCE HELPER METHODS ##################
 
-    def print_info(self, str):
+    def print_info(self, string):
         ## print no trailing newline to be able to update WAIT/OK line status
-        sys.stdout.write(str + " ")
+        sys.stdout.write(string + " ")
         sys.stdout.flush()
     
-    def print_err(self, str):
+    def print_err(self, string):
         self.fmt_fail()
         self.finalizeSession(fail=True)
-        self.fmt_err(str)
+        self.fmt_err(string)
 
-    def print_err_info(self, str):
-        print(str)
+    def print_err_info(self, string):
+        print(string)
 
-    def fmt_err(self, str):
-        print(self.ERR_STR.format(err_msg=str))
+    def fmt_err(self, string):
+        print(self.ERR_STR.format(err_msg=string))
 
     def fmt_wait(self):
         sys.stdout.write("[" + self.WAIT_STR + "]" + "\b" * (2+len(self.WAIT_STR)))
@@ -121,7 +121,7 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
         self.fmt_wait()
 
     def finalizeSession(self, fail=False):
-        self.print_info(self.FINAL_STR),
+        self.print_info(self.FINAL_STR)
         self.fmt_fail() if fail else self.fmt_done()
 
 ## end class AbstractPlaintextCommunicator

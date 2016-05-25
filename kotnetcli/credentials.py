@@ -36,7 +36,7 @@ class GuestCredentials(AbstractCredentials):
         self.password = None
         
     def hasCreds(self):
-        return (self.user != None) and (self.password != None)
+        return not (self.user is None or self.password is None)
     
     def getCreds(self):
         return (self.user, self.password)

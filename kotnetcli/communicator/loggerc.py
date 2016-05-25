@@ -32,11 +32,11 @@ class LoggerCommunicator(QuietCommunicator):
         super(LoggerCommunicator, self).__init__()
         self.msg_width = 0
 
-    def print_info(self, str):
-        logger.info(str)
+    def print_info(self, string):
+        logger.info(string)
     
-    def print_err(self, str):
-        logger.error(str)
+    def print_err(self, string):
+        logger.error(string)
 
-    def print_err_info(self, str):
-        logger.info(str)
+    def print_err_info(self, string):
+        logger.info(string)

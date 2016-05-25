@@ -59,12 +59,12 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
         
     ################## OVERRIDE PLAINTEXT APPEARANCE METHODS ##################
 
-    def get_prompt(self, str):
-        return Style.BRIGHT + str + Style.NORMAL + " > "
+    def get_prompt(self, string):
+        return Style.BRIGHT + string + Style.NORMAL + " > "
 
-    def fmt_err(self, str):
+    def fmt_err(self, string):
         sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
-        super(AbstractColoramaCommunicator, self).fmt_err(str)
+        super(AbstractColoramaCommunicator, self).fmt_err(string)
         sys.stderr.write(Style.RESET_ALL)
         sys.stderr.flush()
 

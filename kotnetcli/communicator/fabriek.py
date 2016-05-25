@@ -43,7 +43,7 @@ def wrap(co):
     atexit.register(co.eventExit)
     return co
 
-class LoginCommunicatorFabriek():
+class LoginCommunicatorFabriek(object):
     
     def createQuietCommunicator(self):
         from .quietc import QuietCommunicator
@@ -91,7 +91,7 @@ class ForgetCommunicatorFabriek(LoginCommunicatorFabriek):
 
 ## end class ForgetCommunicatorFabriek
 
-class LogoutCommunicatorFabriek():
+class LogoutCommunicatorFabriek(object):
     
     def __init__(self):
         raise NotImplementedError

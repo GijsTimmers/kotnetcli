@@ -200,10 +200,10 @@ class KotnetCLI(object):
             co = self.parseCommunicatorFlags(fabriek, argumenten)
         except ImportError, e:
             logger.error(
-                "import error when trying to create '{com}' communicator: "     \
-                "{exc}\nHave you installed all the dependencies for the {com} " \
-                "communicator?\nSee also <{gh}/wiki/Dependencies-overview>"     \
-                .format(com=argumenten.communicator, exc=e, gh=GITHUB_URL))
+                "import error when trying to create '%s' communicator: %s\n"    \
+                "Have you installed all the dependencies?\n"                    \
+                "See also <%s/wiki/Dependencies-overview>",
+                argumenten.communicator, e, GITHUB_URL)
             sys.exit(EXIT_FAILURE)
         ## 4. start the process
         worker.go(co, creds)
@@ -225,8 +225,7 @@ class KotnetCLI(object):
             fabriek = ForgetCommunicatorFabriek()
         elif argumenten.logout:
             logger.info("ik wil uitloggen")
-            worker = LogoutWorker(argumenten.institution)
-            fabriek = LogoutCommunicatorFabriek()
+            raise NotImplementedError
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen")

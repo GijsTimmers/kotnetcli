@@ -28,7 +28,6 @@ from __future__ import unicode_literals
 
 from dialog import Dialog
 from loggerc import LoggerCommunicator
-import quietc
 
 DIALOG_MSG_LOGIN_SUCCESS    = "Je bent successvol ingelogd."
 DIALOG_MSG_FORGET_SUCCESS   = "You have succesfully removed your kotnetcli credentials."

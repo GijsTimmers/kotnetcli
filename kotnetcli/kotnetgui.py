@@ -31,7 +31,6 @@ from .communicator.summaryc import AbstractSummaryCommunicator
 from .credentials import KeyRingCredentials, GuestCredentials
 from .worker import (
     DummyLoginWorker,
-    EXIT_FAILURE,
     EXIT_SUCCESS
 )
 from .tools import log
@@ -223,14 +222,14 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
         self.credsSignal.emit()
         logger.debug("block waiting on credentialsDialog queue")
         (u,p) = queue.get()
-        logger.debug("got credentials for user '{}'".format(u))
+        logger.debug("got credentials for user '%s'", u)
         return (u,p)
 
-    def print_info(self, str):
-        self.updateGUIText.emit(str)
+    def print_info(self, string):
+        self.updateGUIText.emit(string)
     
-    def print_err(self, str):
-        self.updateGUIError.emit("ERROR::" + str)
+    def print_err(self, string):
+        self.updateGUIError.emit("ERROR::" + string)
 
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.updateGUIPercentages.emit(downloadpercentage, uploadpercentage)
@@ -268,7 +267,7 @@ def main():
     d = GUIOptionDialog()
     d.exec_()
     choice = d.getChoice()
-    logger.debug("choice is '%s'" % choice)
+    logger.debug("choice is '%s'", choice)
         
     logger.debug("creating GUI objects")
     gui = KotnetGUI("kotnetcli network login")

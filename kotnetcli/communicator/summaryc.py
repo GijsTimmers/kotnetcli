@@ -50,8 +50,8 @@ class AbstractSummaryCommunicator(LoggerCommunicator):
         self.err_srv        = SUMMARY_ERR_SRV
         self.err_panic      = SUMMARY_ERR_PANIC
     
-    def print_err(self, str):
-        print("ERROR::" + str)
+    def print_err(self, string):
+        print("ERROR::" + string)
 
 class ForgetSummaryCommunicator(AbstractSummaryCommunicator, LoggerCommunicator):
     def eventForgetCredsSuccess(self):
