@@ -21,154 +21,76 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-#import re                               ## Basislib voor reguliere expressies
-#import time                             ## Voor timeout om venster te sluiten
-import sys                              ## Basislib
-#import os                               ## Basislib
-#import platform                         ## Om onderscheid Lin/Mac te maken
-from plaintextc import (
-                        SuperPlaintextCommunicator,
-                        LoginPlaintextCommunicator,
-                        LogoutPlaintextCommunicator
-                        )
-import cursor
+import sys
+from plaintextc import *
 
-#from kotnetcli import logger
-import logging
-logger = logging.getLogger(__name__)
-
-try:            
-    logger.debug("Probeert Colorama te importeren..."),
-    from colorama import (              ## Voor gekleurde tekst.
-                          Fore,
-                          Style,
-                          init as colorama_init
-                          )
-    logger.debug("OK")
-except ImportError:
-    logger.error("Couldn't import the colorama library.")
-    exit(1)
+from colorama import (
+                      Fore,
+                      Style,
+                      init as colorama_init
+                     )
 
 class SuperColoramaCommunicator(SuperPlaintextCommunicator):
-    ## I changed the structure: it used to be:
-    ## SuperColoramaCommunicator(QuietCommunicator)
-    ## LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator)
-    ## 
-    ## This caused a quiet print. See: https://github.com/GijsTimmers/kotnetcli/issues/56.
-    ##
-    ## Solution:
-    ## Let the superclass inherit directly from LoginPlaintextCommunicator.
-    ##
-    ## Challenge:
-    ## Make sure that LoginColoramaCommunicator inherits LoginPlaintextCommunicator
-    ## and LogoutColoramaCommunicator inherits LogoutPlaintextCommunicator
-    ##
-    ## TODO: jo: veranderd naar single inheritance van plaintext in de super
-    ## en multiple inheritance van de juiste subplaintext in de subs
-    ## Gijs: Merci!
-    
-    def __init__(self, colorNameList):
-        """
-        from colorama import (                  ## Om de tekst kleur te geven
-            Fore,                               ## 
-            Style,                              ## 
-            init as colorama_init)              ## 
-        """
-        try:        
-            colorNameList = map(lambda x:x.upper(), colorNameList)
-            self.init_colors(colorNameList)
-        except Exception, e:
-            logger.error("something went wrong when initializing colors; " + \
-            "did you provide a correct colorNameList %s?", colorNameList)
-            logger.error("exception is: %s" % e)
-            exit(1)
+
+    ################## INITIALIZATION ##################
+
+    def __init__(self):
+        self.init_colors(map(lambda x:x.upper(),[ "green", "yellow", "red", "bright" ]))
         colorama_init()
-        cursor.hide()
-    
-    ## any communicator wanting to customize the colors can override
-    ## this method to define new colors and styles
-    ## TODO: Jo: evt custom perentage style
-    ##
-    ## Gijs: Wat bedoel je? Bvb de balk verbergen, etc?
+        super(SuperColoramaCommunicator,self).__init__()
     
     def init_colors(self, colorNameList):
-        logger.debug("the given colornamelist is %s", colorNameList)
         style = getattr(Style, colorNameList.pop())
         err_color = getattr(Fore, colorNameList.pop())
         wait_color = getattr(Fore, colorNameList.pop())        
         ok_color = getattr(Fore, colorNameList.pop())
-        self.ERR_COLOR = err_color #Fore.RED
-        self.ERR_STYLE = style #Style.BRIGHT
-        self.WAIT_STYLE = style #Style.BRIGHT
-        self.WAIT_COLOR = wait_color #Fore.YELLOW
-        self.SUCCESS_STYLE = style #Style.BRIGHT
-        self.SUCCESS_COLOR = ok_color #Fore.GREEN
-        self.FAIL_STYLE = style #Style.BRIGHT
-        self.FAIL_COLOR = err_color #Fore.RED
-        self.PERC_STYLE = style #Style.BRIGHT
-        self.CRITICAL_PERC_COLOR = err_color #Fore.RED
-        self.LOW_PERC_COLOR = wait_color #Fore.YELLOW
-        self.OK_PERC_COLOR = ok_color #Fore.GREEN
+        self.ERR_COLOR = Fore.RED
+        self.ERR_STYLE = Style.NORMAL
+        self.WAIT_STYLE = style
+        self.WAIT_COLOR = wait_color
+        self.SUCCESS_STYLE = style
+        self.SUCCESS_COLOR = ok_color
+        self.FAIL_STYLE = style
+        self.FAIL_COLOR = err_color
+        self.PERC_STYLE = style
+        self.CRITICAL_PERC_COLOR = err_color
+        self.LOW_PERC_COLOR = wait_color
+        self.OK_PERC_COLOR = ok_color
+        
+    ################## OVERRIDE PLAINTEXT APPEARANCE METHODS ##################
 
-    ## Overrides the printing of an error string on stderr
     def printerr(self, msg):
-        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR + \
-        msg + Style.RESET_ALL),
+        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
+        super(SuperColoramaCommunicator,self).printerr(msg)
+        sys.stderr.write(Style.RESET_ALL)
         sys.stderr.flush()
 
-    ## Overrides the printing of a "wait" event on stdout
-    def print_wait(self, msg):
-        print msg + self.WAIT_STYLE + "[" + self.WAIT_COLOR + \
+    def print_wait(self):
+        print self.WAIT_STYLE + "[" + self.WAIT_COLOR + \
         "WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
 
-    ## Overrides the printing of a "succes" string on stdout
     def print_success(self):
         print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + " OK " + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    ## Overrides the printing of a "done" string on stdout
     def print_done(self):
         print self.SUCCESS_STYLE + "[" + self.SUCCESS_COLOR + "DONE" + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    ## Overrides the printing of a "fail" string on stdout
     def print_fail(self):
         print self.FAIL_STYLE + "[" + self.FAIL_COLOR + "FAIL" + \
         Fore.RESET + "]" + Style.RESET_ALL
 
-    ## Overrides the printing of a "balk" string on stdout
-    def print_balk(self, percentage):
+    def print_bar(self, percentage):
         if percentage <= 10:
-            voorwaardelijke_kleur = self.CRITICAL_PERC_COLOR
+            color = self.CRITICAL_PERC_COLOR
         elif 10 < percentage < 60:
-            voorwaardelijke_kleur = self.LOW_PERC_COLOR
+            color = self.LOW_PERC_COLOR
         else:
-            voorwaardelijke_kleur = self.OK_PERC_COLOR
+            color = self.OK_PERC_COLOR
         
-        self.print_generic_balk(percentage, self.PERC_STYLE,
-        voorwaardelijke_kleur, Fore.RESET, Style.RESET_ALL)
+        self.print_generic_bar(percentage, self.PERC_STYLE, color, Fore.RESET, Style.RESET_ALL)
 
 class LoginColoramaCommunicator(SuperColoramaCommunicator, LoginPlaintextCommunicator):
-    ## TODO: jo: (hackhackhack) manually override the mutliple inheritance
-    ## priorities to avoid quiet printing
-    def eventNetloginStart(self):
-        LoginPlaintextCommunicator.eventNetloginStart(self)
-
-    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
-        LoginPlaintextCommunicator.eventLoginGeslaagd(self, downloadpercentage, uploadpercentage)
-
-    def beeindig_sessie(self, error_code=0):
-        LoginPlaintextCommunicator.beeindig_sessie(self, error_code)
-
-class LogoutColoramaCommunicator(SuperColoramaCommunicator, LogoutPlaintextCommunicator):
-    ## TODO: jo: (hackhackhack) manually override the mutliple inheritance
-    ## priorities to avoid quiet printing
-    def eventNetloginStart(self):
-        LogoutPlaintextCommunicator.eventNetloginStart(self)
-
-    def eventLogoutGeslaagd(self, downloadpercentage, uploadpercentage):
-        LogoutPlaintextCommunicator.eventLoginGeslaagd(self, downloadpercentage, uploadpercentage)
-
-    def beeindig_sessie(self, error_code=0):
-        LogoutPlaintextCommunicator.beeindig_sessie(self, error_code=0)
+    pass

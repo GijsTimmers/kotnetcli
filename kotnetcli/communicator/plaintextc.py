@@ -21,58 +21,45 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-#import re                               ## Basislib voor reguliere expressies
-#import time                             ## Voor timeout om venster te sluiten
-import sys                              ## for advanced print functions
-#import os                               ## Basislib
-#import platform                         ## Om onderscheid Lin/Mac te maken
-from quietc import QuietCommunicator
+import sys
 import cursor
 
+from quietc import QuietCommunicator
+
 class SuperPlaintextCommunicator(QuietCommunicator):
+
     def __init__(self):
         cursor.hide()
+    
+    def eventExit(self):
+        cursor.show()
 
-    #### 1. appearance printing methods ####
+    ################## APPEARANCE HELPER METHODS ##################
+    ## override these to change appearance of subclass terminal-based communicators
 
-    ## Encapsulates the printing of an error string on stderr
-    ## Override this method to change the appearance of the printed string.
     def printerr(self, msg):
-        sys.stderr.write(msg),
+        sys.stderr.write("ERROR::" + msg + "\n"),
         sys.stderr.flush()
 
-    ## Encapsulates the printing of a "text" string on stdout, *without* a trailing newline
-    ## Override this method to change the appearance of the printed string.
     def print_txt(self, msg):
         sys.stdout.write(msg)
 
-    ## Encapsulates the printing of a "wait" event on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_wait(self, msg):
-        print msg + "[WAIT]" + "\b\b\b\b\b\b\b",
+    def print_wait(self):
+        print "[WAIT]" + "\b\b\b\b\b\b\b",
         sys.stdout.flush()
 
-    ## Encapsulates the printing of a "succes" string on stdout
-    ## Override this method to change the appearance of the printed string.
     def print_success(self):
         print "[ OK ]"
 
-    ## Encapsulates the printing of a "done" string on stdout
-    ## Override this method to change the appearance of the printed string.
     def print_done(self):
         print "[DONE]"
 
-    ## Encapsulates the printing of a "fail" string on stdout
-    ## Override this method to change the appearance of the printed string.
     def print_fail(self):
         print "[ FAIL ]"
 
-    ## generic print_balk method (not meant to be overriden)
-    def print_generic_balk(self, percentage, style, color, stop_color, stop_style):
-        
+    def print_generic_bar(self, percentage, style, color, stop_color, stop_style):
         percentagefloat = float(percentage)
         percentagestring = str(percentage)
-        
         lengteVanBalkfloat = 15.0
         lengteVanBalkint = 15
         lengteVanRuimteVoorPercentages = 3
@@ -86,129 +73,85 @@ class SuperPlaintextCommunicator(QuietCommunicator):
         color + percentagestring + "%" + \
         stop_color + "]" + stop_style
 
-    ## Encapsulates the printing of a "balk" string on stdout
-    ## Override this method to change the appearance of the printed string.
-    def print_balk(self, percentage):
-        self.print_generic_balk(percentage, "", "", "", "")
+    def print_bar(self, percentage):
+        self.print_generic_bar(percentage, "", "", "", "")
 
-    #### 2. communicator method implementations common for both login and logout ####
+    def finalize_session(self, success):
+        pass
 
-    #def eventPingFailure(self):
-    #    self.printerr("Niet verbonden met het KU Leuven-netwerk.")
-    #    
-    #def eventPingAlreadyOnline(self):
-    #    self.printerr("U bent al online.")
+    def do_failure(self, err_str):
+        self.print_fail()
+        self.finalize_session(False)
+        self.printerr(err_str)
 
-    def eventKotnetVerbindingStart(self):
-        self.print_wait("Kotnetverbinding testen.... ")
-        
-    def eventKotnetVerbindingSuccess(self):
-        self.print_success()
+    ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
+
+    def eventCheckNetworkConnection(self):
+        self.print_txt("Kotnetverbinding testen.... ")
+        self.print_wait()
     
-    def eventKotnetVerbindingFailure(self):
-        self.print_fail()
-
-    def eventNetloginSuccess(self):
+    def eventGetData(self):
         self.print_success()
-    def eventNetloginFailure(self):
-        self.print_fail()
-        
-    def eventKuleuvenStart(self):
-        self.print_wait("KU Leuven kiezen........... ")
-    def eventKuleuvenSuccess(self):
-        self.print_success()
-    def eventKuleuvenFailure(self):
-        self.print_fail()
-
-    def eventInvoerenStart(self):
-        self.print_wait("Gegevens invoeren.......... ")
-    def eventInvoerenSuccess(self):
-        self.print_success()
-    def eventInvoerenFailure(self):
-        self.print_fail()
-
-    def eventOpsturenStart(self):
-        self.print_wait("Gegevens opsturen.......... ")
-    def eventOpsturenSuccess(self):
-        self.print_success()
-    def eventOpsturenFailure(self):
-        self.print_fail()
+        self.print_txt("Gegevens ophalen........... ")
+        self.print_wait()
     
-class LoginPlaintextCommunicator(SuperPlaintextCommunicator):     
-    def eventNetloginStart(self):
-        ## TODO: jo : inloggen is al duidelijk door "netLOGIN" right?
-        ## Gijs: Zie noot bij LogoutPlaintextCommunicator.eventNetloginStart().
+    def eventPostData(self):
+        self.print_success()
+        self.print_txt("Gegevens opsturen.......... ")
+        self.print_wait()
         
-        #print "           Inloggen           "
-        #print "------------------------------"
-        
-        
-        self.print_wait("Netlogin openen............ ")
+    def eventProcessData(self):
+        self.print_success()
+        self.print_txt("Gegevens verwerken......... ")
+        self.print_wait()
 
-    def eventLoginGeslaagd(self, downloadpercentage, uploadpercentage):
+    def eventFailureOffline(self, srv):
+        err_str = "Connection attempt to netlogin service '{}' timed out. Are you on the kotnet network?".format(srv)
+        self.do_failure(err_str)
+
+    def eventFailureCredentials(self):
+        err_str = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
+        self.do_failure(err_str)
+
+    def eventFailureMaxIP(self):
+        err_str = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
+        self.do_failure(err_str)
+    
+    def eventFailureInstitution(self, inst):
+        err_str = "Uw gekozen institutie '{}' klopt niet. Gebruik kotnetcli --institution om een andere institutie te kiezen.".format(inst)
+        self.do_failure(err_str)
+        
+    def eventFailureServerScriptError(self):
+        err_str = "De netlogin server rapporteert een 'internal script error'. Probeer opnieuw in te loggen..."
+        self.do_failure(err_str)
+    
+    def eventFailureUnknownRC(self, rccode, html):
+        err_str = "De netlogin server geeft een onbekende rc-code '{}' terug. Contacteer de kotnetcli developers om ondersteuning te krijgen.".format(rccode)
+        self.do_failure(err_str)
+        self.print_txt("====== START HTML DUMP ======\n")
+        self.print_txt(html)
+        self.print_txt("====== END HTML DUMP ======\n")
+    
+    def eventFailureInternalError(self, traceback):
+        err_str = "Internal kotnetcli exception: traceback below."
+        self.do_failure(err_str)
+        self.print_txt(traceback.format_exc())
+
+class LoginPlaintextCommunicator(SuperPlaintextCommunicator):
+    
+    ################## LOGIN COMMUNICATOR INTERFACE ##################
+    
+    def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
+        self.print_success()
         self.print_txt("Download:  ")
-        self.print_balk(downloadpercentage)
+        self.print_bar(downloadpercentage)
         self.print_txt("Upload:    ")
-        self.print_balk(uploadpercentage)
+        self.print_bar(uploadpercentage)
+        self.finalize_session(True)
         
-    def beeindig_sessie(self, error_code=0):
+    def finalize_session(self, success):
         self.print_txt("Inloggen................... "),
-        if error_code == 0:
+        if success:
             self.print_done()
         else:
             self.print_fail()
-        cursor.show()
-
-class LogoutPlaintextCommunicator(SuperPlaintextCommunicator):
-    def eventNetloginStart(self):
-        ## TODO jo : "netLOGOUT" duidelijk genoeg?
-        ##
-        ## Gijs: Mijn voorkeur gaat uit naar een header:
-        ##       - Een header is duidelijker, zeker met het oog op
-        ##         --force-login, in dat geval zal er eerst een Uitloggen-header
-        ##         zijn en daarna een Inloggen-header
-        ##       - "Formulier aanmaken" is een betere beschrijving van wat er
-        ##         gebeurt
-        ##
-        ##       Eventueel kunnen we een nieuwe methode maken, bijvoorbeeld
-        ##       headerAanmaken(). In dat geval kan de header zijn:
-        ##       "Geforceerd inloggen" of iets dergelijks. Ook leuk!
-        
-        print "          Uitloggen           "
-        print "------------------------------"
-        
-        
-        #print "Formulier openen....... " + Style.BRIGHT + "[" + Fore.YELLOW + \
-        #"WAIT" + Fore.RESET + "]" + Style.RESET_ALL + "\b\b\b\b\b\b\b",
-        #sys.stdout.flush()
-        
-        self.print_wait("Netlogout openen....... ")
-
-
-    ## TODO: jo wat is nog het nut van "eventLogoutGeslaagd"??
-    ## dit kan ook in beendig_sessie right?
-    ## Gijs: Kan inderdaad ook in beeindig_sessie(). Mijn voorkeur gaat er naar
-    ##       uit om een aparte methode aan te maken, eventLoginGeslaagd() en 
-    ##       eventLogoutGeslaagd(). De reden hiervoor is dat een geslaagde
-    ##       logout niet noodzakelijk het einde van een sessie aangeeft. Bij-
-    ##       voorbeeld, in --force-login moet er na het uitloggen opnieuw wor-
-    ##       den ingelogd. Het is dan vreemd, om de sessie eerst af te sluiten,
-    ##       met alle gevolgen van dien (hier: cursor tonen, bij curses:
-    ##       scherm afsluiten). Dat zou betekenen dat bij --force-login na het
-    ##       uitloggen de cursor zichtbaar wordt, en dan opnieuw verdwijnt.\
-    ##  
-    ##       Daarnaast was het mijn plan om de sys.exit() in de communicator
-    ##       te zetten, maar misschien kunnen we deze beter in de worker plaat-
-    ##       sen.
-    
-    def eventLogoutGeslaagd(self):
-        pass
-
-    def beeindig_sessie(self, error_code=0):
-        self.print_txt("Uitloggen............. "),
-        if error_code == 0:
-            self.print_success()
-        else:
-            self.print_fail()
-        cursor.show()
-

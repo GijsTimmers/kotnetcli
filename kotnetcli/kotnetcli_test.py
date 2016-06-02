@@ -23,9 +23,10 @@
 ##
 ## An extended KotnetCLI to allow dummy behavior for testing purposes
 
+import sys
 import argparse
 from kotnetcli import KotnetCLI
-from worker import DummyLoginWorker, DummyLogoutWorker
+from worker import DummyLoginWorker, EXIT_FAILURE
 from communicator.fabriek import LoginCommunicatorFabriek, LogoutCommunicatorFabriek
 from credentials import DummyCredentials
 from testsuite import LoginTestsuiteWorker
@@ -88,5 +89,9 @@ class KotnetCLITester(KotnetCLI):
         return self.parseCredsFlags(argumenten, DummyCredentials())
 
 def dummy_main():
-    k = KotnetCLITester()
-    k.parseArgumenten()
+    try:
+        k = KotnetCLITester()
+        k.parseArgumenten()
+    except KeyboardInterrupt:
+        logger.warning("Keyboard interrupt received")
+        sys.exit(EXIT_FAILURE)
