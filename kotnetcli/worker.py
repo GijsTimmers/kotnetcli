@@ -28,9 +28,9 @@
 ##  - sends status updates to the communicator
 ##  - exits with the corresponding exit code
 
-
 import sys                              ## Basislib
 
+from .credentials import ForgetCredsException
 from .browser import *
 import traceback
 
@@ -40,9 +40,42 @@ logger = logging.getLogger(__name__)
 EXIT_FAILURE = 1 ## Tijdelijke exitcode, moet nog worden geïmplementeerd.
 EXIT_SUCCESS = 0
 
-class SuperWorker(object):
+class AbstractWorker(object):
+    def go(self, co, creds):
+        try:
+            logger.debug("Enter worker.go()")
+            self.do_work(co, creds)
+            logger.debug("Exiting worker with success")
+            sys.exit(EXIT_SUCCESS)
+        ## fail gracefully when encountering an unexpected error
+        except Exception:
+            logger.debug("Caught worker exception; exiting with failure")
+            co.eventFailureInternalError(traceback)
+            sys.exit(EXIT_FAILURE)
+
+class ForgetCredsWorker(AbstractWorker):
+    def do_work(self, co, creds):
+        try:
+            co.eventForgetCreds()
+            creds.forgetCreds()
+            co.eventForgetCredsSuccess()
+        except ForgetCredsException:
+            co.eventFailureForget()
+            sys.exit(EXIT_FAILURE)
+
+class SuperNetworkWorker(AbstractWorker):
     def __init__(self, institution):
         self.browser = KotnetBrowser(institution)
+    
+    def check_credentials(self, co, creds):
+        if not creds.hasCreds():
+            logger.info("querying for user credentials")
+            try:
+                (username, pwd) = co.promptCredentials()
+            except Exception:
+                logger.debug("communicator prompt exception; exiting with failure")
+                sys.exit(EXIT_FAILURE)
+            creds.saveCreds(username, pwd)
     
     def check_kotnet(self, co):
         co.eventCheckNetworkConnection()
@@ -54,22 +87,13 @@ class SuperWorker(object):
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
-class LoginWorker(SuperWorker):
-    def go(self, co, creds):
-        try:
-            logger.debug("enter LoginWorker.go()")
-            self.check_kotnet(co)
-            self.login_gegevensinvoeren(co)
-            self.login_gegevensopsturen(co,creds)
-            self.login_resultaten(co)
-            
-            logger.debug("LoginWorker: exiting with success")
-            sys.exit(EXIT_SUCCESS)
-        ## fail gracefully when encountering an unexpected error
-        except Exception:
-            logger.debug("LoginWorker: caught exception; exiting with failure")
-            co.eventFailureInternalError(traceback)
-            sys.exit(EXIT_FAILURE)
+class LoginWorker(SuperNetworkWorker):
+    def do_work(self, co, creds):
+        self.check_credentials(co,creds)
+        self.check_kotnet(co)
+        self.login_gegevensinvoeren(co)
+        self.login_gegevensopsturen(co,creds)
+        self.login_resultaten(co)
         
     def login_gegevensinvoeren(self, co):
         co.eventGetData()

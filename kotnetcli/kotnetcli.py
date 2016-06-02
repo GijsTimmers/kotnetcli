@@ -28,22 +28,23 @@
 ##  - create and start the appropriate worker instance
 
 import sys                              ## Basislib
-import getpass                          ## Voor invoer wachtwoord zonder print
 import argparse                         ## Parst argumenten
 import argcomplete                      ## Argumenten aanvullen met Tab
 import logging                          ## Voor uitvoer van debug-informatie
 
 from .communicator.fabriek import (     ## Voor output op maat
     LoginCommunicatorFabriek, 
-    LogoutCommunicatorFabriek           
+    LogoutCommunicatorFabriek,
+    ForgetCommunicatorFabriek
 )
 
 from .credentials import (              ## Voor opvragen van s-nummer
     KeyRingCredentials,                 ## en wachtwoord
-    ForgetCredsException
+    GuestCredentials
 )                                           
 from .worker import (                   ## Stuurt alle losse componenten aan
     LoginWorker,
+    ForgetCredsWorker,
     EXIT_FAILURE,
     EXIT_SUCCESS
 )
@@ -80,7 +81,11 @@ def init_debug_level(log_level, include_time):
     except ValueError:
         print "kotnetcli: Invalid debug level: %s" % log_level
         sys.exit(1)
-        
+
+## TODO create an AbstractKotnetCLI class for common CLI arguments (eg version,
+## license, debug level, ...) --> shared between all binaries in the kotnetcli
+## distribution: kotnetcli, kotnetcli-dev, kotnetgui, kotnetcli-srv
+##
 ## A class encapsulating the argument parsing behavior
 ## Note: directly inherit from "object" in order to be able to use super() in child classes
 class KotnetCLI(object):
@@ -140,19 +145,13 @@ class KotnetCLI(object):
         self.workergroep.add_argument("-o", "--logout",\
         help="Logs you out off KotNet", action="store_true")
         
-        '''
-        self.workergroep.add_argument("-!", "--force-login",\
-        help="Logs you out on other IP's, and then in on this one",\
-        action="store_const", dest="worker", const="force_login")
-        '''
+        self.workergroep.add_argument("-f", "--forget",\
+        help="Makes kotnetcli forget your credentials",\
+        action="store_true")
         
         ########## credentials type flags ##########
         self.credentialsgroep.add_argument("-k", "--keyring",\
         help="Makes kotnetcli pick up your credentials from the keyring (default)",\
-        action="store_true")
-        
-        self.credentialsgroep.add_argument("-f", "--forget",\
-        help="Makes kotnetcli forget your credentials",\
         action="store_true")
         
         self.credentialsgroep.add_argument("-g", "--guest-mode",\
@@ -168,7 +167,19 @@ class KotnetCLI(object):
         ## default=False to get "store_true" semantics when option not specified
         self.communicatorgroep.add_argument("-c", "--color",\
         help="Logs you in using custom colors", \
-        action="store_const", dest="communicator", const="colorama")
+        action="store_const", dest="communicator", const="colorama" )
+        
+        self.communicatorgroep.add_argument("-d", "--dialog",\
+        help="Omits the curses interface by using dialog based output",\
+        action="store_const", dest="communicator", const="dialog")
+
+        self.communicatorgroep.add_argument("-l", "--logger",\
+        help="Reports progress through the logging module",\
+        action="store_const", dest="communicator", const="logger")
+        
+        self.communicatorgroep.add_argument("-s", "--summary",\
+        help="Hides all output except for a short summary",\
+        action="store_const", dest="communicator", const="summary")
         
         self.communicatorgroep.add_argument("-q", "--quiet",\
         help="Hides all output",\
@@ -189,55 +200,32 @@ class KotnetCLI(object):
             co = self.parseCommunicatorFlags(fabriek, argumenten)
         except ImportError, e:
             logger.error(
-                "import error when trying to create '{com}' communicator: "     \
-                "{exc}\nHave you installed all the dependencies for the {com} " \
-                "communicator?\nSee also <{gh}/wiki/Dependencies-overview>"     \
-                .format(com=argumenten.communicator, exc=e, gh=GITHUB_URL))
+                "import error when trying to create '%s' communicator: %s\n"    \
+                "Have you installed all the dependencies?\n"                    \
+                "See also <%s/wiki/Dependencies-overview>",
+                argumenten.communicator, e, GITHUB_URL)
             sys.exit(EXIT_FAILURE)
         ## 4. start the process
         worker.go(co, creds)
 
     ## returns newly created credentials obj
     def parseCredentialFlags(self, argumenten):
-        logger.info("ik haal de credentials uit de keyring")
-        return self.parseCredsFlags(argumenten, KeyRingCredentials())
-    
-    ## a helper method with a default credentials object argument
-    def parseCredsFlags(self, argumenten, cr):
-        if argumenten.forget:
-            logger.info("ik wil vergeten")
-            try:
-                cr.forgetCreds()
-                print "You have succesfully removed your kotnetcli credentials."
-                sys.exit(0)
-            except ForgetCredsException:
-                print "You have already removed your kotnetcli credentials."
-                sys.exit(1)
-        
-        elif argumenten.guest_mode:
+        if argumenten.guest_mode:
             logger.info("ik wil me anders voordoen dan ik ben")
-            (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
-            cr.saveGuestCreds(gebruikersnaam, wachtwoord)
-            return cr
-            
+            return GuestCredentials()
         else:
-            ## default option: argumenten.keyring
-            if (not cr.hasCreds()):
-                (gebruikersnaam, wachtwoord) = self.prompt_user_creds()
-                cr.saveCreds(gebruikersnaam, wachtwoord)
-            return cr
-            
-    def prompt_user_creds(self):
-        gebruikersnaam = raw_input("Voer uw s-nummer/r-nummer in... ")
-        wachtwoord = getpass.getpass(prompt="Voer uw wachtwoord in... ")
-        return (gebruikersnaam, wachtwoord)
+            logger.info("ik haal de credentials uit de keyring")
+            return KeyRingCredentials()
 
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):
-        if argumenten.logout:
+        if argumenten.forget:
+            logger.info("ik wil vergeten")
+            worker = ForgetCredsWorker()
+            fabriek = ForgetCommunicatorFabriek()
+        elif argumenten.logout:
             logger.info("ik wil uitloggen")
-            worker = LogoutWorker(argumenten.institution)
-            fabriek = LogoutCommunicatorFabriek()
+            raise NotImplementedError
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen")
@@ -255,6 +243,18 @@ class KotnetCLI(object):
         if argumenten.communicator == "plaintext":
             logger.info("ik wil terug naar de basis")
             return fabriek.createPlaintextCommunicator()
+        
+        if argumenten.communicator == "dialog":
+            logger.info("ik wil praten")
+            return fabriek.createDialogCommunicator()
+        
+        if argumenten.communicator == "logger":
+            logger.info("ik wil loggen")
+            return fabriek.createLoggerCommunicator()
+        
+        if argumenten.communicator == "summary":
+            logger.info("ik wil het mooie in de kleine dingen zien")
+            return fabriek.createSummaryCommunicator()
         
         else:
             ## default option: argumenten.color with default colors
