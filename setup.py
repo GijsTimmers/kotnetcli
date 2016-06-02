@@ -29,6 +29,7 @@ dependencies = [
 		"argcomplete",
 		"cursor",
 		"keyring",
+                "keyrings.alt",
 		"notify2",
 		"requests",
 		"colorama",
