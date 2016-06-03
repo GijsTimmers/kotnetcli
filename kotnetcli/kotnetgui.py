@@ -127,16 +127,24 @@ class GUICredentialsDialog(QtGui.QDialog):
         vbox.addStretch(1)
         
         grid = QtGui.QGridLayout()
+        lblInst = QtGui.QLabel("Institution")
+        grid.addWidget(lblInst, 1, 0)
+        self.inst = QtGui.QComboBox()
+        self.inst.addItem("kuleuven")
+        self.inst.addItem("kuleuven-campusnet")
+        self.inst.addItem("kotnetext")
+        grid.addWidget(self.inst, 1, 1)
+        
         lblUser = QtGui.QLabel("Username")
-        grid.addWidget(lblUser, 1, 0)
+        grid.addWidget(lblUser, 2, 0)
         self.user = QtGui.QLineEdit()
-        grid.addWidget(self.user, 1, 1)
+        grid.addWidget(self.user, 2, 1)
         
         lblPwd = QtGui.QLabel("Password")
-        grid.addWidget(lblPwd, 2, 0)
+        grid.addWidget(lblPwd, 3, 0)
         self.pwd = QtGui.QLineEdit()
         self.pwd.setEchoMode(QtGui.QLineEdit.Password)
-        grid.addWidget(self.pwd, 2, 1) 
+        grid.addWidget(self.pwd, 3, 1) 
         vbox.addLayout(grid)
 
         hbox = QtGui.QHBoxLayout()
@@ -152,7 +160,7 @@ class GUICredentialsDialog(QtGui.QDialog):
         self.show()
     
     def getCreds(self):
-        return (str(self.user.text()), str(self.pwd.text()))
+        return (str(self.user.text()), str(self.pwd.text()), str(self.inst.currentText()))
    
 ## end class GUICredentialsDialog
 
@@ -221,9 +229,9 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
         self.updateGUIText.emit(self.ljust_msg("Credentials opvragen"))
         self.credsSignal.emit()
         logger.debug("block waiting on credentialsDialog queue")
-        (u,p) = queue.get()
-        logger.debug("got credentials for user '%s'", u)
-        return (u,p)
+        (u,p,i) = queue.get()
+        logger.debug("got credentials for user %s@%s", u, i)
+        return (u,p,i)
 
     def print_info(self, string):
         self.updateGUIText.emit(string)

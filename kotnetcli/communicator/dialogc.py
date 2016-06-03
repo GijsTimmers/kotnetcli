@@ -96,13 +96,15 @@ class SuperNetDialogCommunicator(AbstractDialogCommunicator):
     ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
     
     def promptCredentials(self):
-        (code, username) = self.d.inputbox(self.user_prompt)
+        (code, inst) = self.d.inputbox(self.inst_prompt, width=len(self.inst_prompt)+6)
+        if code == Dialog.OK:
+            (code, username) = self.d.inputbox(self.user_prompt, width=len(self.user_prompt)+6)
         if code == Dialog.OK:
             ## echo an asterisk for each character entered by the user
             (code, pwd) = self.d.passwordbox(self.pwd_prompt, insecure=True)
         if code != Dialog.OK:
             raise Exception
-        return (username, pwd)
+        return (username, pwd, inst)
     
     def eventCheckNetworkConnection(self):
         self.update()

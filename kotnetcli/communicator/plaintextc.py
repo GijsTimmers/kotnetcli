@@ -94,9 +94,9 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
 
     def promptCredentials(self):
         cursor.show()
-        (u, pwd) = super(AbstractPlaintextCommunicator, self).promptCredentials()
+        rv = super(AbstractPlaintextCommunicator, self).promptCredentials()
         cursor.hide()
-        return (u, pwd)
+        return rv
 
     def eventExit(self):
         cursor.show()

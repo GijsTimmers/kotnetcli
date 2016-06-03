@@ -63,19 +63,20 @@ class ForgetCredsWorker(AbstractWorker):
             co.eventFailureForget()
             sys.exit(EXIT_FAILURE)
 
-class SuperNetworkWorker(AbstractWorker):
-    def __init__(self, institution):
-        self.browser = KotnetBrowser(institution)
+class SuperNetWorker(AbstractWorker):
+    def __init__(self):
+        self.browser = KotnetBrowser()
     
     def check_credentials(self, co, creds):
         if not creds.hasCreds():
             logger.info("querying for user credentials")
             try:
-                (username, pwd) = co.promptCredentials()
+                (username, pwd, inst) = co.promptCredentials()
             except Exception:
                 logger.debug("communicator prompt exception; exiting with failure")
                 sys.exit(EXIT_FAILURE)
-            creds.saveCreds(username, pwd)
+            creds.storeCreds(username, pwd, inst)
+        logger.debug("got creds for user %s@%s", creds.getUser(), creds.getInst())
     
     def check_kotnet(self, co):
         co.eventCheckNetworkConnection()
@@ -87,18 +88,18 @@ class SuperNetworkWorker(AbstractWorker):
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
-class LoginWorker(SuperNetworkWorker):
+class LoginWorker(SuperNetWorker):
     def do_work(self, co, creds):
         self.check_credentials(co,creds)
         self.check_kotnet(co)
-        self.login_gegevensinvoeren(co)
-        self.login_gegevensopsturen(co,creds)
+        self.login_gegevensinvoeren(co, creds)
+        self.login_gegevensopsturen(co, creds)
         self.login_resultaten(co)
         
-    def login_gegevensinvoeren(self, co):
+    def login_gegevensinvoeren(self, co, creds):
         co.eventGetData()
         try:
-            self.browser.login_get_request()
+            self.browser.login_get_request(creds)
         except KotnetOfflineException:
             co.eventFailureOffline(self.browser.get_server_url())
             sys.exit(EXIT_FAILURE)

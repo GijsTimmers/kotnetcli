@@ -82,8 +82,7 @@ class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
-    def __init__(self, inst):
-        self.institution = inst
+    def __init__(self):
         self.language = "nl"
         self.host = NETLOGIN_HOST
         self.port = NETLOGIN_PORT
@@ -106,9 +105,9 @@ class KotnetBrowser(object):
         except socket.error:
             raise KotnetOfflineException
     
-    def login_get_request(self):
+    def login_get_request(self, creds):
         payload = {
-            "inst"      : self.institution,
+            "inst"      : creds.getInst(),
             "lang"      : self.language,
             "submit"    : "Ga verder / Continue",
         }
@@ -121,13 +120,12 @@ class KotnetBrowser(object):
         self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
         
     def login_post_request(self, creds):
-        (gebruikersnaam, wachtwoord) = creds.getCreds()
         payload = {
-            "inst"              : self.institution,
+            "inst"              : creds.getInst(),
             "lang"              : self.language,
             "submit"            : "Login",
-            "uid"               : gebruikersnaam,
-            self.wachtwoordvak  : wachtwoord
+            "uid"               : creds.getUser(),
+            self.wachtwoordvak  : creds.getPwd()
         }
         try:
             r = requests.post(self.html_post_url, data=payload, timeout=BROWSER_TIMEOUT_SEC)
@@ -207,7 +205,7 @@ class DummyBrowser(KotnetBrowser):
         if not self.kotnet_online:
             raise KotnetOfflineException
 
-    def login_get_request(self):
+    def login_get_request(self, creds):
         if (not self.netlogin_unavailable):
             time.sleep(self.dummy_timeout)
         else:

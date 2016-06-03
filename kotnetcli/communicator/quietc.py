@@ -27,6 +27,7 @@ STD_MSG_WIDTH       = 26
 
 STD_USERNAME_PROMPT = "Voer uw s-nummer/r-nummer in"
 STD_PWD_PROMPT      = "Voer uw wachtwoord in"
+STD_INST_PROMPT     = "Kies uw institutie [kuleuven, kuleuven-campusnet, kotnetext]"
 
 STD_MSG_TEST        = "Kotnetverbinding testen"
 STD_MSG_GET         = "Gegevens ophalen"
@@ -54,6 +55,7 @@ class QuietCommunicator(object):
         
         self.user_prompt    = STD_USERNAME_PROMPT
         self.pwd_prompt     = STD_PWD_PROMPT
+        self.inst_prompt    = STD_INST_PROMPT
         
         self.msg_test       = STD_MSG_TEST
         self.msg_get        = STD_MSG_GET
@@ -95,9 +97,10 @@ class QuietCommunicator(object):
     ################## COMMUNICATOR INTERFACE ##################
     
     def promptCredentials(self):
-        gebruikersnaam = raw_input(self.get_prompt(self.user_prompt))
-        wachtwoord = getpass.getpass(prompt=self.get_prompt(self.pwd_prompt))
-        return (gebruikersnaam, wachtwoord)
+        inst = raw_input(self.get_prompt(self.inst_prompt))
+        user = raw_input(self.get_prompt(self.user_prompt))
+        pwd = getpass.getpass(prompt=self.get_prompt(self.pwd_prompt))
+        return (user, pwd, inst)
     
     def eventForgetCreds(self):
         self.print_info(self.ljust_msg(self.msg_forget))

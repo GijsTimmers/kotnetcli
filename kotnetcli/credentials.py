@@ -23,56 +23,96 @@
 
 import keyring                          ## Voor ophalen wachtwoord
 
-class AbstractCredentials(object):
-    def hasCreds(self):
-        return False
-    
-    def forgetCreds(self):
-        pass #raise ForgetCredsException
-
-class GuestCredentials(AbstractCredentials):
-    def __init__(self):
-        self.user = None
-        self.password = None
-        
-    def hasCreds(self):
-        return not (self.user is None or self.password is None)
-    
-    def getCreds(self):
-        return (self.user, self.password)
-
-    def saveCreds(self, gebruikersnaam, wachtwoord):
-        self.user = gebruikersnaam
-        self.password = wachtwoord
-
-class DummyCredentials(GuestCredentials):
-    def __init__(self):
-        self.user = "dummy_user"
-        self.password = "dummy_password"
-
 class ForgetCredsException(Exception):
     pass
 
-class KeyRingCredentials(AbstractCredentials):
-    def __init__(self):
-        self.kr = keyring.get_keyring()
+class AbstractCredentials(object):
+
+    def __init__(self, inst=None):
+        self.inst = inst
+
+    def getUser(self):
+        return None
+    
+    def getPwd(self):
+        return None
+    
+    def getInst(self):
+        return self.inst
+    
+    def storeCreds(self, user, pwd, inst):
+        self.inst = inst
 
     def hasCreds(self):
-        return not ((self.kr.get_password("kotnetcli", "gebruikersnaam") == None) or\
-            (self.kr.get_password("kotnetcli", "wachtwoord") == None))
+        return not (self.getUser() is None or
+                    self.getPwd()  is None or
+                    self.getInst() is None)
     
-    def getCreds(self):
-        gebruikersnaam = self.kr.get_password("kotnetcli", "gebruikersnaam")
-        wachtwoord = self.kr.get_password("kotnetcli", "wachtwoord")
-        return (gebruikersnaam, wachtwoord)
+    def forgetCreds(self):
+        self.inst = None
+
+## end class AbstractCredentials
+
+class GuestCredentials(AbstractCredentials):
+
+    def __init__(self, inst=None):
+        super(GuestCredentials, self).__init__(inst)
+        self.user = None
+        self.pwd = None
     
-    def saveCreds(self, gebruikersnaam, wachtwoord):
-        self.kr.set_password("kotnetcli", "gebruikersnaam", gebruikersnaam)
-        self.kr.set_password("kotnetcli", "wachtwoord", wachtwoord)
+    def getUser(self):
+        return self.user
+    
+    def getPwd(self):
+        return self.pwd
+
+    def storeCreds(self, user, pwd, inst):
+        self.user = user
+        self.pwd = pwd
+        self.inst = inst
+    
+    def forgetCreds(self):
+        self.user = None
+        self.pwd = None
+        self.inst = None
+
+## end class GuestCredentials
+
+class DummyCredentials(GuestCredentials):
+    def __init__(self, inst=None):
+        super(DummyCredentials, self).__init__(inst)
+        self.user = "dummy_user"
+        self.pwd  = "dummy_password"
+        self.inst = inst
+
+## end class DummyCredentials
+
+class KeyRingCredentials(AbstractCredentials):
+    def __init__(self, inst=None):
+        super(KeyRingCredentials, self).__init__(inst)
+        self.kr = keyring.get_keyring()
+
+    def getUser(self):
+        return self.kr.get_password("kotnetcli", "gebruikersnaam")
+    
+    def getPwd(self):
+        return self.kr.get_password("kotnetcli", "wachtwoord")
+
+    def getInst(self):
+        krInst = self.kr.get_password("kotnetcli", "institution")
+        return self.inst if self.inst is not None else krInst
+    
+    def storeCreds(self, user, pwd, inst):
+        self.kr.set_password("kotnetcli", "wachtwoord", pwd)
+        self.kr.set_password("kotnetcli", "gebruikersnaam", user)
+        self.kr.set_password("kotnetcli", "institution", inst)
     
     def forgetCreds(self):
         try:
             self.kr.delete_password("kotnetcli", "gebruikersnaam")
             self.kr.delete_password("kotnetcli", "wachtwoord")
+            self.kr.delete_password("kotnetcli", "institution")
         except keyring.errors.PasswordDeleteError:
             raise ForgetCredsException()
+
+## end class KeyRingCredentials

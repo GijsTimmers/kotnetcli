@@ -93,10 +93,10 @@ class KotnetCLITester(KotnetCLI):
     def parseCredentialFlags(self, argumenten):
         if argumenten.guest_mode:
             logger.info("ik wil me anders voordoen dan ik ben")
-            return GuestCredentials()
+            return GuestCredentials(argumenten.institution)
         else:
             logger.info("ik wil credentials ophalen voor spek en bonen")
-            return DummyCredentials()
+            return DummyCredentials(argumenten.institution)
 
 def dummy_main():
     try:

@@ -21,13 +21,13 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from worker import DummyLoginWorker, SuperNetworkWorker, EXIT_SUCCESS, EXIT_FAILURE
+from worker import DummyLoginWorker, SuperNetWorker, EXIT_SUCCESS, EXIT_FAILURE
 import browser
 
 import logging
 logger = logging.getLogger(__name__)
 
-class LoginTestsuiteWorker(SuperNetworkWorker):
+class LoginTestsuiteWorker(SuperNetWorker):
 
     def __init__(self, inst, dummy_browser_timeout):
         self.inst = inst

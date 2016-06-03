@@ -34,7 +34,6 @@ import logging                          ## Voor uitvoer van debug-informatie
 
 from .communicator.fabriek import (     ## Voor output op maat
     LoginCommunicatorFabriek, 
-    LogoutCommunicatorFabriek,
     ForgetCommunicatorFabriek
 )
 
@@ -133,10 +132,9 @@ class KotnetCLI(object):
         self.parser.add_argument("--time", action="store_true", \
             help="include fine-grained timing info in logger output")
         
-        self.parser.add_argument("--institution", help="specify the instititution", \
-            nargs="?", const="kuleuven", metavar="INST",
-            choices=["kuleuven", "kotnetext", "kuleuven-campusnet"],
-            action="store", default="kuleuven")
+        self.parser.add_argument("--institution", help="override the instititution", \
+            metavar="INST", action="store", default=None,
+            choices=["kuleuven", "kotnetext", "kuleuven-campusnet"])
         
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\
@@ -212,10 +210,10 @@ class KotnetCLI(object):
     def parseCredentialFlags(self, argumenten):
         if argumenten.guest_mode:
             logger.info("ik wil me anders voordoen dan ik ben")
-            return GuestCredentials()
+            return GuestCredentials(argumenten.institution)
         else:
             logger.info("ik haal de credentials uit de keyring")
-            return KeyRingCredentials()
+            return KeyRingCredentials(argumenten.institution)
 
     ## returns tuple (worker, fabriek)
     def parseActionFlags(self, argumenten):
@@ -229,7 +227,7 @@ class KotnetCLI(object):
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen")
-            worker = LoginWorker(argumenten.institution)
+            worker = LoginWorker()
             fabriek = LoginCommunicatorFabriek()
 
         return (worker, fabriek)
