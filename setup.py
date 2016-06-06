@@ -37,23 +37,35 @@ dependencies = [
 		"beautifulsoup4"
 				  ]
 
+def check_requirements():
+
+    #assert sys.version_info >= (3, 4), "Please use Python 3.4 or higher."
+    
+    if os.name == "posix":
+        assert os.geteuid() == 0, "Please run with root privileges."
+
+
 ## notify2 can't be used on Windows.
 if os.name == "nt":
     dependencies.remove("notify2")
 
-setup(
-    name = "kotnetcli",
-    packages = ["kotnetcli"],
-    version = "1.3.0",
-    description = "An easy automated way to log in on Kotnet",
-    author = "Gijs Timmers and Jo Van Bulck",
-    author_email = "gijs.timmers@student.kuleuven.be",
-    url = "https://github.com/GijsTimmers/kotnetcli",
-    keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
-    install_requires = dependencies,
-  classifiers = [],
-  entry_points = {
-        "console_scripts": ["kotnetcli=kotnetcli:main",
-                            "kotnetcli-dummy=kotnetcli.kotnetcli_test:dummy_main"]},
-  include_package_data = True
-)
+try:
+    check_requirements()
+    setup(
+        name = "kotnetcli",
+        packages = ["kotnetcli"],
+        version = "1.3.0",
+        description = "An easy automated way to log in on Kotnet",
+        author = "Gijs Timmers and Jo Van Bulck",
+        author_email = "gijs.timmers@student.kuleuven.be",
+        url = "https://github.com/GijsTimmers/kotnetcli",
+        keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
+        install_requires = dependencies,
+      classifiers = [],
+      entry_points = {
+            "console_scripts": ["kotnetcli=kotnetcli:main",
+                                "kotnetcli-dummy=kotnetcli.kotnetcli_test:dummy_main"]},
+      include_package_data = True
+    )
+except AssertionError as e:
+    print(e)
