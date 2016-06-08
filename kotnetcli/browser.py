@@ -181,7 +181,7 @@ class KotnetBrowser(object):
         elif rccode == RC_INVALID_INSTITUTION:
             raise InvalidInstitutionException(self.institution)
         
-        elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
+        elif rccode == RC_INTERNAL_SCRIPT_ERR:
             raise InternalScriptErrorException()
 
         else:
