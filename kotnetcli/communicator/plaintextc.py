@@ -28,8 +28,8 @@ from quietc import QuietCommunicator
 
 class AbstractPlaintextCommunicator(QuietCommunicator):
 
-    def __init__(self, title):
-        super(AbstractPlaintextCommunicator, self).__init__()
+    def __init__(self, title, inst_dict):
+        super(AbstractPlaintextCommunicator, self).__init__(inst_dict)
         cursor.hide()
         
         self.OK_STR     = " OK "
@@ -37,28 +37,15 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
         self.FAIL_STR   = "FAIL"
         self.ERR_STR    = "ERROR::{err_msg}"
         self.DONE_STR   = "DONE"
-        self.FINAL_STR  = self.ljust_msg(title)
+        self.FINAL_STR  = self.fmt_info(title)
     
     ################## APPEARANCE HELPER METHODS ##################
 
-    def print_info(self, string):
-        ## print no trailing newline to be able to update WAIT/OK line status
-        sys.stdout.write(string + " ")
-        sys.stdout.flush()
-    
-    def print_err(self, string):
-        self.fmt_fail()
-        self.finalizeSession(fail=True)
-        self.fmt_err(string)
-
-    def print_err_info(self, string):
-        print(string)
-
-    def fmt_err(self, string):
-        print(self.ERR_STR.format(err_msg=string))
+    def fmt_err(self, err):
+        return self.ERR_STR.format(err_msg=err)
 
     def fmt_wait(self):
-        sys.stdout.write("[" + self.WAIT_STR + "]" + "\b" * (2+len(self.WAIT_STR)))
+        sys.stdout.write("[" + self.WAIT_STR + "]" + "\b"*(2+len(self.WAIT_STR)))
         sys.stdout.flush()
 
     def fmt_success(self):
@@ -78,7 +65,8 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
         lengteVanBalkint = 15
         lengteVanRuimteVoorPercentages = 3
         
-        aantalStreepjesObvPercentage = int(round(percentagefloat/100.0 * lengteVanBalkfloat))
+        aantalStreepjesObvPercentage = int(round(percentagefloat/100.0 * \
+                                                    lengteVanBalkfloat))
         print style + "[" + color + \
         "=" * aantalStreepjesObvPercentage + stop_color + \
         " " * (lengteVanBalkint-aantalStreepjesObvPercentage) + \
@@ -90,11 +78,26 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
     def fmt_bar(self, percentage):
         self.fmt_generic_bar(percentage, "", "", "", "")
 
-    ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
+    ################## EVENT HELPER METHODS ##################
 
-    def promptCredentials(self):
+    def eventInfo(self, info):
+        ## print no trailing newline to be able to update WAIT/OK line status
+        sys.stdout.write(info + " ")
+        sys.stdout.flush()
+    
+    def eventError(self, err):
+        self.fmt_fail()
+        self.finalizeSession(fail=True)
+        print(err)
+
+    def eventErrorInfo(self, info):
+        print(info)
+
+    ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##############
+
+    def eventPromptCredentials(self):
         cursor.show()
-        rv = super(AbstractPlaintextCommunicator, self).promptCredentials()
+        rv = super(AbstractPlaintextCommunicator, self).eventPromptCredentials()
         cursor.hide()
         return rv
 
@@ -121,21 +124,21 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
         self.fmt_wait()
 
     def finalizeSession(self, fail=False):
-        self.print_info(self.FINAL_STR)
+        self.eventInfo(self.FINAL_STR)
         self.fmt_fail() if fail else self.fmt_done()
 
 ## end class AbstractPlaintextCommunicator
 
 class LoginPlaintextCommunicator(AbstractPlaintextCommunicator):
     
-    def __init__(self):
-        super(LoginPlaintextCommunicator, self).__init__("Inloggen")
+    def __init__(self, inst_dict):
+        super(LoginPlaintextCommunicator, self).__init__("Inloggen", inst_dict)
     
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.fmt_success()
-        self.print_info("Download:")
+        self.eventInfo("Download:")
         self.fmt_bar(downloadpercentage)
-        self.print_info("Upload:  ")
+        self.eventInfo("Upload:  ")
         self.fmt_bar(uploadpercentage)
         self.finalizeSession()
 
@@ -143,8 +146,8 @@ class LoginPlaintextCommunicator(AbstractPlaintextCommunicator):
 
 class ForgetPlaintextCommunicator(AbstractPlaintextCommunicator):
     
-    def __init__(self):
-        super(ForgetPlaintextCommunicator, self).__init__("Vergeten")
+    def __init__(self, inst_dict):
+        super(ForgetPlaintextCommunicator, self).__init__("Vergeten", inst_dict)
     
     def eventForgetCreds(self):
         super(ForgetPlaintextCommunicator, self).eventForgetCreds()

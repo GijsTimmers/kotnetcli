@@ -83,7 +83,7 @@ class DummyCredentials(GuestCredentials):
         super(DummyCredentials, self).__init__(inst)
         self.user = "dummy_user"
         self.pwd  = "dummy_password"
-        self.inst = inst
+        self.inst = "dummy_inst" if inst is None else inst
 
 ## end class DummyCredentials
 

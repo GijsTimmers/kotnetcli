@@ -34,8 +34,8 @@ DIALOG_MSG_FORGET_SUCCESS   = "You have succesfully removed your kotnetcli crede
 
 class AbstractDialogCommunicator(LoggerCommunicator):
 
-    def __init__(self):
-        super(AbstractDialogCommunicator, self).__init__()
+    def __init__(self, inst_dict):
+        super(AbstractDialogCommunicator, self).__init__(inst_dict)
         self.d = Dialog()
         self.d.set_background_title("kotnetcli")
 
@@ -57,8 +57,8 @@ class ForgetDialogCommunicator(AbstractDialogCommunicator):
 
 class SuperNetDialogCommunicator(AbstractDialogCommunicator):
 
-    def __init__(self, title):
-        super(SuperNetDialogCommunicator, self).__init__()
+    def __init__(self, inst_dict, title):
+        super(SuperNetDialogCommunicator, self).__init__(inst_dict)
         
         self.WAIT     = "Wachten"
         self.DONE     = "In Orde"
@@ -69,8 +69,8 @@ class SuperNetDialogCommunicator(AbstractDialogCommunicator):
         self.title    = title
         self.info     = ""
         self.overal   = 0
-        ## we use a non-ordered dictionary here; event order is encapsulated in the
-        ## login/logout subclasses via a custom self.iter iterator
+        ## we use a non-ordered dictionary here; event order is encapsulated in
+        ## the login/logout subclasses via a custom self.iter iterator
         self.elements = { "check"   : self.WAIT,
                           "get"     : self.WAIT,
                           "post"    : self.WAIT,
@@ -85,20 +85,22 @@ class SuperNetDialogCommunicator(AbstractDialogCommunicator):
                           percent  = self.overal,
                           elements = self.getProgressElements())
 
-    ## will be called by eventFailure methods inherited from QuietCommunicator
-    def print_err(self, str):
-        self.info = str
+    def eventError(self, string):
+        self.info = string
         ## fail the current item and cancel all following ones
         self.elements[self.iter.next()]      = self.FAIL
         for x in self.iter: self.elements[x] = self.CANCEL
         self.update()
     
-    ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##################
+    ################## COMMON LOGIN/LOGOUT COMMUNICATOR INTERFACE ##############
     
-    def promptCredentials(self):
-        (code, inst) = self.d.inputbox(self.inst_prompt, width=len(self.inst_prompt)+6)
+    def eventPromptCredentials(self):
+        instChoices = [(k, v, k=="kuleuven") for k,v in self.inst_dict.items()]
+        (code, inst) = self.d.radiolist(text=self.inst_prompt, width=70,
+                                                choices=instChoices)
         if code == Dialog.OK:
-            (code, username) = self.d.inputbox(self.user_prompt, width=len(self.user_prompt)+6)
+            (code, username) = self.d.inputbox(self.user_prompt,
+                                                width=len(self.user_prompt)+6)
         if code == Dialog.OK:
             ## echo an asterisk for each character entered by the user
             (code, pwd) = self.d.passwordbox(self.pwd_prompt, insecure=True)
@@ -128,8 +130,9 @@ class SuperNetDialogCommunicator(AbstractDialogCommunicator):
 
 class LoginDialogCommunicator(SuperNetDialogCommunicator):
 
-    def __init__(self):
-        super(LoginDialogCommunicator,self).__init__("kotnetcli network login")
+    def __init__(self, inst_dict):
+        super(LoginDialogCommunicator,self).__init__(inst_dict,
+                                                    "kotnetcli network login")
 
         self.elements["upload"]   = self.NA
         self.elements["download"] = self.NA

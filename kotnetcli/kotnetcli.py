@@ -34,7 +34,8 @@ import logging                          ## Voor uitvoer van debug-informatie
 
 from .communicator.fabriek import (     ## Voor output op maat
     LoginCommunicatorFabriek, 
-    ForgetCommunicatorFabriek
+    ForgetCommunicatorFabriek,
+    inst_dict
 )
 
 from .credentials import (              ## Voor opvragen van s-nummer
@@ -134,7 +135,7 @@ class KotnetCLI(object):
         
         self.parser.add_argument("--institution", help="override the instititution", \
             metavar="INST", action="store", default=None,
-            choices=["kuleuven", "kotnetext", "kuleuven-campusnet"])
+            choices=inst_dict.keys())
         
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\

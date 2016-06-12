@@ -28,15 +28,15 @@ logger = logging.getLogger(__name__)
 
 class LoggerCommunicator(QuietCommunicator):
 
-    def __init__(self):
-        super(LoggerCommunicator, self).__init__()
-        self.msg_width = 0
+    ## do not left-adjust progress info
+    def fmt_info(self, info):
+        return info
 
-    def print_info(self, string):
-        logger.info(string)
-    
-    def print_err(self, string):
-        logger.error(string)
+    def eventInfo(self, info):
+        logger.info(info)
 
-    def print_err_info(self, string):
-        logger.info(string)
+    def eventError(self, err):
+        logger.error(err)
+
+    def eventErrorInfo(self, info):
+        logger.info(info)

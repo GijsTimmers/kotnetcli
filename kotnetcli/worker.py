@@ -50,7 +50,7 @@ class AbstractWorker(object):
         ## fail gracefully when encountering an unexpected error
         except Exception:
             logger.debug("Caught worker exception; exiting with failure")
-            co.eventFailureInternalError(traceback)
+            co.eventFailureInternalError(traceback.format_exc())
             sys.exit(EXIT_FAILURE)
 
 class ForgetCredsWorker(AbstractWorker):
@@ -71,9 +71,11 @@ class SuperNetWorker(AbstractWorker):
         if not creds.hasCreds():
             logger.info("querying for user credentials")
             try:
-                (username, pwd, inst) = co.promptCredentials()
+                (username, pwd, inst) = co.eventPromptCredentials()
             except Exception:
-                logger.debug("communicator prompt exception; exiting with failure")
+                ## fail gracefully for a communicator input failure
+                logger.warning("communicator prompt exception; exiting with failure")
+                logger.debug(traceback.format_exc())
                 sys.exit(EXIT_FAILURE)
             creds.storeCreds(username, pwd, inst)
         logger.debug("got creds for user %s@%s", creds.getUser(), creds.getInst())

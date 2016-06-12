@@ -38,8 +38,8 @@ SUMMARY_ERR_PANIC       = "Internal kotnetcli exception."
 
 class AbstractSummaryCommunicator(LoggerCommunicator):
     
-    def __init__(self):
-        super(AbstractSummaryCommunicator, self).__init__()
+    def __init__(self, inst_dict):
+        super(AbstractSummaryCommunicator, self).__init__(inst_dict)
     
         self.err_offline    = SUMMARY_ERR_OFFLINE
         self.err_creds      = SUMMARY_ERR_CREDS
@@ -50,15 +50,19 @@ class AbstractSummaryCommunicator(LoggerCommunicator):
         self.err_srv        = SUMMARY_ERR_SRV
         self.err_panic      = SUMMARY_ERR_PANIC
     
-    def print_err(self, string):
-        print("ERROR::" + string)
+    def fmt_err(self, err):
+        return "ERROR::" + err
+
+    def eventError(self, err):
+        print(err)
 
 class ForgetSummaryCommunicator(AbstractSummaryCommunicator, LoggerCommunicator):
+    
     def eventForgetCredsSuccess(self):
-        print SUMMARY_MSG_FORGET
+        print(SUMMARY_MSG_FORGET)
     
 class LoginSummaryCommunicator(AbstractSummaryCommunicator, LoggerCommunicator):
 
     def eventLoginSuccess(self, download, upload):
-        print SUMMARY_MSG_LOGIN
-        print SUMMARY_MSG_DOWN_UP.format(downl=download, upl=upload)
+        print(SUMMARY_MSG_LOGIN)
+        print(SUMMARY_MSG_DOWN_UP.format(downl=download, upl=upload))

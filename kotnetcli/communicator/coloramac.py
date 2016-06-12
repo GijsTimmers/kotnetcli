@@ -34,10 +34,10 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
 
     ################## INITIALIZATION ##################
 
-    def __init__(self):
+    def __init__(self, inst_dict):
+        super(AbstractColoramaCommunicator,self).__init__(inst_dict)
         self.init_colors(map(lambda x:x.upper(),[ "green", "yellow", "red", "bright" ]))
         colorama_init()
-        super(AbstractColoramaCommunicator,self).__init__()
     
     def init_colors(self, colorNameList):
         style = getattr(Style, colorNameList.pop())
@@ -59,14 +59,18 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
         
     ################## OVERRIDE PLAINTEXT APPEARANCE METHODS ##################
 
-    def get_prompt(self, string):
-        return Style.BRIGHT + string + Style.NORMAL + " > "
+    def fmt_prompt_msg(self, string):
+        return Style.BRIGHT + Fore.BLUE + "::" + Fore.RESET + " " + string + \
+            Style.NORMAL
 
-    def fmt_err(self, string):
-        sys.stderr.write(self.ERR_STYLE + self.ERR_COLOR)
-        super(AbstractColoramaCommunicator, self).fmt_err(string)
-        sys.stderr.write(Style.RESET_ALL)
-        sys.stderr.flush()
+    def fmt_input_choice(self, key, val, maxKeyLen):
+        return "    " + Fore.CYAN + \
+               "{k:{width}}".format(k=key, width=maxKeyLen+1) + Fore.RESET + \
+               " {v}".format(v=val)
+
+    def fmt_err(self, err):
+        superErr = super(AbstractColoramaCommunicator, self).fmt_err(err)
+        return Fore.RED + superErr + Fore.RESET
 
     def fmt_wait(self):
         sys.stdout.write(self.WAIT_STYLE + "[" + self.WAIT_COLOR + self.WAIT_STR + \

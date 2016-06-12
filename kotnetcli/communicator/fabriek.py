@@ -21,25 +21,16 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-## fabriek.py: zorgt op aanvraag van kotnetcli.py voor het aanmaken van de
-## correcte communicator: bijvoorbeeld: kotnetcli.py vraagt om een login met
-## curses als communicator; dan zal een instantie van 
-## LoginCommunicatorFabriek.createCursesCommunicator() worden aangemaakt,
-## genaamd co. Gezien LoginSummaryCommunicator() methodes bevat als 
-## eventNetloginStart(), worden deze nu onderdeel van co. Dat wil zeggen dat
-## de worker de juiste event kan aanroepen: bvb co.eventNetloginStart(), zonder
-## te weten welke communicator dat nu precies is.
-##
-## LoginCommunicatorFabriek: functies als volgt aanroepen:
-## co = LoginCommunicatorFabriek()       
-## co = co.createColoramaCommunicator() 
-## co.eventNetloginStart()               ## geeft de juiste output
-
 import atexit
+
+inst_dict = { "kuleuven"           : "voor KU Leuven associatie",
+              "kuleuven-campusnet" : "voor KU Leuven residenties",
+              "kotnetext"          : "voor externen" }
 
 ## co.eventExit is always called, even on asynchronous exit (e.g. keyboard interrupt)
 ## --> allow the communicator to restore user interface state (e.g. show cursor)
-def wrap(co):
+def wrap(coClass):
+    co = coClass(inst_dict)
     atexit.register(co.eventExit)
     return co
 
@@ -47,27 +38,27 @@ class LoginCommunicatorFabriek(object):
     
     def createQuietCommunicator(self):
         from .quietc import QuietCommunicator
-        return wrap(QuietCommunicator())
+        return wrap(QuietCommunicator)
     
     def createLoggerCommunicator(self):
         from .loggerc import LoggerCommunicator
-        return wrap(LoggerCommunicator())
+        return wrap(LoggerCommunicator)
     
     def createPlaintextCommunicator(self):
         from .plaintextc import LoginPlaintextCommunicator
-        return wrap(LoginPlaintextCommunicator())
+        return wrap(LoginPlaintextCommunicator)
     
     def createColoramaCommunicator(self):
         from .coloramac import LoginColoramaCommunicator
-        return wrap(LoginColoramaCommunicator())
+        return wrap(LoginColoramaCommunicator)
     
     def createDialogCommunicator(self):
         from .dialogc import LoginDialogCommunicator
-        return wrap(LoginDialogCommunicator())
+        return wrap(LoginDialogCommunicator)
 
     def createSummaryCommunicator(self):
         from .summaryc import LoginSummaryCommunicator
-        return wrap(LoginSummaryCommunicator())
+        return wrap(LoginSummaryCommunicator)
 
 ## end class LoginCommunicatorFabriek
 
@@ -75,19 +66,19 @@ class ForgetCommunicatorFabriek(LoginCommunicatorFabriek):
     
     def createPlaintextCommunicator(self):
         from .plaintextc import ForgetPlaintextCommunicator
-        return wrap(ForgetPlaintextCommunicator())
+        return wrap(ForgetPlaintextCommunicator)
     
     def createColoramaCommunicator(self):
         from .coloramac import ForgetColoramaCommunicator
-        return wrap(ForgetColoramaCommunicator())
+        return wrap(ForgetColoramaCommunicator)
 
     def createDialogCommunicator(self):
         from .dialogc import ForgetDialogCommunicator
-        return wrap(ForgetDialogCommunicator())
+        return wrap(ForgetDialogCommunicator)
 
     def createSummaryCommunicator(self):
         from .summaryc import ForgetSummaryCommunicator
-        return wrap(ForgetSummaryCommunicator())
+        return wrap(ForgetSummaryCommunicator)
 
 ## end class ForgetCommunicatorFabriek
 

@@ -27,6 +27,7 @@ import logging
 from PyQt4 import QtGui, QtCore
 from Queue import Queue
 
+from .communicator.fabriek import inst_dict
 from .communicator.summaryc import AbstractSummaryCommunicator
 from .credentials import KeyRingCredentials, GuestCredentials
 from .worker import (
@@ -106,9 +107,9 @@ class KotnetGUI(QtGui.QWidget):
         self.uploadbar.setValue(upload)
         self.finalize()
 
-    def queryCredentials(self):
+    def queryCredentials(self, instList):
         logger.debug("spawning GUICredentialsDialog")
-        d = GUICredentialsDialog(self)
+        d = GUICredentialsDialog(self, instList)
         d.exec_()
         logger.debug("queuing result from GUICredentialsDialog")
         queue.put(d.getCreds())
@@ -118,11 +119,11 @@ class KotnetGUI(QtGui.QWidget):
 ## Helper GUI class for a pop-up dialog querying credentials from the user
 class GUICredentialsDialog(QtGui.QDialog):
 
-    def __init__(self, parent):
+    def __init__(self, parent, instList):
         super(GUICredentialsDialog, self).__init__(parent)
-        self.initUI()
+        self.initUI(instList)
         
-    def initUI(self):
+    def initUI(self, instList):
         vbox = QtGui.QVBoxLayout()
         vbox.addStretch(1)
         
@@ -130,9 +131,9 @@ class GUICredentialsDialog(QtGui.QDialog):
         lblInst = QtGui.QLabel("Institution")
         grid.addWidget(lblInst, 1, 0)
         self.inst = QtGui.QComboBox()
-        self.inst.addItem("kuleuven")
-        self.inst.addItem("kuleuven-campusnet")
-        self.inst.addItem("kotnetext")
+        self.inst.addItems(instList)
+        if "kuleuven" in instList:
+            self.inst.setCurrentIndex(instList.index("kuleuven"))
         grid.addWidget(self.inst, 1, 1)
         
         lblUser = QtGui.QLabel("Username")
@@ -217,27 +218,30 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
 
     GUI_TEXT_LJUST_WIDTH = 26
 
-    def __init__(self, textSignal, errorSignal, percentagesSignal, credsSignal):
-        super(LoginGUICommunicator, self).__init__()
+    def __init__(self, inst_dict, textSignal, errorSignal, percentagesSignal, credsSignal):
+        super(LoginGUICommunicator, self).__init__(inst_dict)
         self.msg_width = self.GUI_TEXT_LJUST_WIDTH
         self.updateGUIText = textSignal
         self.updateGUIError = errorSignal
         self.updateGUIPercentages = percentagesSignal
         self.credsSignal = credsSignal
 
-    def promptCredentials(self):
-        self.updateGUIText.emit(self.ljust_msg("Credentials opvragen"))
-        self.credsSignal.emit()
+    def eventPromptCredentials(self):
+        self.updateGUIText.emit(self.fmt_info("Credentials opvragen"))
+        self.credsSignal.emit(self.inst_dict.keys())
         logger.debug("block waiting on credentialsDialog queue")
         (u,p,i) = queue.get()
         logger.debug("got credentials for user %s@%s", u, i)
         return (u,p,i)
 
-    def print_info(self, string):
-        self.updateGUIText.emit(string)
+    def eventInfo(self, info):
+        self.updateGUIText.emit(info)
+
+    def fmt_err(err):
+        return "ERROR::" + err
     
-    def print_err(self, string):
-        self.updateGUIError.emit("ERROR::" + string)
+    def eventError(self, err):
+        self.updateGUIError.emit(err)
 
     def eventLoginSuccess(self, downloadpercentage, uploadpercentage):
         self.updateGUIPercentages.emit(downloadpercentage, uploadpercentage)
@@ -252,11 +256,11 @@ class KotnetcliRunner(QtCore.QObject):
     updateGUIText = QtCore.pyqtSignal(str)
     updateGUIError = QtCore.pyqtSignal(str)
     updateGUIPercentages = QtCore.pyqtSignal(int,int)
-    GUIQueryCredentials = QtCore.pyqtSignal()
+    GUIQueryCredentials = QtCore.pyqtSignal(list)
 
     def do_netlogin(self, choice):
         logger.debug("creating netlogin kotnetcli objects")
-        co = LoginGUICommunicator(self.updateGUIText, self.updateGUIError,
+        co = LoginGUICommunicator(inst_dict, self.updateGUIText, self.updateGUIError,
                                  self.updateGUIPercentages, self.GUIQueryCredentials)
         creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
         

@@ -24,6 +24,9 @@
 from worker import DummyLoginWorker, SuperNetWorker, EXIT_SUCCESS, EXIT_FAILURE
 import browser
 
+##TODO quick dirty hack; should pass creation method as an argument for testsuite instead
+from .communicator.fabriek import inst_dict
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,7 +48,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
     def run_dummy_login_tests(self, co, creds):
     
         logger.info("DEFAULT DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout)
         try:
             worker.go(co, creds)
@@ -54,7 +57,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("DEFAULT DUMMY LOGIN END\n")
         
         logger.info("LOW PERCENTAGES DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_SUCCESS, -5, 22.5)        
         try:
             worker.go(co, creds)
@@ -63,7 +66,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("LOW PERCENTAGES DUMMY LOGIN END\n")
         
         logger.info("KOTNET OFFLINE DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, False) 
         try:
             worker.go(co, creds)
@@ -72,7 +75,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("KOTNET OFFLINE DUMMY LOGIN END\n")
         
         logger.info("NETLOGIN OFFLINE DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, True)        
         try:
             worker.go(co, creds)
@@ -81,7 +84,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("NETLOGIN OFFLINE DUMMY LOGIN END\n")
         
         logger.info("INVALID USERNAME DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_INVALID_USERNAME)        
         try:
             worker.go(co, creds)
@@ -90,7 +93,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("INVALID USERNAME DUMMY LOGIN END\n")
         
         logger.info("INTERNAL SCRIPT ERROR LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_INTERNAL_SCRIPT_ERR)        
         try:
             worker.go(co, creds)
@@ -99,7 +102,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("INTERNAL SCRIPT ERROR LOGIN END\n")
         
         logger.info("INVALID PASSWORD DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_INVALID_PASSWORD)        
         try:
             worker.go(co, creds)
@@ -108,7 +111,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("INVALID PASSWORD DUMMY LOGIN END\n")
         
         logger.info("MAX IP DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_LOGIN_MAX_IP)        
         try:
             worker.go(co, creds)
@@ -117,7 +120,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("MAX IP DUMMY LOGIN END\n")
         
         logger.info("UNKNOWN INSTITUTION DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, browser.RC_INVALID_INSTITUTION)        
         try:
             worker.go(co, creds)
@@ -126,7 +129,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("UNKNOWN INSTITUTION DUMMY LOGIN END\n")
 
         logger.info("UNKNOWN RC (DEBUG ON) DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker = DummyLoginWorker(self.inst, self.timeout, True, False, 300)
         worker_logger = logging.getLogger("worker")
         worker_logger.setLevel(logging.DEBUG)
@@ -137,7 +140,7 @@ class LoginTestsuiteWorker(SuperNetWorker):
             logger.info("UNKNOWN RC (DEBUG ON) DUMMY LOGIN END\n")        
         
         logger.info("UNKNOWN RC (DEBUG OFF) DUMMY LOGIN START")
-        co.__init__()
+        co.__init__(inst_dict)
         worker_logger.setLevel(logging.WARNING)
         try:
             worker.go(co, creds)
