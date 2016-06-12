@@ -32,6 +32,7 @@ from .communicator.summaryc import AbstractSummaryCommunicator
 from .credentials import KeyRingCredentials, GuestCredentials
 from .worker import (
     DummyLoginWorker,
+    LoginWorker,
     EXIT_SUCCESS
 )
 from .tools import log
@@ -230,16 +231,11 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
         self.updateGUIText.emit(self.fmt_info("Credentials opvragen"))
         self.credsSignal.emit(self.inst_dict.keys())
         logger.debug("block waiting on credentialsDialog queue")
-        (u,p,i) = queue.get()
-        logger.debug("got credentials for user %s@%s", u, i)
-        return (u,p,i)
+        return queue.get()
 
     def eventInfo(self, info):
         self.updateGUIText.emit(info)
 
-    def fmt_err(err):
-        return "ERROR::" + err
-    
     def eventError(self, err):
         self.updateGUIError.emit(err)
 
@@ -264,7 +260,8 @@ class KotnetcliRunner(QtCore.QObject):
                                  self.updateGUIPercentages, self.GUIQueryCredentials)
         creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
         
-        worker = DummyLoginWorker("kuleuven", 1, True, False, 100)
+        #worker = DummyLoginWorker("kuleuven", 1, True, False, 100)
+        worker = LoginWorker()
         worker.go(co, creds)
 
 ## end class KotnetcliRunner
