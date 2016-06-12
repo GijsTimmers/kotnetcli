@@ -61,7 +61,7 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
 
     def fmt_prompt_msg(self, string):
         return Style.BRIGHT + Fore.BLUE + "::" + Fore.RESET + " " + string + \
-            Style.NORMAL
+               Style.NORMAL
 
     def fmt_input_choice(self, key, val, maxKeyLen):
         return "    " + Fore.CYAN + \
@@ -69,8 +69,8 @@ class AbstractColoramaCommunicator(AbstractPlaintextCommunicator):
                " {v}".format(v=val)
 
     def fmt_err(self, err):
-        superErr = super(AbstractColoramaCommunicator, self).fmt_err(err)
-        return Fore.RED + superErr + Fore.RESET
+        return Fore.RED + Style.BRIGHT + "error: " + Fore.RESET + \
+               Style.RESET_ALL + err
 
     def fmt_wait(self):
         sys.stdout.write(self.WAIT_STYLE + "[" + self.WAIT_COLOR + self.WAIT_STR + \

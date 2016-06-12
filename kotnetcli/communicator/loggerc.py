@@ -28,10 +28,11 @@ logger = logging.getLogger(__name__)
 
 class LoggerCommunicator(QuietCommunicator):
 
-    ## do not left-adjust progress info
-    def fmt_info(self, info):
-        return info
-
+    def __init__(self, inst_dict):
+        super(LoggerCommunicator, self).__init__(inst_dict)
+        ## do not left-adjust progress info
+        self.msg_width = 0
+    
     def eventInfo(self, info):
         logger.info(info)
 
