@@ -53,26 +53,20 @@ from .tools import log                  ## Custom logger
 from .tools import logo
 from .tools import license
 
+from __init__ import __version__, __version_str__, __src_url__
+
 logger = logging.getLogger(__name__)
-
-GITHUB_URL = "https://github.com/GijsTimmers/kotnetcli"
-
-## Hardcode the version. Development versions should be suffixed with -dev;
-## release versions should be followed with "Name" as well. Some examples:
-## __version__ = '1.2.1 "American Craftsman"'   (A release)
-## __version__ = '1.2.1-dev'                    (A development version)
-__version__ = '1.3.0-dev'
 
 ## An argument parse action that prints license information on stdout and exits
 class PrintLicenceAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print(license.license.format(github_url=GITHUB_URL))
+        print(license.license.format(github_url=__src_url__))
         exit(0)
 
 ## An argument parse action that prints version info on stdout and exits
 class PrintVersionAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print(logo.logo.format(version=__version__, github_url=GITHUB_URL))
+        print(logo.logo.format(version=__version_str__, github_url=__src_url__))
         exit(0)
 
 def init_debug_level(log_level, include_time):

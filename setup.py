@@ -22,50 +22,41 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup, find_packages
+from kotnetcli import __version__, __src_url__
 import os
 
- 
+## Only essential dependencies should be listed here. Specific communicator
+## dependencies can always be installed later, if desired.
 dependencies = [
-		"argcomplete",
-		"cursor",
-		"keyring",
-                "keyrings.alt",
-		"notify2",
-		"requests",
-		"colorama",
-		"python2-pythondialog",
-		"beautifulsoup4"
-				  ]
+    "argcomplete",
+    "argparse",
+    "logging",
+    "cursor",
+    "keyring",
+    "keyrings.alt",
+    "requests",
+    "beautifulsoup4"
+]
 
-def check_requirements():
-
-    #assert sys.version_info >= (3, 4), "Please use Python 3.4 or higher."
-    
-    if os.name == "posix":
-        assert os.geteuid() == 0, "Please run with root privileges."
-
-
-## notify2 can't be used on Windows.
-if os.name == "nt":
-    dependencies.remove("notify2")
-
-try:
-    check_requirements()
-    setup(
-        name = "kotnetcli",
-        packages = ["kotnetcli"],
-        version = "1.3.0",
-        description = "An easy automated way to log in on Kotnet",
-        author = "Gijs Timmers and Jo Van Bulck",
-        author_email = "gijs.timmers@student.kuleuven.be",
-        url = "https://github.com/GijsTimmers/kotnetcli",
-        keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
-        install_requires = dependencies,
-      classifiers = [],
-      entry_points = {
-            "console_scripts": ["kotnetcli=kotnetcli:main",
-                                "kotnetcli-dummy=kotnetcli.kotnetcli_test:dummy_main"]},
-      include_package_data = True
-    )
-except AssertionError as e:
-    print(e)
+setup(
+    name = "kotnetcli",
+    packages = find_packages(),
+    version = __version__,
+    description = "An easy automated way to log in on Kotnet",
+    author = "Gijs Timmers and Jo Van Bulck",
+    author_email = "gijs.timmers@student.kuleuven.be",
+    url = __src_url__,
+    keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
+    install_requires = dependencies,
+    entry_points = {
+        "console_scripts":[
+            "kotnetcli=kotnetcli.kotnetcli:main",
+            #TODO dedicated test command deprecated with kotnetsrv
+            "kotnetcli-dummy=kotnetcli.kotnetcli_test:dummy_main"
+        ],
+        "gui_scripts":[
+            "kotnetgui=kotnetcli.kotnetgui:main"
+        ],
+    },
+    classifiers=[]
+)

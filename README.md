@@ -68,7 +68,7 @@ platform-specific instructions
    
    or install system-wide:
 
-        $ sudo python setup.py install
+        $ sudo python2 setup.py install
 
 When run for the first time, kotnetcli will ask you to unlock your keyring. For
 maximum ease-of-use, just enter the password you use to login to your system. If

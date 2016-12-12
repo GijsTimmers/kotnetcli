@@ -1,4 +1,7 @@
-include kotnetcli/communicator/*.py
-include kotnetcli/tools/*.py
-include kotnetcli/logoutformuliertemplate.html
+include LICENSE
+include README.md
+include CONTRIBUTING.md
+
+recursive-include kotnetcli/ *
+
 global-exclude *.pyc
