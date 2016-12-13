@@ -26,9 +26,13 @@ import BaseHTTPServer
 import CGIHTTPServer
 import ssl
 
+import os
+from ..__init__ import resolve_path
+
 HOST_NAME   = 'localhost'
 PORT_NUMBER = 4443
-CERT_FILE   = 'kotnetcli-localhost.pem'
+CERT_FILE   = resolve_path("data/dummy_localhost_cert.pem")
+SRV_DIR     = resolve_path("server")
 
 def main():
     ## set up a simple SSL-enabled HTTPS server that listens for incoming GET/
@@ -38,11 +42,16 @@ def main():
     httpd = BaseHTTPServer.HTTPServer((HOST_NAME, PORT_NUMBER), handler)
     httpd.socket = ssl.wrap_socket (httpd.socket, certfile=CERT_FILE, server_side=True)
 
+    print "cd to server directory at '{0}'".format(SRV_DIR)
+    os.chdir(SRV_DIR)
+
     ## Force the use of a subprocess for CGI scripts to ensure they have acccess
     ## to the SSL wrapped socket (see also http://stackoverflow.com/a/27303995)
     CGIHTTPServer.CGIHTTPRequestHandler.have_fork=False
 
     print time.asctime(), "Kotnetcli Test Server Starts - %s:%s" % (HOST_NAME, PORT_NUMBER)
+    print "using certificate at {0}".format(CERT_FILE)
+    
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

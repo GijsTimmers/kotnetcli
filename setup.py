@@ -51,12 +51,14 @@ setup(
     entry_points = {
         "console_scripts":[
             "kotnetcli=kotnetcli.kotnetcli:main",
-            #TODO dedicated test command deprecated with kotnetsrv
             "kotnetsrv=kotnetcli.server.server:main"
         ],
         "gui_scripts":[
             "kotnetgui=kotnetcli.kotnetgui:main"
         ],
     },
+    #TODO find a way to make sure kotnetcli/data/dummy_localhost_cert.pem has
+    # been generated (?)
+    include_package_data = True,
     classifiers=[]
 )

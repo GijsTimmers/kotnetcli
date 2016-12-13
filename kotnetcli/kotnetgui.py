@@ -36,6 +36,7 @@ from .worker import (
     EXIT_SUCCESS
 )
 from .tools import log
+from __init__ import resolve_path
 
 ## we use a queue to synchronize the background netlogin thread, requesting the
 ## credentials from the GUICredentialsDialog in the main thread
@@ -191,7 +192,9 @@ class GUIOptionDialog(QtGui.QDialog):
         grid.addLayout(vbox, 0, 0)
         
         lblLogo = QtGui.QLabel()
-        logo = QtGui.QPixmap("kotnetcli/tools/logo_small.jpg")
+        img = resolve_path("data/logo_small.jpg")
+        logger.debug("logo data path resolved to '{0}'".format(img))
+        logo = QtGui.QPixmap(img)
         scaledLogo = logo.scaled(QtCore.QSize(120,120), QtCore.Qt.KeepAspectRatio)
         lblLogo.setPixmap(scaledLogo)
         grid.addWidget(lblLogo, 0, 1)
@@ -261,10 +264,7 @@ class KotnetcliRunner(QtCore.QObject):
                                  self.updateGUIPercentages, self.GUIQueryCredentials)
         creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
         
-        worker = LoginWorker("kuleuven",
-                             "localhost",
-                             4443,
-                             "kotnetcli/server/kotnetcli-localhost.pem")
+        worker = LoginWorker("kuleuven")
         worker.go(co, creds)
 
 ## end class KotnetcliRunner

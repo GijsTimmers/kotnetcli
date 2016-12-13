@@ -64,9 +64,8 @@ class ForgetCredsWorker(AbstractWorker):
             sys.exit(EXIT_FAILURE)
 
 class SuperNetworkWorker(AbstractWorker):
-    def __init__(self, institution, host=NETLOGIN_HOST, port=NETLOGIN_PORT, 
-                 verify=NETLOGIN_CERT):
-        self.browser = KotnetBrowser(institution, host, port, verify)
+    def __init__(self, institution):
+        self.browser = KotnetBrowser(institution)
     
     def check_credentials(self, co, creds):
         if not creds.hasCreds():

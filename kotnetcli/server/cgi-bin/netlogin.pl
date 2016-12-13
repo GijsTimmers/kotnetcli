@@ -26,12 +26,16 @@ import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 import datetime
 import rccodes
-import yaml
 import cgi
+
+#import yaml
 
 ## dummy authentication database
 ## TODO read in a yaml file as test database --> also write the number of IP connections...
 ## each user should get his own timestamp from the moment the pwd-number gets requested.
+
+## TODO default yaml database should be preinstalled and copied to /tmp dir
+## when the server starts (with write rights)
 
 institutions    = ['kuleuven', 'kotnetext', 'kuleuven-campusnet']
 dummy_db        = {'dummy_user' : {'pwd': 'dummy_password', 'download': 75, 'upload': 90},
@@ -40,8 +44,8 @@ dummy_db        = {'dummy_user' : {'pwd': 'dummy_password', 'download': 75, 'upl
                    'gijs'       : {'pwd': 'wies', 'download': 0, 'upload': 0}
                   }
 
-with open("database.yml", "w") as database:
-    database.write(yaml.dump(dummy_db, default_flow_style=False))
+#with open("database.yml", "w") as database:
+#    database.write(yaml.dump(dummy_db, default_flow_style=False))
     
 ## parse CGI arguments
 

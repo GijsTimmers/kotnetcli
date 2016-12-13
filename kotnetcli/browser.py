@@ -26,6 +26,11 @@ import time                             ## Voor timeout om venster te sluiten
 import requests                         ## Invullen van HTTP POST-request
 import socket                           ## Voor ophalen IP
 
+#TODO urllib generates a warning for our localhost test certificate, but cannot
+# be fixed on python < 2.7.2 (https://github.com/shazow/urllib3/issues/497)
+import requests.packages.urllib3
+requests.packages.urllib3.disable_warnings()
+
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 ## login rc codes contained in the response html page
@@ -34,10 +39,12 @@ from server.rccodes import *
 import logging
 logger = logging.getLogger(__name__)
 
+from __init__ import resolve_path
+
 ## FIXME for now default to localhost developement server
 NETLOGIN_HOST       = "localhost"   #"netlogin.kuleuven.be"
 NETLOGIN_PORT       = 4443          #443
-NETLOGIN_CERT       = "kotnetcli/server/kotnetcli-localhost.pem" # True
+NETLOGIN_CERT       = resolve_path("data/dummy_localhost_cert.pem") # True
 
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5

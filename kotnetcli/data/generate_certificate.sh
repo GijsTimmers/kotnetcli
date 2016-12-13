@@ -17,18 +17,21 @@
 COUNTRY="BE"
 STATE="Belgium"
 CITY="Leuven"
-COMPANY="kotnetcli"
+ORGANIZATION="kotnetcli"
 UNIT="dev"
 CN="localhost"
 
-SUBJ="/C=$COUNTRY/ST=$STATE/L=$CITY/O=$COMPANY/OU=$UNIT/CN=$CN"
-CERT="kotnetcli-localhost.pem"
-OPENSSL_CMD="openssl req -x509 -newkey rsa:2048 -keyout $CERT -out $CERT -days 365 -nodes -subj $SUBJ"
+SUBJ="/C=$COUNTRY/ST=$STATE/L=$CITY/O=$ORGANIZATION/OU=$UNIT/CN=$CN"
+CERT="dummy_localhost_cert.pem"
+OPENSSL_CMD="openssl req -x509 -newkey rsa:2048 -keyout $CERT -out $CERT \
+-days 365 -nodes -subj $SUBJ"
 
 rm $CERT
-echo -e "===== generating self-signed openSSL certificate: $OPENSSL_CMD =====\n"
+echo "===== generating self-signed openSSL certificate ====="
+echo -e "> $OPENSSL_CMD\n"
 $OPENSSL_CMD
 
 OPENSSL_VERIFY_CMD="openssl verify $CERT"
-echo -e "\n===== verifying generated certificate: $OPENSSL_VERIFY_CMD =====\n"
+echo -e "\n===== verifying generated certificate ====="
+echo -e "> $OPENSSL_VERIFY_CMD\n"
 $OPENSSL_VERIFY_CMD
