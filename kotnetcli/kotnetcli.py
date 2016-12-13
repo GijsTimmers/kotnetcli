@@ -222,7 +222,7 @@ class KotnetCLI(object):
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen")
-            worker = LoginWorker()
+            worker = LoginWorker(argumenten.institution)
             fabriek = LoginCommunicatorFabriek()
 
         return (worker, fabriek)

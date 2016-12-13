@@ -52,7 +52,7 @@ setup(
         "console_scripts":[
             "kotnetcli=kotnetcli.kotnetcli:main",
             #TODO dedicated test command deprecated with kotnetsrv
-            "kotnetcli-dummy=kotnetcli.kotnetcli_test:dummy_main"
+            "kotnetsrv=kotnetcli.server.server:main"
         ],
         "gui_scripts":[
             "kotnetgui=kotnetcli.kotnetgui:main"

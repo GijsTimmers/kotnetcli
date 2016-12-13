@@ -1,0 +1,17 @@
+dummy_user:
+  download: 75
+  pwd: dummy_password
+  upload: 90
+foo:
+  download: 20
+  pwd: bar
+  upload: 60
+gijs:
+  download: 0
+  pwd: wies
+  upload: 0
+jo:
+  download: 100
+  pwd: very_secret
+  upload: 100
+time: 2016-04-19 23:22:08.705657

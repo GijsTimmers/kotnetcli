@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/python2
 # -*- coding: utf-8 -*-
-
+##
 ## Dependencies:    python-mechanize, python-keyring, curses
 ## Author:          Gijs Timmers: https://github.com/GijsTimmers
 ## Contributors:    Gijs Timmers: https://github.com/GijsTimmers
@@ -21,7 +21,20 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from kotnetcli.kotnetcli_test import dummy_main
+#TODO gotta catch them all ;-)
 
-if __name__ == "__main__":
-    dummy_main()
+RC_LOGIN_SUCCESS            = 100
+
+RC_LOGIN_INVALID_USERNAME   = 201
+
+RC_LOGIN_INVALID_PASSWORD   = 202
+
+# de machine waarop u werkt is niet aangesloten op een netwerk met netwerk login service.
+RC_NO_LOGIN_SERVICE         = 204
+
+RC_LOGIN_MAX_IP             = 206
+
+RC_INVALID_INSTITUTION      = 211
+
+RC_INTERNAL_SCRIPT_ERR      = 301
+

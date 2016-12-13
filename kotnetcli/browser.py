@@ -28,22 +28,19 @@ import socket                           ## Voor ophalen IP
 
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
+## login rc codes contained in the response html page
+from server.rccodes import *
+
 import logging
 logger = logging.getLogger(__name__)
 
-NETLOGIN_HOST       = "netlogin.kuleuven.be"
-NETLOGIN_PORT       = 443
+## FIXME for now default to localhost developement server
+NETLOGIN_HOST       = "localhost"   #"netlogin.kuleuven.be"
+NETLOGIN_PORT       = 4443          #443
+NETLOGIN_CERT       = "kotnetcli/server/kotnetcli-localhost.pem" # True
 
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
-
-## login rc codes contained in the response html page
-RC_LOGIN_SUCCESS            = 100
-RC_LOGIN_INVALID_USERNAME   = 201
-RC_LOGIN_INVALID_PASSWORD   = 202
-RC_LOGIN_MAX_IP             = 206
-RC_INVALID_INSTITUTION      = 211
-RC_INTERNAL_SCRIPT_ERR      = 301
 
 ## custom exceptions to be caught by worker
 class KotnetOfflineException(Exception):
@@ -82,28 +79,35 @@ class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
-    def __init__(self):
+    def __init__(self, inst, host=NETLOGIN_HOST, port=NETLOGIN_PORT,
+                 verify=NETLOGIN_CERT):
+        self.institution = inst
         self.language = "nl"
-        self.host = NETLOGIN_HOST
-        self.port = NETLOGIN_PORT
+        self.host = host
+        self.port = port
+        self.verify = verify
+        if (verify is not True):
+            logger.warning("using custom SSL certificate '{}'".format(verify))
         
-        ## What the user sees when using netlogin. We need this url to find the
-        ## password field name ("pwdXXXXX")
-        self.html_get_url = "https://{}:{}/cgi-bin/wayf2.pl".format(self.host, self.port)
-        
-        ## The backend: contains the to-be-submitted form.
-        self.html_post_url = "https://{}:{}/cgi-bin/netlogin.pl".format(self.host, self.port)
-
     def get_server_url(self):
         return "{}:{}".format(self.host, self.port)
 
     def check_connection(self):
-        ## open a connection with the netlogin server using a maximum waiting time
         try:
             sock = socket.create_connection((self.host,self.port), BROWSER_TIMEOUT_SEC)
             sock.close()
         except socket.error:
             raise KotnetOfflineException
+    
+    def do_server_request(self, method, cgi_script, params=None, data=None):
+        url = "https://{}:{}/cgi-bin/{}".format(self.host, self.port, cgi_script)
+        assert(self.verify)
+        try:
+            r = requests.request(method, url, verify=self.verify, params=params, data=data, timeout=BROWSER_TIMEOUT_SEC)
+        except requests.exceptions.Timeout:
+            raise KotnetOfflineException
+        logger.debug("server HTTP '{}' response status code is {}".format(method, r.status_code))
+        return r.text
     
     def login_get_request(self, creds):
         payload = {
@@ -111,13 +115,9 @@ class KotnetBrowser(object):
             "lang"      : self.language,
             "submit"    : "Ga verder / Continue",
         }
-        try:
-            r = requests.get(self.html_get_url, params=payload, timeout=BROWSER_TIMEOUT_SEC)
-        except requests.exceptions.Timeout:
-            raise KotnetOfflineException
-        #logger.debug("HTTP GET RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
+        html = self.do_server_request('GET', 'wayf2.pl', params=payload)
         ## search for something of the form name="pwd123" and extract the pwd123 part
-        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", r.text)[0]
+        self.wachtwoordvak = re.findall("(?<=name=\")pwd\d*", html)[0]
         
     def login_post_request(self, creds):
         payload = {
@@ -127,12 +127,8 @@ class KotnetBrowser(object):
             "uid"               : creds.getUser(),
             self.wachtwoordvak  : creds.getPwd()
         }
-        try:
-            r = requests.post(self.html_post_url, data=payload, timeout=BROWSER_TIMEOUT_SEC)
-        except requests.exceptions.Timeout:
-            raise KotnetOfflineException
-        #logger.debug("HTTP POST RESPONSE FROM SERVER is:\n\n%s\n" % r.text)
-        self.html = r.text
+        self.html = self.do_server_request('POST', 'netlogin.pl', data=payload)
+        logger.debug("Server reply for HTML POST is:\n" + self.html)
 
     ## This method parses the server's response. On success, it returns a tuple of
     ## length 2: (downloadpercentage, uploadpercentage); else it raises an
@@ -186,52 +182,3 @@ class KotnetBrowser(object):
 
         else:
             raise UnknownRCException(rccode, self.html)
-
-## deprecated (see dev-srv)
-class DummyBrowser(KotnetBrowser):
-    ## allow custom test behavior via params
-    def __init__(self, inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl):
-        self.institution = inst
-        self.dummy_timeout = dummy_timeout
-        self.kotnet_online=kotnet_online
-        self.netlogin_unavailable = netlogin_unavailable
-        self.rccode = rccode
-        self.download = abs(downl) %101
-        self.upload = abs(upl) %101
-        self.host = "dummynetlogin"
-        self.port = NETLOGIN_PORT
-    
-    def check_connection(self):
-        if not self.kotnet_online:
-            raise KotnetOfflineException
-
-    def login_get_request(self, creds):
-        if (not self.netlogin_unavailable):
-            time.sleep(self.dummy_timeout)
-        else:
-            raise KotnetOfflineException
-
-    def login_post_request(self, creds):
-        time.sleep(self.dummy_timeout)
-
-    def login_parse_results(self):
-        logger.debug("rccode is %s", self.rccode)
-        
-        if self.rccode == RC_LOGIN_SUCCESS:
-            return (self.download, self.upload)
-
-        elif (self.rccode == RC_LOGIN_INVALID_PASSWORD) or \
-            (self.rccode == RC_LOGIN_INVALID_USERNAME):
-            raise WrongCredentialsException()
-            
-        elif self.rccode == RC_LOGIN_MAX_IP:
-            raise MaxNumberIPException()
-
-        elif self.rccode == RC_INVALID_INSTITUTION:
-            raise InvalidInstitutionException(self.institution)
-        
-        elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
-            raise InternalScriptErrorException()
-
-        else:
-            raise UnknownRCException(self.rccode, "<html>\n<p>the dummy html page</p>\n</html>\n")

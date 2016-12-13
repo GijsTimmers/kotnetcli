@@ -29,10 +29,10 @@
 ##  - exits with the corresponding exit code
 
 import sys                              ## Basislib
+import traceback
 
 from .credentials import ForgetCredsException
 from .browser import *
-import traceback
 
 import logging
 logger = logging.getLogger(__name__)
@@ -63,9 +63,10 @@ class ForgetCredsWorker(AbstractWorker):
             co.eventFailureForget()
             sys.exit(EXIT_FAILURE)
 
-class SuperNetWorker(AbstractWorker):
-    def __init__(self):
-        self.browser = KotnetBrowser()
+class SuperNetworkWorker(AbstractWorker):
+    def __init__(self, institution, host=NETLOGIN_HOST, port=NETLOGIN_PORT, 
+                 verify=NETLOGIN_CERT):
+        self.browser = KotnetBrowser(institution, host, port, verify)
     
     def check_credentials(self, co, creds):
         if not creds.hasCreds():
@@ -80,17 +81,20 @@ class SuperNetWorker(AbstractWorker):
             creds.storeCreds(username, pwd, inst)
         logger.debug("got creds for user %s@%s", creds.getUser(), creds.getInst())
     
-    def check_kotnet(self, co):
-        co.eventCheckNetworkConnection()
+    def contact_server(self, co, fct, *args):
         try:
-            self.browser.check_connection()
+            fct(*args)
         except KotnetOfflineException:
             co.eventFailureOffline(self.browser.get_server_url())
             sys.exit(EXIT_FAILURE)
+    
+    def check_kotnet(self, co):
+        co.eventCheckNetworkConnection()
+        self.contact_server(co, self.browser.check_connection)
 
 ## A worker class that either succesfully logs you in to kotnet
 ## or exits with failure, reporting events to the given communicator
-class LoginWorker(SuperNetWorker):
+class LoginWorker(SuperNetworkWorker):
     def do_work(self, co, creds):
         self.check_credentials(co,creds)
         self.check_kotnet(co)
@@ -100,19 +104,11 @@ class LoginWorker(SuperNetWorker):
         
     def login_gegevensinvoeren(self, co, creds):
         co.eventGetData()
-        try:
-            self.browser.login_get_request(creds)
-        except KotnetOfflineException:
-            co.eventFailureOffline(self.browser.get_server_url())
-            sys.exit(EXIT_FAILURE)
+        self.contact_server(co, self.browser.login_get_request, creds)
 
     def login_gegevensopsturen(self, co, creds):
         co.eventPostData()
-        try:
-            self.browser.login_post_request(creds)
-        except KotnetOfflineException:
-            co.eventFailureOffline(self.browser.get_server_url())
-            sys.exit(EXIT_FAILURE)
+        self.contact_server(co, self.browser.login_post_request, creds)
 
     def login_resultaten(self, co):
         co.eventProcessData()
@@ -136,7 +132,5 @@ class LoginWorker(SuperNetWorker):
             co.eventFailureUnknownRC(rccode, html)
             sys.exit(EXIT_FAILURE)
 
-class DummyLoginWorker(LoginWorker):
-    def __init__(self, inst="kuleuven", dummy_timeout=0.1, kotnet_online=True, netlogin_unavailable=False, \
-        rccode=RC_LOGIN_SUCCESS, downl=44, upl=85):
-        self.browser = DummyBrowser(inst, dummy_timeout, kotnet_online, netlogin_unavailable, rccode, downl, upl)
+class LogoutWorker(SuperNetworkWorker):
+    pass

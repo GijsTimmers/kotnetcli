@@ -78,15 +78,6 @@ class GuestCredentials(AbstractCredentials):
 
 ## end class GuestCredentials
 
-class DummyCredentials(GuestCredentials):
-    def __init__(self, inst=None):
-        super(DummyCredentials, self).__init__(inst)
-        self.user = "dummy_user"
-        self.pwd  = "dummy_password"
-        self.inst = "dummy_inst" if inst is None else inst
-
-## end class DummyCredentials
-
 class KeyRingCredentials(AbstractCredentials):
     def __init__(self, inst=None):
         super(KeyRingCredentials, self).__init__(inst)
