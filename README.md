@@ -1,20 +1,10 @@
-```
-______       _____            _____      __________ 
-___  /_________  /______________  /_________  /__(_)
-__  //_/  __ \  __/_  __ \  _ \  __/  ___/_  /__  / 
-_  ,<  / /_/ / /_ _  / / /  __/ /_ / /__ _  / _  /  
-/_/|_| \____/\__/ /_/ /_/\___/\__/ \___/ /_/  /_/   
-                                                    
-```
-
-*KotNet Command Line Interface* -- An easy automated way to log in to
-[KotNet](https://admin.kuleuven.be/icts/english/kotnet).
+![banner](https://raw.githubusercontent.com/GijsTimmers/kotnetcli/dev/kotnetcli/data/banner.jpg)
 
 [![Build Status](https://travis-ci.org/GijsTimmers/kotnetcli.svg?branch=master)](https://travis-ci.org/GijsTimmers/kotnetcli) [![Code Health](https://landscape.io/github/GijsTimmers/kotnetcli/dev/landscape.svg?style=flat)](https://landscape.io/github/GijsTimmers/kotnetcli/dev) [![license](http://img.shields.io/:license-gpl3-orange.svg)](https://gnu.org/licenses/gpl.html)
 
 ## Purpose
 
-Logging in on KotNet is a hassle. A method to autologin from within the
+Logging in on [KotNet](https://admin.kuleuven.be/icts/english/kotnet) is a hassle. A method to autologin from within the
 browser
 [exists](https://code.google.com/p/kotnetloginextension/),
 but although this way of logging in is very user-friendly, it also has
@@ -69,7 +59,9 @@ platform-specific instructions
    or install system-wide:
 
         $ sudo python2 setup.py install
-
+   
+   The kotnetcli suite comes in the form of three new shell commands: `kotnetcli`, `kotnetgui`, and `kotnetsrv`.
+   
 When run for the first time, kotnetcli will ask you to unlock your keyring. For
 maximum ease-of-use, just enter the password you use to login to your system. If
 you do that, this keyring will only pop up once.
