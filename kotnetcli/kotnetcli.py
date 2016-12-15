@@ -131,6 +131,9 @@ class KotnetCLI(object):
             metavar="INST", action="store", default=None,
             choices=inst_dict.keys())
         
+        self.parser.add_argument("-L", "--localhost", action="store_true",
+            help="connect to the localhost development test server")
+        
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\
         help="Logs you in on KotNet (default)", action="store_true")
@@ -196,7 +199,7 @@ class KotnetCLI(object):
                 "import error when trying to create '%s' communicator: %s\n"    \
                 "Have you installed all the dependencies?\n"                    \
                 "See also <%s/wiki/Dependencies-overview>",
-                argumenten.communicator, e, GITHUB_URL)
+                argumenten.communicator, e, __src_url__)
             sys.exit(EXIT_FAILURE)
         ## 4. start the process
         worker.go(co, creds)
@@ -222,7 +225,7 @@ class KotnetCLI(object):
         else:
             ## default option: argumenten.login
             logger.info("ik wil inloggen")
-            worker = LoginWorker(argumenten.institution)
+            worker = LoginWorker(argumenten.localhost)
             fabriek = LoginCommunicatorFabriek()
 
         return (worker, fabriek)

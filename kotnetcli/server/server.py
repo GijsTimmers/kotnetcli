@@ -30,27 +30,30 @@ import os
 from ..__init__ import resolve_path
 
 HOST_NAME   = 'localhost'
-PORT_NUMBER = 4443
-CERT_FILE   = resolve_path("data/dummy_localhost_cert.pem")
+PORT_NUMBER = 8888
 SRV_DIR     = resolve_path("server")
 
 def main():
-    ## set up a simple SSL-enabled HTTPS server that listens for incoming GET/
-    ## POST requests and passes them on to the relevant CGI scripts in cgi-bin
-    ## to prepare the HTML response
+    ## Set up a simple HTTP server that listens for incoming GET/POST requests
+    ## and passes them to the relevant CGI scripts to prepare the HTML response.
     handler = CGIHTTPServer.CGIHTTPRequestHandler
     httpd = BaseHTTPServer.HTTPServer((HOST_NAME, PORT_NUMBER), handler)
-    httpd.socket = ssl.wrap_socket (httpd.socket, certfile=CERT_FILE, server_side=True)
 
+    ## The development test server is intended to run on localhost, so we can
+    ## simply use a plain unencrypted HTTP connection. The following lines
+    ## enables SSL, should we ever want a remote test server.
+    #httpd.socket = ssl.wrap_socket (httpd.socket, certfile=CERT_FILE,
+    #                                server_side=True)
+    #
+    ## Force the use of a subprocess for CGI scripts to ensure they have acccess
+    ## to the SSL wrapped socket (see also http://stackoverflow.com/a/27303995)
+    #CGIHTTPServer.CGIHTTPRequestHandler.have_fork=False
+
+    ## Ensure the cgi-bin directory is found.
     print "cd to server directory at '{0}'".format(SRV_DIR)
     os.chdir(SRV_DIR)
 
-    ## Force the use of a subprocess for CGI scripts to ensure they have acccess
-    ## to the SSL wrapped socket (see also http://stackoverflow.com/a/27303995)
-    CGIHTTPServer.CGIHTTPRequestHandler.have_fork=False
-
     print time.asctime(), "Kotnetcli Test Server Starts - %s:%s" % (HOST_NAME, PORT_NUMBER)
-    print "using certificate at {0}".format(CERT_FILE)
     
     try:
         httpd.serve_forever()

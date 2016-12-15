@@ -260,11 +260,13 @@ class KotnetcliRunner(QtCore.QObject):
 
     def do_netlogin(self, choice):
         logger.debug("creating netlogin kotnetcli objects")
-        co = LoginGUICommunicator(inst_dict, self.updateGUIText, self.updateGUIError,
-                                 self.updateGUIPercentages, self.GUIQueryCredentials)
+        co = LoginGUICommunicator(inst_dict, self.updateGUIText,
+            self.updateGUIError, self.updateGUIPercentages,
+            self.GUIQueryCredentials)
         creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
         
-        worker = LoginWorker("kuleuven")
+        #TODO localhost choice should come from superclass front-end argparse
+        worker = LoginWorker(localhost=True)
         worker.go(co, creds)
 
 ## end class KotnetcliRunner

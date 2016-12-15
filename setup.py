@@ -58,8 +58,6 @@ setup(
             "kotnetgui=kotnetcli.kotnetgui:main"
         ],
     },
-    #TODO find a way to make sure kotnetcli/data/dummy_localhost_cert.pem has
-    # been generated (?)
     package_data = {
         "kotnetcli":["data/logo_small.jpg","server/cgi-bin/*"]
     },

@@ -64,8 +64,8 @@ class ForgetCredsWorker(AbstractWorker):
             sys.exit(EXIT_FAILURE)
 
 class SuperNetworkWorker(AbstractWorker):
-    def __init__(self, institution):
-        self.browser = KotnetBrowser(institution)
+    def __init__(self, localhost=False):
+        self.browser = KotnetBrowser(localhost)
     
     def check_credentials(self, co, creds):
         if not creds.hasCreds():
@@ -99,7 +99,7 @@ class LoginWorker(SuperNetworkWorker):
         self.check_kotnet(co)
         self.login_gegevensinvoeren(co, creds)
         self.login_gegevensopsturen(co, creds)
-        self.login_resultaten(co)
+        self.login_resultaten(co, creds)
         
     def login_gegevensinvoeren(self, co, creds):
         co.eventGetData()
@@ -109,7 +109,7 @@ class LoginWorker(SuperNetworkWorker):
         co.eventPostData()
         self.contact_server(co, self.browser.login_post_request, creds)
 
-    def login_resultaten(self, co):
+    def login_resultaten(self, co, creds):
         co.eventProcessData()
         try:
             tup = self.browser.login_parse_results()
@@ -121,7 +121,7 @@ class LoginWorker(SuperNetworkWorker):
             co.eventFailureMaxIP()
             sys.exit(EXIT_FAILURE)
         except InvalidInstitutionException, e:
-            co.eventFailureInstitution(e.get_inst())
+            co.eventFailureInstitution(creds.getInst())
             sys.exit(EXIT_FAILURE)
         except InternalScriptErrorException:
             co.eventFailureServerScriptError()

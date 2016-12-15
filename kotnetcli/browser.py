@@ -26,11 +26,6 @@ import time                             ## Voor timeout om venster te sluiten
 import requests                         ## Invullen van HTTP POST-request
 import socket                           ## Voor ophalen IP
 
-#TODO urllib generates a warning for our localhost test certificate, but cannot
-# be fixed on python < 2.7.2 (https://github.com/shazow/urllib3/issues/497)
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
-
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 ## login rc codes contained in the response html page
@@ -41,10 +36,11 @@ logger = logging.getLogger(__name__)
 
 from __init__ import resolve_path
 
-## FIXME for now default to localhost developement server
-NETLOGIN_HOST       = "localhost"   #"netlogin.kuleuven.be"
-NETLOGIN_PORT       = 4443          #443
-NETLOGIN_CERT       = resolve_path("data/dummy_localhost_cert.pem") # True
+NETLOGIN_HOST       = "netlogin.kuleuven.be"
+NETLOGIN_PORT       = 443
+
+LOCALHOST           = "localhost"
+LOCALHOST_PORT      = "8888"
 
 ## the maximum waiting time in seconds for browser connections
 BROWSER_TIMEOUT_SEC = 1.5
@@ -60,12 +56,8 @@ class InternalScriptErrorException(Exception):
     pass
 
 class InvalidInstitutionException(Exception):
-    def __init__(self, inst):
-        self.inst = inst
+    pass
     
-    def get_inst(self):
-        return self.inst
-
 class MaxNumberIPException(Exception):
     pass
     
@@ -86,34 +78,32 @@ class KotnetBrowser(object):
      
     ## Note: the browser itself doesn't save any credentials. These are kept in a
     ## credentials object that is supplied when needed
-    def __init__(self, inst, host=NETLOGIN_HOST, port=NETLOGIN_PORT,
-                 verify=NETLOGIN_CERT):
-        self.institution = inst
+    def __init__(self, localhost=False):
         self.language = "nl"
-        self.host = host
-        self.port = port
-        self.verify = verify
-        if (verify is not True):
-            logger.warning("using custom SSL certificate '{}'".format(verify))
-        
-    def get_server_url(self):
-        return "{}:{}".format(self.host, self.port)
+        self.host = NETLOGIN_HOST if not localhost else LOCALHOST
+        self.port = NETLOGIN_PORT if not localhost else LOCALHOST_PORT
+        self.protocol = "https" if not localhost else "http"
 
+    def get_server_url(self):
+        return "{}://{}:{}".format(self.protocol, self.host, self.port)
+        
     def check_connection(self):
         try:
-            sock = socket.create_connection((self.host,self.port), BROWSER_TIMEOUT_SEC)
+            sock = socket.create_connection((self.host, self.port),
+                                                BROWSER_TIMEOUT_SEC)
             sock.close()
         except socket.error:
             raise KotnetOfflineException
     
     def do_server_request(self, method, cgi_script, params=None, data=None):
-        url = "https://{}:{}/cgi-bin/{}".format(self.host, self.port, cgi_script)
-        assert(self.verify)
+        url = self.get_server_url() + "/cgi-bin/{}".format(cgi_script)
         try:
-            r = requests.request(method, url, verify=self.verify, params=params, data=data, timeout=BROWSER_TIMEOUT_SEC)
+            r = requests.request(method, url, verify=True, params=params,
+                                    data=data, timeout=BROWSER_TIMEOUT_SEC)
         except requests.exceptions.Timeout:
             raise KotnetOfflineException
-        logger.debug("server HTTP '{}' response status code is {}".format(method, r.status_code))
+        logger.debug("server HTTP '{}' response status code is {}".format(
+                                    method, r.status_code))
         return r.text
     
     def login_get_request(self, creds):
@@ -182,7 +172,7 @@ class KotnetBrowser(object):
             raise MaxNumberIPException()
 
         elif rccode == RC_INVALID_INSTITUTION:
-            raise InvalidInstitutionException(self.institution)
+            raise InvalidInstitutionException()
         
         elif self.rccode == RC_INTERNAL_SCRIPT_ERR:
             raise InternalScriptErrorException()
