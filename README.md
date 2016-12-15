@@ -37,31 +37,33 @@ Although ease-of-use is important, `kotnetcli` will probably stay
 You can find more information about the kotnecli features [in the wiki!](https://github.com/GijsTimmers/kotnetcli/wiki/Features)
 ## Installation
 
-You can either install the dependencies and run the python file, or just
-download
-[the binary](https://github.com/GijsTimmers/kotnetcli/releases/latest).
-The general steps to get the latest `kotnetcli.py` are listed below.
-Currently, we only support Linux and Windows (x86).
-If you decide to download the binary, skip steps 1 and 2.
+You can either download pre-built
+[binaries](https://github.com/GijsTimmers/kotnetcli/releases/latest) for the
+latest stable release, or install from source. After cloning the git repository,
+you can run kotnetcli locally through the `xxx-runner.py` entry points, or
+install system-wide as follows:
 
-1. Resolve the dependencies: see the next section for an overview and
-platform-specific instructions
-        
-2. Clone this repository and change the directory:
+1. Clone this repository and change the directory:
 
         $ git clone https://github.com/GijsTimmers/kotnetcli.git
         $ cd kotnetcli
                 
-3. Run kotnetcli-runner.py:
-
-        $ ./kotnetcli-runner.py
-   
-   or install system-wide:
+2. Install system-wide:
 
         $ sudo python2 setup.py install
-   
-   The kotnetcli suite comes in the form of three new shell commands: `kotnetcli`, `kotnetgui`, and `kotnetsrv`.
-   
+
+   The above command automatically resolves the base dependencies. We refer to
+   the [wiki](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)
+   for optional communicator-specific dependencies, or in case you want to
+   install manually.
+
+The kotnetcli package consists of a number of shell commands, which are
+explained below:
+
+1. *kotnetcli*: the core command, logs you in to KotNet.
+2. *kotnetgui*: a GUI front-end for the kotnetcli application.
+3. *kotnetsrv*: an elementary webserver, intended for developers on localhost.
+
 When run for the first time, kotnetcli will ask you to unlock your keyring. For
 maximum ease-of-use, just enter the password you use to login to your system. If
 you do that, this keyring will only pop up once.
@@ -70,6 +72,10 @@ Both will be stored safely in the keyring of your desktop environment.
 
 You can add kotnetcli to your autostart programs to log in to Kotnet
 at boot-time.
+
+## Platform dependent instructions
+This section lists the platform specific instructions to resolve the above dependencies:
+
 
 [Additional instructions for Gnome users that want to use the Gnome keyring back-end with the latest version of `python-keyring`:]
 
@@ -85,9 +91,6 @@ To determine where the config file is stored, run the following:
 
      $ python2 -c "import keyring.util.platform_; print(keyring.util.platform_.config_root())"
 
-
-## Platform dependent instructions
-This section lists the platform specific instructions to resolve the above dependencies:
 
   - Ubuntu:
   
