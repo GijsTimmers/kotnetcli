@@ -38,6 +38,8 @@ from .worker import (
 from .tools import log
 from __init__ import resolve_path
 
+from .frontend import AbstractFrontEnd
+
 ## we use a queue to synchronize the background netlogin thread, requesting the
 ## credentials from the GUICredentialsDialog in the main thread
 queue = Queue()
@@ -215,7 +217,6 @@ class GUIOptionDialog(QtGui.QDialog):
     def getChoice(self):
         return "guest" if self.rbGuest.isChecked() else "keyring"
     
-    
 ## end class GUIOptionDialog
 
 ## Custom communicator translating netlogin progress to Qt signals for the GUI thread
@@ -248,17 +249,25 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
 
 ## end class LoginGUICommunicator
 
+class KotnetGUIFrontEnd(AbstractFrontEnd):
+
+    def __init__(self):
+        super(KotnetGUIFrontEnd, self).__init__()
+        self.args = super(KotnetGUIFrontEnd, self).parseArgs()
+        
+## end class KotnetGUIFrontEnd
+
 ## Entry point class for the kotnetcli background netlogin thread
 class KotnetcliRunner(QtCore.QObject):
 
     ## Qt signals used to link communicator with GUI thread
-    ## note: must be a class attribute of a QObject class
+    ## NOTE: must be a class attribute of a QObject class
     updateGUIText = QtCore.pyqtSignal(str)
     updateGUIError = QtCore.pyqtSignal(str)
     updateGUIPercentages = QtCore.pyqtSignal(int,int)
     GUIQueryCredentials = QtCore.pyqtSignal(list)
 
-    def do_netlogin(self, choice):
+    def do_netlogin(self, choice, args):
         logger.debug("creating netlogin kotnetcli objects")
         co = LoginGUICommunicator(inst_dict, self.updateGUIText,
             self.updateGUIError, self.updateGUIPercentages,
@@ -266,17 +275,16 @@ class KotnetcliRunner(QtCore.QObject):
         creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
         
         #TODO localhost choice should come from superclass front-end argparse
-        worker = LoginWorker(localhost=True)
+        worker = LoginWorker(args.localhost)
         worker.go(co, creds)
 
 ## end class KotnetcliRunner
 
 ## main method creating GUI and spawning a kotnetcli runner thread
 def main():
-    log.init_logging("debug", False)
-
+    guiFrontEnd = KotnetGUIFrontEnd()
     app = QtGui.QApplication(sys.argv)
-    
+
     logger.debug("spawning GUIOptionDialog")
     d = GUIOptionDialog()
     d.exec_()
@@ -292,7 +300,8 @@ def main():
     runner.GUIQueryCredentials.connect(gui.queryCredentials)
 
     logger.info("starting netlogin thread")
-    kotnetcliThread = threading.Thread(target=runner.do_netlogin, args=(choice,))
+    kotnetcliThread = threading.Thread(target=runner.do_netlogin,
+        args=(choice,guiFrontEnd.args))
     ## any running daemon threads are killed automatically on program exit
     kotnetcliThread.daemon = True
     kotnetcliThread.start()

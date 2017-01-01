@@ -11,3 +11,5 @@ htmls/
 test-win.sh
 
 logoutformulieringevuld.html
+
+*.swp

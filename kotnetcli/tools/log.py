@@ -23,6 +23,8 @@
 
 import logging
 
+LOG_LEVEL_DEFAULT="warning"
+
 LOG_FORMAT  = "{}%(levelname)s::%(module)s: %(message)s"
 TIME_FORMAT = "[%(asctime)s.%(msecs)03d] "
 DATE_FORMAT = "%H:%M:%S"

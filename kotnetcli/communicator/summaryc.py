@@ -27,7 +27,7 @@ SUMMARY_MSG_LOGIN       = "Login geslaagd."
 SUMMARY_MSG_DOWN_UP     = "Download: {downl}%, Upload: {upl}%"
 SUMMARY_MSG_FORGET      = "Credentials successfully removed."
 
-SUMMARY_ERR_OFFLINE     = "Connection attempt timed out."
+SUMMARY_ERR_OFFLINE     = "Connection attempt to '{srv}' timed out."
 SUMMARY_ERR_CREDS       = "Invalid credentials."
 SUMMARY_ERR_INST        = "Invalid institution '{inst}'."
 SUMMARY_ERR_MAX_IP      = "Maximum IP logins reached."

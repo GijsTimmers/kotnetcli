@@ -29,8 +29,9 @@
 
 import sys                              ## Basislib
 import argparse                         ## Parst argumenten
-import argcomplete                      ## Argumenten aanvullen met Tab
-import logging                          ## Voor uitvoer van debug-informatie
+
+import logging
+logger = logging.getLogger(__name__)
 
 from .communicator.fabriek import (     ## Voor output op maat
     LoginCommunicatorFabriek, 
@@ -44,96 +45,27 @@ from .credentials import (              ## Voor opvragen van s-nummer
 )                                           
 from .worker import (                   ## Stuurt alle losse componenten aan
     LoginWorker,
-    ForgetCredsWorker,
-    EXIT_FAILURE,
-    EXIT_SUCCESS
+    ForgetCredsWorker
 )
 
-from .tools import log                  ## Custom logger
-from .tools import logo
-from .tools import license
+from .frontend import AbstractFrontEnd
 
-from __init__ import __version__, __version_str__, __src_url__
-
-logger = logging.getLogger(__name__)
-
-## An argument parse action that prints license information on stdout and exits
-class PrintLicenceAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        print(license.license.format(github_url=__src_url__))
-        exit(0)
-
-## An argument parse action that prints version info on stdout and exits
-class PrintVersionAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-        print(logo.logo.format(version=__version_str__, github_url=__src_url__))
-        exit(0)
-
-def init_debug_level(log_level, include_time):
-    try:
-        log.init_logging(log_level, include_time)
-    except ValueError:
-        print "kotnetcli: Invalid debug level: %s" % log_level
-        sys.exit(1)
-
-## TODO create an AbstractKotnetCLI class for common CLI arguments (eg version,
-## license, debug level, ...) --> shared between all binaries in the kotnetcli
-## distribution: kotnetcli, kotnetcli-dev, kotnetgui, kotnetcli-srv
-##
-## A class encapsulating the argument parsing behavior
-## Note: directly inherit from "object" in order to be able to use super() in child classes
-class KotnetCLI(object):
+class KotnetCLI(AbstractFrontEnd):
     
-    ## Note: create the parser and groups as instance fiels so subclasses can access them
-    ##
-    ## We create three different groups, whose arguments can't be mixed (using
-    ## the add_mutually_exclusive_group() option. If you enter non-combinable
-    ## options, you'll get an error. To support grouping in the help messages,
-    ## we add them inside an argument_group (as in http://bugs.python.org/issue10680)
-    ##
-    ## Then, we use "store_true" to allow elif style switching over the groups. Non-true
-    ## values can be specified by using "default=False" to get "store_true" semantics.
-    ## This avoids the need for complex decision trees.
-    ##
-    ## Finally, we call argcomplete, so that we can complete flags automatically
-    ## when using bash.
-    def __init__(self, descr="Script om in- of uit te loggen op KotNet", \
-    log_level_default = "warning"):
-        epilog_string = "return values:\n  %s\t\t\ton success\n  %s\t\t\ton failure" % (EXIT_SUCCESS, EXIT_FAILURE)
-        self.parser = argparse.ArgumentParser(description=descr, epilog=epilog_string, \
-            formatter_class=argparse.RawDescriptionHelpFormatter,conflict_handler='resolve')
+    ## We create three different groups, whose arguments can't be mixed.
+    ## To support grouping in the help messages, we add them inside an 
+    ## argument_group (as in http://bugs.python.org/issue10680)
+    def __init__(self):
+        super(KotnetCLI, self).__init__()
         dummygroup = self.parser.add_argument_group("worker options")
         self.workergroep = dummygroup.add_mutually_exclusive_group()
         dummygroup = self.parser.add_argument_group("credentials options")
         self.credentialsgroep = dummygroup.add_mutually_exclusive_group()
         dummygroup = self.parser.add_argument_group("communicator options")
         self.communicatorgroep = dummygroup.add_mutually_exclusive_group()
-        self.voegArgumentenToe(log_level_default)
-        argcomplete.autocomplete(self.parser)
+        self.voegArgumentenToe()
     
-    def voegArgumentenToe(self, log_level_default):
-        ########## general flags ##########
-        self.parser.add_argument("-v", "--version", action=PrintVersionAction, \
-        help="show program's version number and exit", nargs=0)
-        self.parser.add_argument("-l", "--license", action=PrintLicenceAction, \
-        help="show license info and exit", nargs=0)
-        ## debug flag with optional (nargs=?) level; defaults to LOG_LEVEL_DEFAULT if
-        ## option not present; defaults to debug if option present but no level specified
-        self.parser.add_argument("--debug", help="specify the debug verbosity", \
-            nargs="?", const="debug", metavar="LEVEL",
-            choices=[ 'critical', 'error', 'warning', 'info', 'debug' ],
-            action="store", default=log_level_default)
-
-        self.parser.add_argument("--time", action="store_true", \
-            help="include fine-grained timing info in logger output")
-        
-        self.parser.add_argument("--institution", help="override the instititution", \
-            metavar="INST", action="store", default=None,
-            choices=inst_dict.keys())
-        
-        self.parser.add_argument("-L", "--localhost", action="store_true",
-            help="connect to the localhost development test server")
-        
+    def voegArgumentenToe(self):
         ########## login type flags ##########
         self.workergroep.add_argument("-i", "--login",\
         help="Logs you in on KotNet (default)", action="store_true")
@@ -181,12 +113,8 @@ class KotnetCLI(object):
         help="Hides all output",\
         action="store_const", dest="communicator", const="quiet")
                 
-    ## Parses the arguments corresponding to self.parser
     def parseArgumenten(self):
-        argumenten = self.parser.parse_args()
-        ## 0. general flags
-        init_debug_level(argumenten.debug, argumenten.time)
-        logger.debug("parse_args() is: %s", argumenten)
+        argumenten = super(KotnetCLI, self).parseArgs() 
         ## 1. credential-related flags
         creds = self.parseCredentialFlags(argumenten)
         ## 2. login-type flags
