@@ -8,6 +8,8 @@ __version__ = "1.3.0"
 ## __version__ = '1.2.1-dev'                    (A development version)
 __version_str__ = "{0}-dev".format(__version__)
 
+__descr__ = "An easy automated way to log in to KotNet"
+
 ## Resolve relative to the package root (http://stackoverflow.com/a/5423147).
 import os
 __root__ = os.path.abspath(os.path.dirname(__file__))

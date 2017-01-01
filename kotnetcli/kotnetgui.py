@@ -194,7 +194,7 @@ class GUIOptionDialog(QtGui.QDialog):
         grid.addLayout(vbox, 0, 0)
         
         lblLogo = QtGui.QLabel()
-        img = resolve_path("data/logo_small.jpg")
+        img = resolve_path("data/kotnetcli.jpg")
         logger.debug("logo data path resolved to '{0}'".format(img))
         logo = QtGui.QPixmap(img)
         scaledLogo = logo.scaled(QtCore.QSize(120,120), QtCore.Qt.KeepAspectRatio)

@@ -22,7 +22,7 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup, find_packages
-from kotnetcli import __version__, __src_url__
+from kotnetcli import __version__, __src_url__, __descr__, resolve_path
 import os
 
 ## Only essential dependencies should be listed here. Specific communicator
@@ -39,11 +39,29 @@ dependencies = [
     "beautifulsoup4"
 ]
 
+## Create a custom .desktop file for the kotnetgui binary
+kotnetgui_desktop_template = """[Desktop Entry]
+Version={version}
+Name=KotnetGUI
+Comment={descr}
+Exec=kotnetgui
+Icon={icon_path}
+Terminal=false
+Type=Application
+Categories=Utility;
+"""
+
+f = open("build/kotnetgui.desktop", "w")
+f.write(kotnetgui_desktop_template.format(version=__version__, descr=__descr__,
+    ##TODO scalable icon + portable path
+    icon_path=resolve_path("/usr/share/icons/kotnetcli.jpg")))
+f.close()
+
 setup(
     name = "kotnetcli",
     packages = find_packages(),
     version = __version__,
-    description = "An easy automated way to log in on Kotnet",
+    description = __descr__, 
     author = "Gijs Timmers and Jo Van Bulck",
     author_email = "gijs.timmers@student.kuleuven.be",
     url = __src_url__,
@@ -61,6 +79,15 @@ setup(
     package_data = {
         "kotnetcli":["data/logo_small.jpg","server/cgi-bin/*"]
     },
+    data_files = [
+        ("bitmaps", ["kotnetcli/data/kotnetcli.jpg"]),
+        ("cgi-bin", ["kotnetcli/server/cgi-bin/netlogin.pl",
+                     "kotnetcli/server/cgi-bin/wayf2.pl"]),
+        ("/usr/share/applications/", [f.name]),
+        ("/usr/share/icons/", ["kotnetcli/data/kotnetcli.jpg"])
+        ],
     include_package_data = True,
     classifiers=[]
 )
+
+

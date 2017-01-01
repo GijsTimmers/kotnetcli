@@ -38,7 +38,7 @@ from .communicator.fabriek import (
 from .tools import log
 logger = logging.getLogger(__name__)
 
-from __init__ import __version__, __version_str__, __src_url__
+from __init__ import __version__, __version_str__, __src_url__, __descr__
 
 ## Class encapsulating common CLI arguments for all binaries in the kotnetcli
 ## distribution.
@@ -48,9 +48,8 @@ class AbstractFrontEnd(object):
     def __init__(self):
         estr = "return values:\n  {}\t\t\ton success\n  {}\t\t\ton failure"
         estr = estr.format(EXIT_SUCCESS, EXIT_FAILURE)
-        descr = "An easy automated way to log in to Kotnet."
-        self.parser = argparse.ArgumentParser(description=descr, epilog=estr,
-            formatter_class=argparse.RawDescriptionHelpFormatter, 
+        self.parser = argparse.ArgumentParser(description=__descr__,
+            epilog=estr, formatter_class=argparse.RawDescriptionHelpFormatter, 
             conflict_handler='resolve')
         self.addGeneralFlags()
         self.addNetworkFlags() 
@@ -113,7 +112,7 @@ class PrintVersionAction(argparse.Action):
             github_url=__src_url__))
         exit(EXIT_SUCCESS)
 
-license = """{cmd}: An easy automated way to log in to KotNet
+license = """{cmd}: {descr}
 Copyright (C) 2014-2017 Kotnetcli Development Team
 <{github_url}>
 
@@ -133,6 +132,7 @@ along with kotnetcli.  If not, see <https://www.gnu.org/licenses/>.
 
 class PrintLicenceAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print(license.format(cmd=parser.prog, github_url=__src_url__))
+        print(license.format(cmd=parser.prog, github_url=__src_url__,
+            descr=__descr__))
         exit(EXIT_SUCCESS)
 
