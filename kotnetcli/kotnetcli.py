@@ -48,9 +48,9 @@ from .worker import (                   ## Stuurt alle losse componenten aan
     ForgetCredsWorker
 )
 
-from .frontend import AbstractFrontEnd
+from .frontend import AbstractClientFrontEnd
 
-class KotnetCLI(AbstractFrontEnd):
+class KotnetCLI(AbstractClientFrontEnd):
     
     ## We create three different groups, whose arguments can't be mixed.
     ## To support grouping in the help messages, we add them inside an 

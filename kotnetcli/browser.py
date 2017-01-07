@@ -34,8 +34,6 @@ from server.rccodes import *
 import logging
 logger = logging.getLogger(__name__)
 
-from __init__ import resolve_path
-
 NETLOGIN_HOST       = "netlogin.kuleuven.be"
 NETLOGIN_PORT       = 443
 

@@ -22,7 +22,7 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup, find_packages
-from kotnetcli import __version__, __src_url__, __descr__, resolve_path
+from kotnetcli import __version__, __src_url__, __descr__ 
 import os
 
 ## Only essential dependencies should be listed here. Specific communicator
@@ -40,23 +40,32 @@ dependencies = [
 ]
 
 ## Create a custom .desktop file for the kotnetgui binary
-kotnetgui_desktop_template = """[Desktop Entry]
-Version={version}
-Name=KotnetGUI
-Comment={descr}
-Exec=kotnetgui
-Icon={icon_path}
-Terminal=false
-Type=Application
-Categories=Utility;
-"""
+##TODO scalable icon + portable path
+kotnetgui_desktop_template = """
+    [Desktop Entry]
+    Version={version}
+    Name=KotnetGUI
+    Comment={descr}
+    Exec=kotnetgui
+    Icon={icon_path}
+    Terminal=false
+    Type=Application
+    Categories=Utility;
+    """
 
-f = open("build/kotnetgui.desktop", "w")
-f.write(kotnetgui_desktop_template.format(version=__version__, descr=__descr__,
-    ##TODO scalable icon + portable path
-    icon_path=resolve_path("/usr/share/icons/kotnetcli.jpg")))
-f.close()
+try: 
+    os.makedirs("build") #TODO in Python3.2 we can simply pass exist_ok=True
+except OSError:
+    if not os.path.isdir("build"):
+        raise
+kotnetgui_desktop = open("build/kotnetgui.desktop", "w")
+kotnetgui_desktop.write(kotnetgui_desktop_template.format(
+    version=__version__, descr=__descr__,
+    icon_path="/usr/share/icons/kotnetcli.jpg"))
+kotnetgui_desktop.close()
 
+import sys
+print sys.prefix
 setup(
     name = "kotnetcli",
     packages = find_packages(),
@@ -65,6 +74,7 @@ setup(
     author = "Gijs Timmers and Jo Van Bulck",
     author_email = "gijs.timmers@student.kuleuven.be",
     url = __src_url__,
+    license = "GPLv3",
     keywords = ["kotnet", "login", "kotnetlogin", "leuven", "kuleuven"],
     install_requires = dependencies,
     entry_points = {
@@ -76,18 +86,13 @@ setup(
             "kotnetgui=kotnetcli.kotnetgui:main"
         ],
     },
-    package_data = {
-        "kotnetcli":["data/logo_small.jpg","server/cgi-bin/*"]
-    },
     data_files = [
-        ("bitmaps", ["kotnetcli/data/kotnetcli.jpg"]),
-        ("cgi-bin", ["kotnetcli/server/cgi-bin/netlogin.pl",
-                     "kotnetcli/server/cgi-bin/wayf2.pl"]),
-        ("/usr/share/applications/", [f.name]),
+        ("kotnetcli/data", ["kotnetcli/data/kotnetcli.jpg"]),
+        ("kotnetcli/server/cgi-bin", ["kotnetcli/server/cgi-bin/netlogin.pl",
+                                      "kotnetcli/server/cgi-bin/wayf2.pl"]),
+        ("/usr/share/applications/", [kotnetgui_desktop.name]),
         ("/usr/share/icons/", ["kotnetcli/data/kotnetcli.jpg"])
-        ],
-    include_package_data = True,
-    classifiers=[]
+        ]
 )
 
 

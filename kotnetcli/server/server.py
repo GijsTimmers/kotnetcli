@@ -25,17 +25,31 @@ import time
 import BaseHTTPServer
 import CGIHTTPServer
 import ssl
-
 import os
-from ..__init__ import resolve_path
+
+from pkg_resources import resource_filename
+from ..frontend import AbstractFrontEnd
+
+import logging
+from ..tools import log
+logger = logging.getLogger(__name__)
 
 HOST_NAME   = 'localhost'
 PORT_NUMBER = 8888
-SRV_DIR     = resolve_path("server")
+SRV_DIR     = resource_filename(__name__, "")
+DESCR       = "Elementary localhost server for kotnetcli development"
 
-def main():
+class KotnetSrvFrontEnd(AbstractFrontEnd):
+
+    def __init__(self):
+        super(KotnetSrvFrontEnd, self).__init__(DESCR)
+        self.args = super(KotnetSrvFrontEnd, self).parseArgs()
+        
+## end class KotnetSrvFrontEnd
+
+def run_server():
     ## Set up a simple HTTP server that listens for incoming GET/POST requests
-    ## and passes them to the relevant CGI scripts to prepare the HTML response.
+    ## and passes them to the relevant CGI script to prepare the HTML response.
     handler = CGIHTTPServer.CGIHTTPRequestHandler
     httpd = BaseHTTPServer.HTTPServer((HOST_NAME, PORT_NUMBER), handler)
 
@@ -45,22 +59,23 @@ def main():
     #httpd.socket = ssl.wrap_socket (httpd.socket, certfile=CERT_FILE,
     #                                server_side=True)
     #
-    ## Force the use of a subprocess for CGI scripts to ensure they have acccess
+    ## Force a subprocess for CGI scripts to ensure they have acccess
     ## to the SSL wrapped socket (see also http://stackoverflow.com/a/27303995)
     #CGIHTTPServer.CGIHTTPRequestHandler.have_fork=False
 
     ## Ensure the cgi-bin directory is found.
-    print "cd to server directory at '{0}'".format(SRV_DIR)
+    logger.debug("cd to server directory at '{0}'".format(SRV_DIR))
     os.chdir(SRV_DIR)
 
-    print time.asctime(), "Kotnetcli Test Server Starts - %s:%s" % (HOST_NAME, PORT_NUMBER)
+    logger.info("Kotnetsrv started at {0}:{1}".format(HOST_NAME, PORT_NUMBER))
     
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    print time.asctime(), "Kotnetcli Test Server Stops - %s:%s" % (HOST_NAME, PORT_NUMBER)
+    logger.info("Kotnetsrv terminated by keyboard interrupt")
 
-if __name__ == '__main__':
-    main()
+def main():
+    srvFrontEnd = KotnetSrvFrontEnd()
+    run_server()

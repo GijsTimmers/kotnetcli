@@ -35,6 +35,7 @@ Although ease-of-use is important, `kotnetcli` will probably stay
 "poweruser-ish" for a while.
 
 You can find more information about the kotnecli features [in the wiki!](https://github.com/GijsTimmers/kotnetcli/wiki/Features)
+
 ## Installation
 
 You can either download pre-built
@@ -52,17 +53,18 @@ install system-wide as follows:
 
         $ sudo python2 setup.py install
 
-   The above command automatically resolves the base dependencies. We refer to
-   the [wiki](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)
-   for optional communicator-specific dependencies, or in case you want to
-   install manually.
+The above command automatically resolves the base dependencies. We refer to
+the [wiki](https://github.com/GijsTimmers/kotnetcli/wiki/Dependencies-overview)
+for optional communicator-specific dependencies, or in case you want to
+install manually.
 
-The kotnetcli package consists of a number of shell commands, which are
-explained below:
+## Using kotnetcli
 
-1. *kotnetcli*: the core command, logs you in to KotNet.
-2. *kotnetgui*: a GUI front-end for the kotnetcli application.
-3. *kotnetsrv*: an elementary webserver, intended for developers on localhost.
+The kotnetcli distribution contains the following shell commands: 
+
+- **kotnetcli**: the core command, logs you in to KotNet.
+- **kotnetgui**: a Qt GUI front-end for the kotnetcli application.
+- **kotnetsrv**: an elementary localhost webserver, intended for developers.
 
 When run for the first time, kotnetcli will ask you to unlock your keyring. For
 maximum ease-of-use, just enter the password you use to login to your system. If

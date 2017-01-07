@@ -38,21 +38,20 @@ from .communicator.fabriek import (
 from .tools import log
 logger = logging.getLogger(__name__)
 
-from __init__ import __version__, __version_str__, __src_url__, __descr__
+from __init__ import __version__, __release_name__, __src_url__, __descr__
 
 ## Class encapsulating common CLI arguments for all binaries in the kotnetcli
 ## distribution.
 ## NOTE inherit from "object" to be able to use super() in child classes.
 class AbstractFrontEnd(object):
 
-    def __init__(self):
+    def __init__(self, descr):
         estr = "return values:\n  {}\t\t\ton success\n  {}\t\t\ton failure"
         estr = estr.format(EXIT_SUCCESS, EXIT_FAILURE)
-        self.parser = argparse.ArgumentParser(description=__descr__,
+        self.parser = argparse.ArgumentParser(description=descr,
             epilog=estr, formatter_class=argparse.RawDescriptionHelpFormatter, 
             conflict_handler='resolve')
         self.addGeneralFlags()
-        self.addNetworkFlags() 
 
     def addGeneralFlags(self):
         self.parser.add_argument("-v", "--version", action=PrintVersionAction,
@@ -69,13 +68,6 @@ class AbstractFrontEnd(object):
             action="store", default=log.LOG_LEVEL_DEFAULT)
         self.parser.add_argument("--time", action="store_true",
             help="include fine-grained timing info in logger output")
-        
-    def addNetworkFlags(self):
-        self.parser.add_argument("--institution", action="store", default=None,
-            metavar="INST", choices=inst_dict.keys(),
-            help="override the instititution")
-        self.parser.add_argument("-L", "--localhost", action="store_true",
-            help="connect to the localhost development test server")
 
     def parseArgs(self):
         ## Call argcomplete to complete flags automatically when using bash.
@@ -96,8 +88,23 @@ class AbstractFrontEnd(object):
 
 ## end class AbstractFrontEnd
 
+class AbstractClientFrontEnd(AbstractFrontEnd):
+
+    def __init__(self):
+        super(AbstractClientFrontEnd, self).__init__(__descr__)
+        self.addNetworkFlags()
+
+    def addNetworkFlags(self):
+        self.parser.add_argument("--institution", action="store", default=None,
+            metavar="INST", choices=inst_dict.keys(),
+            help="override the instititution")
+        self.parser.add_argument("-L", "--localhost", action="store_true",
+            help="connect to the localhost development test server")
+
+## end class AbstractClientFrontEnd
+
 logo = """   __
- __\ \                 {cmd} v{version}
+ __\ \                 {cmd} v{version} - '{release}'
  \ \\\_\___             Copyright (C) 2014-2017 Kotnetcli Development Team
   \   V  / __          <{github_url}>
    \  `\<</ /
@@ -108,8 +115,8 @@ logo = """   __
 
 class PrintVersionAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        print(logo.format(cmd=parser.prog, version=__version_str__, 
-            github_url=__src_url__))
+        print(logo.format(cmd=parser.prog, version=__version__, 
+            release=__release_name__, github_url=__src_url__))
         exit(EXIT_SUCCESS)
 
 license = """{cmd}: {descr}

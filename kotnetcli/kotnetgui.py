@@ -36,9 +36,9 @@ from .worker import (
     EXIT_SUCCESS
 )
 from .tools import log
-from __init__ import resolve_path
+from pkg_resources import resource_filename
 
-from .frontend import AbstractFrontEnd
+from .frontend import AbstractClientFrontEnd
 
 ## we use a queue to synchronize the background netlogin thread, requesting the
 ## credentials from the GUICredentialsDialog in the main thread
@@ -194,7 +194,7 @@ class GUIOptionDialog(QtGui.QDialog):
         grid.addLayout(vbox, 0, 0)
         
         lblLogo = QtGui.QLabel()
-        img = resolve_path("data/kotnetcli.jpg")
+        img = resource_filename(__name__, "data/kotnetcli.jpg")
         logger.debug("logo data path resolved to '{0}'".format(img))
         logo = QtGui.QPixmap(img)
         scaledLogo = logo.scaled(QtCore.QSize(120,120), QtCore.Qt.KeepAspectRatio)
@@ -249,7 +249,7 @@ class LoginGUICommunicator(AbstractSummaryCommunicator):
 
 ## end class LoginGUICommunicator
 
-class KotnetGUIFrontEnd(AbstractFrontEnd):
+class KotnetGUIFrontEnd(AbstractClientFrontEnd):
 
     def __init__(self):
         super(KotnetGUIFrontEnd, self).__init__()
