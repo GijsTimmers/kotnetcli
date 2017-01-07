@@ -128,7 +128,7 @@ class LoginWorker(SuperNetworkWorker):
             sys.exit(EXIT_FAILURE)
         except UnknownRCException, e:
             (rccode, html) = e.get_info()
-            co.eventFailureUnknownRC(rccode, html)
+            co.eventFailureUnknownRC(rccode, html.encode('utf-8'))
             sys.exit(EXIT_FAILURE)
 
 class LogoutWorker(SuperNetworkWorker):
