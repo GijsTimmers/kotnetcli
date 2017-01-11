@@ -31,6 +31,8 @@ SUMMARY_ERR_OFFLINE     = "Connection attempt to '{srv}' timed out."
 SUMMARY_ERR_CREDS       = "Invalid credentials."
 SUMMARY_ERR_INST        = "Invalid institution '{inst}'."
 SUMMARY_ERR_MAX_IP      = "Maximum IP logins reached."
+SUMMARY_ERR_SERVICE     = "No network login service available."
+SUMMARY_ERR_REGISTER    = "User {user} not registered for KotNet ('{inst}')."
 SUMMARY_ERR_RC          = "Unknown rc-code '{rc}'."
 SUMMARY_ERR_FORGET      = "Credentials already removed."
 SUMMARY_ERR_SRV         = "Internal server script error."
@@ -45,6 +47,8 @@ class AbstractSummaryCommunicator(LoggerCommunicator):
         self.err_creds      = SUMMARY_ERR_CREDS
         self.err_inst       = SUMMARY_ERR_INST
         self.err_ip         = SUMMARY_ERR_MAX_IP
+        self.err_service    = SUMMARY_ERR_SERVICE
+        self.err_register   = SUMMARY_ERR_REGISTER
         self.err_rc         = SUMMARY_ERR_RC
         self.err_forget     = SUMMARY_ERR_FORGET
         self.err_srv        = SUMMARY_ERR_SRV

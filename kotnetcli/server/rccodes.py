@@ -29,12 +29,15 @@ RC_LOGIN_INVALID_USERNAME   = 201
 
 RC_LOGIN_INVALID_PASSWORD   = 202
 
-# de machine waarop u werkt is niet aangesloten op een netwerk met netwerk login service.
 RC_NO_LOGIN_SERVICE         = 204
 
 RC_LOGIN_MAX_IP             = 206
 
 RC_INVALID_INSTITUTION      = 211
+
+RC_KOTNET_REGISTER          = 213
+
+RC_CAMPUSNET_PERMISSION     = 214
 
 RC_INTERNAL_SCRIPT_ERR      = 301
 

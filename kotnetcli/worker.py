@@ -123,6 +123,12 @@ class LoginWorker(SuperNetworkWorker):
         except InvalidInstitutionException, e:
             co.eventFailureInstitution(creds.getInst())
             sys.exit(EXIT_FAILURE)
+        except KotNetRegisterException, e:
+            co.eventFailureRegister(creds.getUser(), creds.getInst())
+            sys.exit(EXIT_FAILURE)
+        except NoLoginServiceException, e:
+            co.eventFailureLoginService()
+            sys.exit(EXIT_FAILURE)
         except InternalScriptErrorException:
             co.eventFailureServerScriptError()
             sys.exit(EXIT_FAILURE)

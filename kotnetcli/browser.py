@@ -41,7 +41,7 @@ LOCALHOST           = "localhost"
 LOCALHOST_PORT      = "8888"
 
 ## the maximum waiting time in seconds for browser connections
-BROWSER_TIMEOUT_SEC = 1.5
+BROWSER_TIMEOUT_SEC = 3
 
 ## custom exceptions to be caught by worker
 class KotnetOfflineException(Exception):
@@ -59,6 +59,12 @@ class InvalidInstitutionException(Exception):
 class MaxNumberIPException(Exception):
     pass
     
+class KotNetRegisterException(Exception):
+    pass
+
+class NoLoginServiceException(Exception):
+    pass
+
 class UnknownRCException(Exception):
     def __init__(self, rccode, html):
         self.rccode = rccode
@@ -172,6 +178,12 @@ class KotnetBrowser(object):
         elif rccode == RC_INVALID_INSTITUTION:
             raise InvalidInstitutionException()
         
+        elif rccode == RC_NO_LOGIN_SERVICE:
+            raise NoLoginServiceException()
+
+        elif rccode == RC_KOTNET_REGISTER:
+            raise KotNetRegisterException()
+
         elif rccode == RC_INTERNAL_SCRIPT_ERR:
             raise InternalScriptErrorException()
 

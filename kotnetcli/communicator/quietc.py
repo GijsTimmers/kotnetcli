@@ -43,6 +43,8 @@ STD_ERR_OFFLINE     = "Connection attempt to netlogin service '{srv}' timed out.
 STD_ERR_CREDS       = "Uw logingegevens kloppen niet. Gebruik kotnetcli --forget om deze te resetten."
 STD_ERR_INST        = "Uw gekozen institutie '{inst}' klopt niet. Gebruik kotnetcli --institution om een andere institutie te kiezen."
 STD_ERR_MAX_IP      = "U bent al ingelogd op een ander IP-adres. Gebruik kotnetcli --force-login om u toch in te loggen."
+STD_ERR_SERVICE     = "De machine waarop u werkt is niet aangesloten op een netwerk met netwerk login service."
+STD_ERR_REGISTER    = "Gebruiker {user} heeft geen toelating om KotNet te gebruiken. Voor registratie, contacteer je instelling '{inst}'."
 STD_ERR_RC          = "De netlogin server geeft een onbekende rc-code '{rc}' terug. Contacteer de kotnetcli developers om ondersteuning te krijgen."
 STD_ERR_INFO_RC     = "====== START HTML DUMP ======\n{html}====== END HTML DUMP ======"
 STD_ERR_SRV         = "De netlogin server rapporteert een 'internal script error'. Probeer opnieuw in te loggen..."
@@ -73,6 +75,8 @@ class QuietCommunicator(object):
         self.err_creds      = STD_ERR_CREDS
         self.err_inst       = STD_ERR_INST
         self.err_ip         = STD_ERR_MAX_IP
+        self.err_service    = STD_ERR_SERVICE
+        self.err_register   = STD_ERR_REGISTER
         self.err_rc         = STD_ERR_RC
         self.err_info_rc    = STD_ERR_INFO_RC
         self.err_srv        = STD_ERR_SRV
@@ -187,6 +191,12 @@ class QuietCommunicator(object):
     def eventFailureMaxIP(self):
         self.doEventError(self.err_ip)
     
+    def eventFailureLoginService(self):
+        self.doEventError(self.err_service)
+
+    def eventFailureRegister(self, user, inst):
+        self.doEventError(self.err_register.format(user=user, inst=inst))
+
     def eventFailureInstitution(self, inst):
         self.doEventError(self.err_inst.format(inst=inst))
         
