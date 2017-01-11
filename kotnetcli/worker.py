@@ -124,7 +124,12 @@ class LoginWorker(SuperNetworkWorker):
             co.eventFailureInstitution(creds.getInst())
             sys.exit(EXIT_FAILURE)
         except KotNetRegisterException, e:
-            co.eventFailureRegister(creds.getUser(), creds.getInst())
+            co.eventFailureRegister("KotNet", creds.getUser(),
+                creds.getInst())
+            sys.exit(EXIT_FAILURE)
+        except CampusNetRegisterException, e:
+            co.eventFailureRegister("CampusNet", creds.getUser(),
+                creds.getInst())
             sys.exit(EXIT_FAILURE)
         except NoLoginServiceException, e:
             co.eventFailureLoginService()

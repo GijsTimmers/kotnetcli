@@ -59,6 +59,9 @@ class InvalidInstitutionException(Exception):
 class MaxNumberIPException(Exception):
     pass
     
+class CampusNetRegisterException(Exception):
+    pass
+
 class KotNetRegisterException(Exception):
     pass
 
@@ -183,6 +186,9 @@ class KotnetBrowser(object):
 
         elif rccode == RC_KOTNET_REGISTER:
             raise KotNetRegisterException()
+
+        elif rccode == RC_CAMPUSNET_REGISTER:
+            raise CampusNetRegisterException()
 
         elif rccode == RC_INTERNAL_SCRIPT_ERR:
             raise InternalScriptErrorException()

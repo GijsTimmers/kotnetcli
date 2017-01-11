@@ -25,7 +25,9 @@ import atexit
 
 inst_dict = { "kuleuven"           : "voor KU Leuven associatie",
               "kuleuven-campusnet" : "voor KU Leuven residenties",
-              "kotnetext"          : "voor externen" }
+              "kotnetext"          : "voor externen",
+              "kuleuven-guest"     : "voor gasten"
+            }
 
 ## co.eventExit is always called, even on asynchronous exit (e.g. keyboard interrupt)
 ## --> allow the communicator to restore user interface state (e.g. show cursor)
