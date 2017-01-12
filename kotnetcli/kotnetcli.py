@@ -35,8 +35,7 @@ logger = logging.getLogger(__name__)
 
 from .communicator.fabriek import (     ## Voor output op maat
     LoginCommunicatorFabriek, 
-    ForgetCommunicatorFabriek,
-    inst_dict
+    ForgetCommunicatorFabriek
 )
 
 from .credentials import (              ## Voor opvragen van s-nummer
