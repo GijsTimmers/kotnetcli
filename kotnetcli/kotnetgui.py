@@ -272,7 +272,10 @@ class KotnetcliRunner(QtCore.QObject):
         co = LoginGUICommunicator(inst_dict, self.updateGUIText,
             self.updateGUIError, self.updateGUIPercentages,
             self.GUIQueryCredentials)
-        creds = GuestCredentials() if (choice == "guest") else KeyRingCredentials()
+        if choice == "guest":
+            creds = GuestCredentials(args.institution)
+        else:
+            creds = KeyRingCredentials(args.institution)
         
         #TODO localhost choice should come from superclass front-end argparse
         worker = LoginWorker(args.localhost)
