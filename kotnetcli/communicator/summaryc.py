@@ -21,7 +21,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from loggerc import LoggerCommunicator
+from .loggerc import LoggerCommunicator
 
 SUMMARY_MSG_LOGIN       = "Login geslaagd."
 SUMMARY_MSG_DOWN_UP     = "Download: {downl}%, Upload: {upl}%"

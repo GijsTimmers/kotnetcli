@@ -27,7 +27,7 @@
 from __future__ import unicode_literals
 
 from dialog import Dialog
-from loggerc import LoggerCommunicator
+from .loggerc import LoggerCommunicator
 
 DIALOG_MSG_LOGIN_SUCCESS    = "Je bent successvol ingelogd."
 DIALOG_MSG_FORGET_SUCCESS   = "You have succesfully removed your kotnetcli credentials."
@@ -88,7 +88,7 @@ class SuperNetDialogCommunicator(AbstractDialogCommunicator):
     def eventError(self, string):
         self.info = string
         ## fail the current item and cancel all following ones
-        self.elements[self.iter.next()]      = self.FAIL
+        self.elements[next(self.iter)]      = self.FAIL
         for x in self.iter: self.elements[x] = self.CANCEL
         self.update()
     
@@ -112,17 +112,17 @@ class SuperNetDialogCommunicator(AbstractDialogCommunicator):
         self.update()
     
     def eventGetData(self):
-        self.elements[self.iter.next()] = self.DONE
+        self.elements[next(self.iter)] = self.DONE
         self.overal = 20
         self.update()
     
     def eventPostData(self):
-        self.elements[self.iter.next()] = self.DONE
+        self.elements[next(self.iter)] = self.DONE
         self.overal = 50
         self.update()
     
     def eventProcessData(self):
-        self.elements[self.iter.next()] = self.DONE
+        self.elements[next(self.iter)] = self.DONE
         self.overal = 80
         self.update()
 

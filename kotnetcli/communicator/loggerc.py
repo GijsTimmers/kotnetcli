@@ -21,7 +21,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
-from quietc import QuietCommunicator
+from .quietc import QuietCommunicator
 
 import logging
 logger = logging.getLogger(__name__)

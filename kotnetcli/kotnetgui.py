@@ -25,7 +25,7 @@ import sys
 import threading
 import logging
 from PyQt4 import QtGui, QtCore
-from Queue import Queue
+from queue import Queue
 
 from .communicator.fabriek import inst_dict
 from .communicator.summaryc import AbstractSummaryCommunicator

@@ -65,7 +65,7 @@ kotnetgui_desktop.write(kotnetgui_desktop_template.format(
 kotnetgui_desktop.close()
 
 import sys
-print sys.prefix
+print(sys.prefix)
 setup(
     name = "kotnetcli",
     packages = find_packages(),
@@ -94,5 +94,3 @@ setup(
         ("/usr/share/icons/", ["kotnetcli/data/kotnetcli.jpg"])
         ]
 )
-
-

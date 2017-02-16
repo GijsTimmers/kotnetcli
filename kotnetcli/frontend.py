@@ -38,7 +38,7 @@ from .communicator.fabriek import (
 from .tools import log
 logger = logging.getLogger(__name__)
 
-from __init__ import __version__, __release_name__, __src_url__, __descr__
+from .__init__ import __version__, __release_name__, __src_url__, __descr__
 
 ## Class encapsulating common CLI arguments for all binaries in the kotnetcli
 ## distribution.

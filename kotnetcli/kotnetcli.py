@@ -44,10 +44,14 @@ from .credentials import (              ## Voor opvragen van s-nummer
 )                                           
 from .worker import (                   ## Stuurt alle losse componenten aan
     LoginWorker,
-    ForgetCredsWorker
+    ForgetCredsWorker,
+    EXIT_FAILURE,
+    EXIT_SUCCESS
 )
 
 from .frontend import AbstractClientFrontEnd
+
+from .__init__ import __src_url__
 
 class KotnetCLI(AbstractClientFrontEnd):
     
@@ -121,7 +125,7 @@ class KotnetCLI(AbstractClientFrontEnd):
         ## 3. communicator-related flags
         try:
             co = self.parseCommunicatorFlags(fabriek, argumenten)
-        except ImportError, e:
+        except ImportError as e:
             logger.error(
                 "import error when trying to create '%s' communicator: %s\n"    \
                 "Have you installed all the dependencies?\n"                    \

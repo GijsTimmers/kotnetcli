@@ -29,7 +29,7 @@ import socket                           ## Voor ophalen IP
 from bs4 import BeautifulSoup, Comment  ## Om webinhoud proper te parsen.
 
 ## login rc codes contained in the response html page
-from server.rccodes import *
+from .server.rccodes import *
 
 import logging
 logger = logging.getLogger(__name__)

@@ -24,7 +24,7 @@
 import sys
 import cursor
 
-from quietc import QuietCommunicator
+from .quietc import QuietCommunicator
 
 class AbstractPlaintextCommunicator(QuietCommunicator):
 
@@ -67,13 +67,13 @@ class AbstractPlaintextCommunicator(QuietCommunicator):
         
         aantalStreepjesObvPercentage = int(round(percentagefloat/100.0 * \
                                                     lengteVanBalkfloat))
-        print style + "[" + color + \
+        print(style + "[" + color + \
         "=" * aantalStreepjesObvPercentage + stop_color + \
         " " * (lengteVanBalkint-aantalStreepjesObvPercentage) + \
         "][" + \
         " " * (lengteVanRuimteVoorPercentages - len(percentagestring)) + \
         color + percentagestring + "%" + \
-        stop_color + "]" + stop_style
+        stop_color + "]" + stop_style)
 
     def fmt_bar(self, percentage):
         self.fmt_generic_bar(percentage, "", "", "", "")

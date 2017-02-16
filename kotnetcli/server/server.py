@@ -22,8 +22,8 @@
 ## along with kotnetcli.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-import BaseHTTPServer
-import CGIHTTPServer
+import http.server
+from http.server import HTTPServer, CGIHTTPRequestHandler
 import ssl
 import os
 
@@ -50,8 +50,8 @@ class KotnetSrvFrontEnd(AbstractFrontEnd):
 def run_server():
     ## Set up a simple HTTP server that listens for incoming GET/POST requests
     ## and passes them to the relevant CGI script to prepare the HTML response.
-    handler = CGIHTTPServer.CGIHTTPRequestHandler
-    httpd = BaseHTTPServer.HTTPServer((HOST_NAME, PORT_NUMBER), handler)
+    handler = CGIHTTPRequestHandler
+    httpd = HTTPServer((HOST_NAME, PORT_NUMBER), handler)
 
     ## The development test server is intended to run on localhost, so we can
     ## simply use a plain unencrypted HTTP connection. The following lines

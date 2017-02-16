@@ -134,8 +134,10 @@ class QuietCommunicator(object):
     
     def get_input(self, prompt_str, accept=lambda x: x, pwd=False):
         prompt = self.fmt_prompt(prompt_str)
+        try: input = raw_input
+        except NameError: pass
         while True:
-            rv = getpass.getpass(prompt) if pwd else raw_input(prompt)
+            rv = getpass.getpass(prompt) if pwd else input(prompt)
             rv = rv.strip()
             if accept(rv): break
             print(self.fmt_err(self.err_input))

@@ -120,24 +120,24 @@ class LoginWorker(SuperNetworkWorker):
         except MaxNumberIPException:
             co.eventFailureMaxIP()
             sys.exit(EXIT_FAILURE)
-        except InvalidInstitutionException, e:
+        except InvalidInstitutionException as e:
             co.eventFailureInstitution(creds.getInst())
             sys.exit(EXIT_FAILURE)
-        except KotNetRegisterException, e:
+        except KotNetRegisterException as e:
             co.eventFailureRegister("KotNet", creds.getUser(),
                 creds.getInst())
             sys.exit(EXIT_FAILURE)
-        except CampusNetRegisterException, e:
+        except CampusNetRegisterException as e:
             co.eventFailureRegister("CampusNet", creds.getUser(),
                 creds.getInst())
             sys.exit(EXIT_FAILURE)
-        except NoLoginServiceException, e:
+        except NoLoginServiceException as e:
             co.eventFailureLoginService()
             sys.exit(EXIT_FAILURE)
         except InternalScriptErrorException:
             co.eventFailureServerScriptError()
             sys.exit(EXIT_FAILURE)
-        except UnknownRCException, e:
+        except UnknownRCException as e:
             (rccode, html) = e.get_info()
             co.eventFailureUnknownRC(rccode, html.encode('utf-8'))
             sys.exit(EXIT_FAILURE)
